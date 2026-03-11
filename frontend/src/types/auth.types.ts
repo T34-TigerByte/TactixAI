@@ -1,4 +1,4 @@
-export type Roles = 'admin' | 'user';
+export type Roles = 'admin' | 'learner';
 
 export interface User {
     id: string;
@@ -11,7 +11,7 @@ export interface User {
     updated_at: Date;
 }
 
-export interface LoginCrendentials {
+export interface LoginCredentials {
     email: string;
     password: string;
 }
@@ -20,7 +20,7 @@ export interface AuthContextType {
     user: User | null;
     isLoading: boolean;
     isAuthenticated: boolean;
-    login: (credentials: LoginCrendentials) => Promise<void>;
+    login: (credentials: LoginCredentials) => Promise<void>;
     logout: () => void;
 }
 
