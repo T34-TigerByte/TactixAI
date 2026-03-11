@@ -209,14 +209,14 @@ const LoginPage = () => {
                   </button>
                 </form>
 
-                {/* 구분선 */}
+                {/* Line Separator */}
                 <div className='flex items-center gap-3'>
                   <div className='flex-1 h-px bg-gray-200' />
                   <span className='text-gray-400 text-xs'>Demo Access</span>
                   <div className='flex-1 h-px bg-gray-200' />
                 </div>
 
-                {/* 데모 계정 */}
+                {/* Demo Accounts Selection */}
                 <div className='space-y-3'>
                   <button
                     type='button'
