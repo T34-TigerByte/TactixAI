@@ -8,6 +8,7 @@ interface AuthResponse {
 
 
 export async function LoginRequest (credentials: LoginCredentials): Promise<AuthResponse> {
+    // MOCK FLAG TO BE REPLACED ONCE READY TO CONNECT TO BACKEND
     const useMock = import.meta.env.VITE_USE_MOCK !== 'false';
 
     if (useMock) {
