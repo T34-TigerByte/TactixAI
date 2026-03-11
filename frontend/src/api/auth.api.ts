@@ -8,8 +8,10 @@ interface AuthResponse {
 
 
 export async function LoginRequest (credentials: LoginCredentials): Promise<AuthResponse> {
-    if (import.meta.env.DEV) {
-        return mockLogin(credentials);
+    const useMock = import.meta.env.VITE_USE_MOCK !== 'false';
+
+    if (useMock) {
+      return mockLogin(credentials);
     }
 
     const response = await api.post<'/auth/login', AuthResponse>('/auth/login', credentials);
