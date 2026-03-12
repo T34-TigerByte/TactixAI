@@ -291,6 +291,7 @@ export default function LearnerDashboard () {
                 ))}
 
                 {/* View Detailed Progress */}
+                
                 <button
                   className='w-full py-3 rounded-xl border border-gray-200
                                             text-red-600 font-medium text-sm
