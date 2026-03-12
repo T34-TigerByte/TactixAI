@@ -67,6 +67,7 @@ const LoginPage = () => {
             const redirect = ROLE_REDIRECT[savedUser.role as Roles] ?? ROUTES.LOGIN;
             navigate(redirect, { replace: true });
         } catch(error) {
+            console.error('Login error:', error);
             setError('Login failed');
         } finally {
             setIsLoading(false);
