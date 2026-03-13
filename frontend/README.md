@@ -21,6 +21,12 @@ This repository contains the **frontend client** application.
 
 ---
 
+## Demo Link
+
+[Click to navigate](https://tactix-ai.vercel.app/)
+
+---
+
 ## 🛠 FE Tech Stack
 
 | Layer | Technology |
