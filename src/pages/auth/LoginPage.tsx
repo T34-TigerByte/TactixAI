@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 import { ROUTES } from "../../router/routes";
 import type { Roles } from "../../types/auth.types";
-import Logo from "../../components/common/Logo";
+import Logo from "../../components/ui/Logo";
 
 
 const ROLE_REDIRECT: Record<Roles, string> = {
@@ -226,7 +226,6 @@ const LoginPage = () => {
                       {[
                         { email: 'admin@test.com', role: 'Admin' },
                         { email: 'learner@test.com', role: 'Learner' },
-                        { email: 'reviewer@test.com', role: 'Reviewer' },
                       ].map(({ email, role }) => (
                         <button
                           key={role}

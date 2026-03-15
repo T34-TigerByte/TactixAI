@@ -12,11 +12,11 @@ import {
 import { useAuth } from '../../hooks/useAuth';
 import { ROUTES } from '../../router/routes';
 
-import OverviewTab from '../../components/common/OverviewTab';
-import UsersTab from '../../components/common/UsersTab';
-import AnalyticsTab from '../../components/common/AnalyticsTab';
-import StatsCard from '../../components/common/StatsCard';
-import Logo from '../../components/common/Logo';
+import OverviewTab from '../../components/admin/OverviewTab';
+import UsersTab from '../../components/admin/UsersTab';
+import AnalyticsTab from '../../components/admin/AnalyticsTab';
+import StatsCard from '../../components/ui/StatsCard';
+import Logo from '../../components/ui/Logo';
 
 // MOCK DATA
 // TODO: replace with API calls when backend is ready

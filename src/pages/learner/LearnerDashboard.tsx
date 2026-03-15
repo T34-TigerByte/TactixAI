@@ -2,10 +2,10 @@ import { Target, Clock, TrendingUp, BookOpen, BarChart2, Play, LogOut, Shield, M
 import { useNavigate } from 'react-router-dom';
 import { useAuth }  from '../../hooks/useAuth';
 import { ROUTES } from '../../router/routes';
-import DifficultyBadge from '../../components/common/DifficultyBadge';
-import StatsCard from '../../components/common/StatsCard';
-import PanelHeader from '../../components/common/PanelHeader';
-import Logo from '../../components/common/Logo';
+import DifficultyBadge from '../../components/ui/DifficultyBadge';
+import StatsCard from '../../components/ui/StatsCard';
+import PanelHeader from '../../components/ui/PanelHeader';
+import Logo from '../../components/ui/Logo';
 
 const MOCK_STATS = {
   totalSessions: 24,
@@ -125,27 +125,23 @@ export default function LearnerDashboard () {
               label='Total Sessions'
               value={MOCK_STATS.totalSessions}
               icon={<MessageSquare className='w-5 h-5 text-teal-500' />}
-              iconBg='bg-teal-50'
             />
             <StatsCard
               label='Average Score'
               value={`${MOCK_STATS.averageScore}%`}
               valueColor='text-orange-500'
               icon={<Target className='w-5 h-5 text-orange-400' />}
-              iconBg='bg-orange-50'
             />
             <StatsCard
               label='Training Hours'
               value={`${MOCK_STATS.trainingHours}h`}
               icon={<Clock className='w-5 h-5 text-purple-500' />}
-              iconBg='bg-purple-50'
             />
             <StatsCard
               label='Current Streak'
               value={MOCK_STATS.currentStreak}
               valueColor='text-red-500'
               icon={<TrendingUp className='w-5 h-5 text-red-500' />}
-              iconBg='bg-orange-50'
             />
           </div>
 

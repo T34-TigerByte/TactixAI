@@ -1,4 +1,4 @@
-import PanelHeader from "./PanelHeader";
+import PanelHeader from "../ui/PanelHeader";
 import { Settings, Users, Activity, FileText } from "lucide-react";
 
 
@@ -82,7 +82,7 @@ const OverviewTab = () => (
         <button
           className='w-full flex items-center gap-3 px-5 py-4 rounded-lg
                            bg-orange-600 hover:bg-orange-700 text-white font-medium
-                           transition-colors'
+                           transition-colors cursor-pointer'
         >
           <Users className='w-5 h-5' />
           Manage Users
@@ -90,7 +90,7 @@ const OverviewTab = () => (
         <button
           className='w-full flex items-center gap-3 px-5 py-4 rounded-lg
                            border border-red-300 text-red-600 font-medium
-                           hover:bg-orange-50 transition-colors'
+                           hover:bg-orange-50 transition-colors cursor-pointer'
         >
           <FileText className='w-5 h-5' />
           Generate Reports

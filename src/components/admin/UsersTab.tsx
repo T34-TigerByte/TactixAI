@@ -5,14 +5,13 @@ const MOCK_USER_COUNTS = {
   admins: 5,
 };
 const UsersTab = () => (
-
   <div>
     <div className='flex items-center justify-between mb-4'>
       <h2 className='text-gray-900 font-semibold text-lg'>User Management</h2>
       <button
         className='flex items-center gap-2 px-4 py-2 rounded-lg
                          bg-orange-600 hover:bg-orange-700 text-white text-sm font-medium
-                         transition-colors'
+                         transition-colors cursor-pointer'
       >
         <Users className='w-4 h-4' />
         View All Users
@@ -48,7 +47,7 @@ const UsersTab = () => (
           <div className='px-6 pb-6'>
             <button
               className='w-full py-3 rounded-lg bg-orange-600 hover:bg-orange-700
-                               text-white font-medium transition-colors'
+                               text-white font-medium transition-colors cursor-pointer'
             >
               {action}
             </button>
