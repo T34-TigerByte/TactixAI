@@ -2,8 +2,10 @@ import { Target, Clock, TrendingUp, BookOpen, BarChart2, Play, LogOut, Shield, M
 import { useNavigate } from 'react-router-dom';
 import { useAuth }  from '../../hooks/useAuth';
 import { ROUTES } from '../../router/routes';
-import DifficultyBadge from '../../components/common/DifficultyBadge';
-import StatsCard from '../../components/common/StatsCard';
+import DifficultyBadge from '../../components/ui/DifficultyBadge';
+import StatsCard from '../../components/ui/StatsCard';
+import PanelHeader from '../../components/ui/PanelHeader';
+import Logo from '../../components/ui/Logo';
 
 const MOCK_STATS = {
   totalSessions: 24,
@@ -79,26 +81,8 @@ export default function LearnerDashboard () {
           <div className='max-w-7xl mx-auto flex items-center justify-between'>
             {/* Logo / Title */}
             <div className='flex items-center gap-6'>
-              <div className='flex items-center gap-2'>
-                <div className='w-8 h-8 bg-orange-600 rounded-sm flex items-center justify-center'>
-                  <svg
-                    className='w-5 h-5 text-white'
-                    fill='currentColor'
-                    viewBox='0 0 24 24'
-                  >
-                    <path d='M12 2C8 6 6 9 8 13c-2-1-3-3-3-5C3 13 5 18 12 22c7-4 9-9 7-14-1 2-2 3-4 3 2-3 1-6-3-9z' />
-                  </svg>
-                </div>
-                <span className='text-orange-500 font-semibold text-lg'>
-                  Flame Tree
-                </span>
-                <span className='text-white font-semibold text-lg'>
-                  TactixAI.
-                </span>
-              </div>
-
+              <Logo />
               <div className='h-6 w-px bg-slate-600' />
-
               <div>
                 <h1 className='text-white font-bold text-lg leading-tight'>
                   Learner Dashboard
@@ -112,7 +96,7 @@ export default function LearnerDashboard () {
             <div className='flex items-center gap-3'>
               <div
                 className='flex items-center gap-2 px-4 py-2 rounded-lg
-                                        bg-red-600 text-white text-sm font-medium'
+                                        bg-orange-600 text-white text-sm font-medium'
               >
                 <Shield className='w-4 h-4' />
                 <span>Intermediate</span>
@@ -141,27 +125,23 @@ export default function LearnerDashboard () {
               label='Total Sessions'
               value={MOCK_STATS.totalSessions}
               icon={<MessageSquare className='w-5 h-5 text-teal-500' />}
-              iconBg='bg-teal-50'
             />
             <StatsCard
               label='Average Score'
               value={`${MOCK_STATS.averageScore}%`}
               valueColor='text-orange-500'
               icon={<Target className='w-5 h-5 text-orange-400' />}
-              iconBg='bg-orange-50'
             />
             <StatsCard
               label='Training Hours'
               value={`${MOCK_STATS.trainingHours}h`}
               icon={<Clock className='w-5 h-5 text-purple-500' />}
-              iconBg='bg-purple-50'
             />
             <StatsCard
               label='Current Streak'
               value={MOCK_STATS.currentStreak}
               valueColor='text-red-500'
               icon={<TrendingUp className='w-5 h-5 text-red-500' />}
-              iconBg='bg-red-50'
             />
           </div>
 
@@ -173,12 +153,10 @@ export default function LearnerDashboard () {
                                         shadow-sm overflow-hidden'
             >
               {/* Panel Header */}
-              <div className='flex items-center gap-3 px-6 py-4 bg-slate-900'>
-                <BookOpen className='w-5 h-5 text-teal-400' />
-                <h2 className='text-white font-semibold'>
-                  Recommended Scenarios
-                </h2>
-              </div>
+              <PanelHeader
+                icon={<BookOpen className='w-5 h-5' />}
+                title='Recommended Scenarios'
+              />
 
               {/* Scenario Cards */}
               <div className='p-4 space-y-3'>
@@ -209,7 +187,7 @@ export default function LearnerDashboard () {
                       <button
                         onClick={() => handleStartScenario(scenario.id)}
                         className='flex items-center gap-2 px-4 py-2 rounded-lg
-                                            bg-red-600 hover:bg-red-700 active:bg-red-800
+                                            bg-orange-600 hover:bg-orange-700 active:bg-orange-800
                                             text-white text-sm font-medium
                                             transition-colors
                                             cursor-pointer'
@@ -225,7 +203,7 @@ export default function LearnerDashboard () {
                 <button
                   className='w-full py-3 rounded-xl border border-gray-200
                                             text-red-600 font-medium text-sm
-                                            hover:bg-red-50 transition-colors mt-1
+                                            hover:bg-orange-50 transition-colors mt-1
                                             cursor-pointer'
                 >
                   View All Scenarios
@@ -239,10 +217,10 @@ export default function LearnerDashboard () {
                                         shadow-sm overflow-hidden'
             >
               {/* Panel Header */}
-              <div className='flex items-center gap-3 px-6 py-4 bg-slate-900'>
-                <BarChart2 className='w-5 h-5 text-teal-400' />
-                <h2 className='text-white font-semibold'>Recent Activity</h2>
-              </div>
+              <PanelHeader
+                icon={<BarChart2 className='w-5 h-5' />}
+                title='Recent Activity'
+              />
 
               {/* Activity List */}
               <div className='p-4 space-y-1'>
@@ -295,7 +273,7 @@ export default function LearnerDashboard () {
                 <button
                   className='w-full py-3 rounded-xl border border-gray-200
                                             text-red-600 font-medium text-sm
-                                            hover:bg-red-50 transition-colors mt-2
+                                            hover:bg-orange-50 transition-colors mt-2
                                             cursor-pointer'
                 >
                   View Detailed Progress

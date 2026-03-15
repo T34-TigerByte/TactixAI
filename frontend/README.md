@@ -109,7 +109,17 @@ src/
 │   └── chat.api.ts (to be added)
 │
 ├── components/
-│   ├── common/           # Reusable UI components (Button, Input, Modal...)
+│   ├── ui/               # Generic, reusable primitives (no page-specific logic)
+│   │   ├── Logo.tsx          # Brand logo used across all pages
+│   │   ├── StatsCard.tsx     # Metric display card
+│   │   ├── DifficultyBadge.tsx
+│   │   └── PanelHeader.tsx   # Reusable panel/section header
+│   ├── admin/            # Admin dashboard tab components
+│   │   ├── OverviewTab.tsx
+│   │   ├── AnalyticsTab.tsx
+│   │   └── UsersTab.tsx
+│   ├── forms/            # Form components
+│   │   └── SubmitForm.tsx
 │   ├── layout/           # App shell (Navbar, Sidebar, AppLayout)
 │   └── guards/           # RBAC route protection
 │       ├── ProtectedRoute.tsx

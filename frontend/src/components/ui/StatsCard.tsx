@@ -2,7 +2,7 @@ interface StatCardProps {
   label: string;
   value: string | number;
   icon: React.ReactNode;
-  iconBg: string;
+  iconBg?: string;
   valueColor?: string;
 }
 
@@ -22,7 +22,7 @@ const StatsCard = ({
       <p className={`text-3xl font-bold ${valueColor}`}>{value}</p>
     </div>
     <div
-      className={`w-12 h-12 rounded-full flex items-center justify-center ${iconBg}`}
+      className={`w-12 h-12 rounded-full flex items-center justify-center ${iconBg ? iconBg : ''}`}
     >
       {icon}
     </div>

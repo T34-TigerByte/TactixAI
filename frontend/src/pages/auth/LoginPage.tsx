@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 import { ROUTES } from "../../router/routes";
 import type { Roles } from "../../types/auth.types";
+import Logo from "../../components/ui/Logo";
 
 
 const ROLE_REDIRECT: Record<Roles, string> = {
@@ -86,19 +87,7 @@ const LoginPage = () => {
         {/* Navigation */}
         <header className='px-8 py-5 flex items-center gap-3'>
           {/* FlameTree Logo */}
-          <div className='flex items-center gap-2'>
-            <div className='w-8 h-8 bg-orange-600 rounded-sm flex items-center justify-center'>
-              <svg
-                className='w-5 h-5 text-white'
-                fill='currentColor'
-                viewBox='0 0 24 24'
-              >
-                <path d='M12 2C8 6 6 9 8 13c-2-1-3-3-3-5C3 13 5 18 12 22c7-4 9-9 7-14-1 2-2 3-4 3 2-3 1-6-3-9z' />
-              </svg>
-            </div>
-            <span className='text-orange-500 font-semibold text-lg'>Flame Tree</span>
-            <span className='text-white font-semibold text-lg'>TactixAI.</span>
-          </div>
+          <Logo />
         </header>
 
         {/* Main Contents */}
@@ -156,7 +145,7 @@ const LoginPage = () => {
 
                 {/* Error View */}
                 {error && (
-                  <div className='p-3 rounded-lg bg-red-50 border border-red-200'>
+                  <div className='p-3 rounded-lg bg-orange-50 border border-red-200'>
                     <p className='text-red-600 text-sm text-center'>{error}</p>
                   </div>
                 )}
@@ -237,7 +226,6 @@ const LoginPage = () => {
                       {[
                         { email: 'admin@test.com', role: 'Admin' },
                         { email: 'learner@test.com', role: 'Learner' },
-                        { email: 'reviewer@test.com', role: 'Reviewer' },
                       ].map(({ email, role }) => (
                         <button
                           key={role}
@@ -251,7 +239,7 @@ const LoginPage = () => {
                           <span className='text-gray-600'>{email}</span>
                           <span
                             className='text-xs text-red-500 font-medium
-                                         bg-red-50 px-2 py-0.5 rounded-full'
+                                         bg-orange-50 px-2 py-0.5 rounded-full'
                           >
                             {role}
                           </span>
