@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import {
@@ -17,6 +17,7 @@ import UsersTab from '../../components/admin/UsersTab';
 import AnalyticsTab from '../../components/admin/AnalyticsTab';
 import StatsCard from '../../components/ui/StatsCard';
 import Logo from '../../components/ui/Logo';
+import { StatsRequest } from '../../api/admin.api';
 
 // MOCK DATA
 // TODO: replace with API calls when backend is ready
@@ -47,6 +48,11 @@ export default function AdminDashboardPage() {
     { key: 'users', label: 'User Management' },
     { key: 'analytics', label: 'Analytics' },
   ];
+
+  useEffect(() => {
+      const response = StatsRequest();
+      console.log(response);
+  }, [])
 
   return (
     <div className='min-h-screen bg-gray-100'>

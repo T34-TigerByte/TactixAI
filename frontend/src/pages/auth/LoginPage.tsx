@@ -63,10 +63,8 @@ const LoginPage = () => {
         setError(null);
         setIsLoading(true);
         try {
-            await login({ email, password });
-            const savedUser = JSON.parse(localStorage.getItem('mock_user') ?? '{}');
-            const redirect = ROLE_REDIRECT[savedUser.role as Roles] ?? ROUTES.LOGIN;
-            navigate(redirect, { replace: true });
+            const { role } = await login({ email, password });
+            navigate(ROLE_REDIRECT[role] ?? ROUTES.LOGIN, { replace: true });
         } catch(error) {
             console.error('Login error:', error);
             setError('Login failed');
@@ -76,9 +74,13 @@ const LoginPage = () => {
     
     }
 
-    const fillDemo = (demoEmail: string) => {
+    const fillDemo = (demoEmail: string, role: string) => {
         setEmail(demoEmail)
-        setPassword('demo123')
+        if (role === 'Learner') {
+          setPassword('learner1234');
+        } else {
+          setPassword('admin1234')
+        }
         setShowDemoAccts(false)
     }
         
@@ -224,13 +226,13 @@ const LoginPage = () => {
                   {showDemoAccts && (
                     <div className='space-y-2'>
                       {[
-                        { email: 'admin@test.com', role: 'Admin' },
+                        { email: 'admin@dev.local', role: 'Admin' },
                         { email: 'learner@test.com', role: 'Learner' },
                       ].map(({ email, role }) => (
                         <button
                           key={role}
                           type='button'
-                          onClick={() => fillDemo(email)}
+                          onClick={() => fillDemo(email, role)}
                           className='w-full flex items-center justify-between
                                    px-4 py-2.5 rounded-lg text-sm
                                    bg-gray-50 hover:bg-gray-100

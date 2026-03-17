@@ -1,25 +1,24 @@
 import type { LoginCredentials, User } from '../types/auth.types';
 import api from './client';
 
-interface AuthResponse {
-  user: User;
-  token: string;
+export interface AuthResponse {
+  access_token: string;
+  refresh_token: string;
 }
 
 
 export async function LoginRequest (credentials: LoginCredentials): Promise<AuthResponse> {
-    // MOCK FLAG TO BE REPLACED ONCE READY TO CONNECT TO BACKEND
-    const useMock = import.meta.env.VITE_USE_MOCK !== 'false';
-
-    if (useMock) {
-      return mockLogin(credentials);
-    }
-
-    const response = await api.post<'/auth/login', AuthResponse>('/auth/login', credentials);
-    return response;
+    const response = await api.post<AuthResponse>('/auth/login', credentials);
+    return response.data;
 }
 
-const mockLogin = async ( credentials: LoginCredentials): Promise<AuthResponse> => {
+export async function getMeRequest(): Promise<User> {
+    const response = await api.get<User>('/me');
+    return response.data;
+}
+
+/*
+const mockLogin = async (credentials: LoginCredentials): Promise<AuthResponse> => {
     await new Promise(resolve => setTimeout(resolve, 1000)) // simulate network delay
 
     const mockData: Record<string, AuthResponse> = {
@@ -49,12 +48,12 @@ const mockLogin = async ( credentials: LoginCredentials): Promise<AuthResponse> 
         },
         token: 'mock-learner-token',
       },
-
     };
     const match = mockData[credentials.email];
-    
+
     if (!match) {
       throw new Error('Invalid credentials');
     }
     return match;
 }
+*/
