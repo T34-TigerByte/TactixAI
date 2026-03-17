@@ -1,13 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import {
-  Users,
-  UserCheck,
-  BarChart2,
-  LogOut,
-  CheckCircle,
-} from 'lucide-react';
+import { Users, UserCheck, BarChart2 } from 'lucide-react';
 
 import { useAuth } from '../../hooks/useAuth';
 import { ROUTES } from '../../router/routes';
@@ -16,7 +10,7 @@ import OverviewTab from '../../components/admin/OverviewTab';
 import UsersTab from '../../components/admin/UsersTab';
 import AnalyticsTab from '../../components/admin/AnalyticsTab';
 import StatsCard from '../../components/ui/StatsCard';
-import Logo from '../../components/ui/Logo';
+import DashboardHeader from '../../components/ui/DashboardHeader';
 import { StatsRequest } from '../../api/admin.api';
 
 // MOCK DATA
@@ -56,50 +50,14 @@ export default function AdminDashboardPage() {
 
   return (
     <div className='min-h-screen bg-gray-100'>
-      {/* ── Header ── */}
-      <header className='bg-slate-900 px-8 py-4'>
-        <div className='max-w-7xl mx-auto flex items-center justify-between'>
-          <div className='flex items-center gap-6'>
-            <Logo />
-            <div className='h-6 w-px bg-slate-600' />
+      <DashboardHeader
+        title='Admin Dashboard'
+        subtitle='System Overview & Management'
+        uptime={MOCK_STATS.uptime}
+        onLogout={handleLogout}
+      />
 
-            <div>
-              <h1 className='text-white font-bold text-lg leading-tight'>
-                Admin Dashboard
-              </h1>
-              <p className='text-slate-400 text-sm'>
-                System Overview & Management
-              </p>
-            </div>
-          </div>
-
-          <div className='flex items-center gap-3'>
-            {/* Uptime badge */}
-            <div
-              className='flex items-center gap-2 px-4 py-2 rounded-lg
-                            bg-teal-500/20 border border-teal-500/30
-                            text-teal-400 text-sm font-medium'
-            >
-              <CheckCircle className='w-4 h-4' />
-              {MOCK_STATS.uptime}% Uptime
-              {/* TODO: replace with real uptime from GET /admin/system/health */}
-            </div>
-
-            <button
-              onClick={handleLogout}
-              className='flex items-center gap-2 px-4 py-2 rounded-lg
-                         border border-slate-600 text-slate-300
-                         hover:border-slate-400 hover:text-white
-                         transition-colors text-sm font-medium'
-            >
-              <LogOut className='w-4 h-4' />
-              Logout
-            </button>
-          </div>
-        </div>
-      </header>
-
-      <main className='max-w-7xl mx-auto px-8 py-8 space-y-6'>
+      <main className='max-w-7xl mx-auto px-4 sm:px-8 py-6 sm:py-8 space-y-6'>
         {/* ── Stat Cards ── */}
         <div className='grid grid-cols-1 lg:grid-cols-3 gap-4'>
           <StatsCard
