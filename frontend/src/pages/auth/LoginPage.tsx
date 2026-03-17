@@ -5,6 +5,7 @@ import { useAuth } from "../../hooks/useAuth";
 import { ROUTES } from "../../router/routes";
 import type { Roles } from "../../types/auth.types";
 import Logo from "../../components/ui/Logo";
+import { BookOpen, Users, BarChart2 } from "lucide-react";
 
 
 const ROLE_REDIRECT: Record<Roles, string> = {
@@ -14,34 +15,19 @@ const ROLE_REDIRECT: Record<Roles, string> = {
 
 const FEATURES = [
   {
-    icon: (
-      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-          d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-      </svg>
-    ),
+    icon: <BookOpen className="w-6 h-6" />,
     color: 'text-cyan-400',
     title: 'Interactive Scenario-Based Learning',
     desc: 'Practice realistic ransomware negotiations with AI-powered threat actors. Document breach methods, encrypted data, and exploitation strategies.',
   },
   {
-    icon: (
-      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-          d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
-      </svg>
-    ),
+    icon: <Users className="w-6 h-6" />,
     color: 'text-orange-500',
     title: 'Role-Based Training',
     desc: 'Tailored experiences for learners and administrators with comprehensive performance tracking and detailed analytics.',
   },
   {
-    icon: (
-      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-          d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-      </svg>
-    ),
+    icon: <BarChart2 className="w-6 h-6" />,
     color: 'text-orange-500',
     title: 'Comprehensive Performance Metrics',
     desc: 'Track negotiation time extensions, ransom reductions, decryption proof requests, and data exploitation discussions.',
@@ -63,10 +49,8 @@ const LoginPage = () => {
         setError(null);
         setIsLoading(true);
         try {
-            await login({ email, password });
-            const savedUser = JSON.parse(localStorage.getItem('mock_user') ?? '{}');
-            const redirect = ROLE_REDIRECT[savedUser.role as Roles] ?? ROUTES.LOGIN;
-            navigate(redirect, { replace: true });
+            const { role } = await login({ email, password });
+            navigate(ROLE_REDIRECT[role] ?? ROUTES.LOGIN, { replace: true });
         } catch(error) {
             console.error('Login error:', error);
             setError('Login failed');
@@ -76,9 +60,13 @@ const LoginPage = () => {
     
     }
 
-    const fillDemo = (demoEmail: string) => {
+    const fillDemo = (demoEmail: string, role: string) => {
         setEmail(demoEmail)
-        setPassword('demo123')
+        if (role === 'Learner') {
+          setPassword('learner1234');
+        } else {
+          setPassword('admin1234')
+        }
         setShowDemoAccts(false)
     }
         
@@ -131,7 +119,7 @@ const LoginPage = () => {
             </div>
 
             {/* Right side: Login Card */}
-            <div className='w-full lg:w-[420px] shrink-0'>
+            <div className='w-full lg:w-105 shrink-0'>
               <div className='bg-white rounded-2xl shadow-2xl p-8 space-y-6'>
                 {/* Card Header */}
                 <div className='text-center space-y-1'>
@@ -224,17 +212,18 @@ const LoginPage = () => {
                   {showDemoAccts && (
                     <div className='space-y-2'>
                       {[
-                        { email: 'admin@test.com', role: 'Admin' },
+                        { email: 'admin@dev.local', role: 'Admin' },
                         { email: 'learner@test.com', role: 'Learner' },
                       ].map(({ email, role }) => (
                         <button
                           key={role}
                           type='button'
-                          onClick={() => fillDemo(email)}
+                          onClick={() => fillDemo(email, role)}
                           className='w-full flex items-center justify-between
                                    px-4 py-2.5 rounded-lg text-sm
                                    bg-gray-50 hover:bg-gray-100
-                                   border border-gray-200 transition-colors'
+                                   border border-gray-200 transition-colors
+                                   cursor-pointer'
                         >
                           <span className='text-gray-600'>{email}</span>
                           <span

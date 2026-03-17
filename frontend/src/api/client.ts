@@ -1,8 +1,12 @@
 import axios from 'axios';
 import { getToken, clearToken } from '../utils/auth.utils.ts';
 
+const baseURL = import.meta.env.VITE_MODE === 'PROD'
+    ? import.meta.env.VITE_PROD_BASE_URL
+    : '/api';
+
 const api = axios.create({
-    baseURL: import.meta.env.VITE_API_BASE_URL,
+    baseURL,
     timeout: 5000,
     headers: {
         'Content-Type': 'application/json',
