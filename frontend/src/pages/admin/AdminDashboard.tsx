@@ -11,7 +11,8 @@ import UsersTab from '../../components/admin/UsersTab';
 import AnalyticsTab from '../../components/admin/AnalyticsTab';
 import StatsCard from '../../components/ui/StatsCard';
 import DashboardHeader from '../../components/ui/DashboardHeader';
-import { StatsRequest } from '../../api/admin.api';
+import TabNav from '../../components/ui/TabNav';
+import { getAdminStatsRequest } from '../../api/admin.api';
 
 // MOCK DATA
 // TODO: replace with API calls when backend is ready
@@ -44,7 +45,7 @@ export default function AdminDashboardPage() {
   ];
 
   useEffect(() => {
-      const response = StatsRequest();
+      const response = getAdminStatsRequest();
       console.log(response);
   }, [])
 
@@ -78,23 +79,7 @@ export default function AdminDashboardPage() {
         </div>
 
         {/* ── Tab Navigation ── */}
-        <div className='flex rounded-xl overflow-hidden bg-slate-900 p-1'>
-          {TABS.map((tab) => (
-            <button
-              key={tab.key}
-              onClick={() => setActiveTab(tab.key)}
-              className={`flex-1 py-2.5 rounded-lg text-sm font-medium
-                          transition-colors ${
-                            activeTab === tab.key
-                              ? 'bg-orange-600 text-white'
-                              : 'text-slate-400 hover:text-white'
-                          }
-                          cursor-pointer`}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </div>
+        <TabNav tabs={TABS} activeTab={activeTab} onChange={setActiveTab} />
 
         {/* ── Tab Content ── */}
         {activeTab === 'overview' && <OverviewTab />}
