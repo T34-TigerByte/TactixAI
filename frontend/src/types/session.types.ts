@@ -1,6 +1,6 @@
 export interface Session {
     id: string;
-    scenarion_name: string;
+    scenario_name: string;
     date: string;
 }
 

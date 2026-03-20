@@ -2,6 +2,7 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import { ROUTES } from './routes';
 import LearnerDashboard from '../pages/learner/LearnerDashboard';
 import AdminDashboard from '../pages/admin/AdminDashboard';
+import LearnerDetailsPage from '../pages/admin/LearnerDetailsPage';
 import LoginPage from '../pages/auth/LoginPage';
 
 import { useAuth } from '../hooks/useAuth';
@@ -38,6 +39,7 @@ export default function AppRouter() {
             <Route element={<ProtectedRoute />}>
                 <Route element={<RoleGuard allowedRoles={['admin']} />}>
                     <Route path={ROUTES.ADMIN.DASHBOARD} element={<AdminDashboard />} />
+                    <Route path={ROUTES.ADMIN.LEARNER_DETAILS} element={<LearnerDetailsPage />} />
                     {/* Add more admin routes here */}
                 </Route>
             </Route>

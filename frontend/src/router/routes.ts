@@ -8,5 +8,6 @@ export const ROUTES = {
   ADMIN: {
     DASHBOARD: '/admin/dashboard',
     USERS: '/admin/users',
+    LEARNER_DETAILS: '/admin/users/:userId'
   },
 } as const;
