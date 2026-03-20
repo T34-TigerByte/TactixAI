@@ -11,7 +11,7 @@ import UsersTab from '../../components/admin/UsersTab';
 import AnalyticsTab from '../../components/admin/AnalyticsTab';
 import StatsCard from '../../components/ui/StatsCard';
 import DashboardHeader from '../../components/ui/DashboardHeader';
-import { StatsRequest } from '../../api/admin.api';
+import { AdminStatsRequest } from '../../api/admin.api';
 
 // MOCK DATA
 // TODO: replace with API calls when backend is ready
@@ -44,7 +44,7 @@ export default function AdminDashboardPage() {
   ];
 
   useEffect(() => {
-      const response = StatsRequest();
+      const response = AdminStatsRequest();
       console.log(response);
   }, [])
 
