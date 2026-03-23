@@ -63,7 +63,7 @@ const LoginPage = () => {
     const fillDemo = (demoEmail: string, role: string) => {
         setEmail(demoEmail)
         if (role === 'Learner') {
-          setPassword('learner1234');
+          setPassword('new-user-1234');
         } else {
           setPassword('admin1234')
         }
@@ -213,7 +213,7 @@ const LoginPage = () => {
                     <div className='space-y-2'>
                       {[
                         { email: 'admin@dev.local', role: 'Admin' },
-                        { email: 'learner@test.com', role: 'Learner' },
+                        { email: 'learner@dev.local', role: 'Learner' },
                       ].map(({ email, role }) => (
                         <button
                           key={role}

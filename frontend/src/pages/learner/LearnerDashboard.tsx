@@ -6,6 +6,8 @@ import DifficultyBadge from '../../components/ui/DifficultyBadge';
 import StatsCard from '../../components/ui/StatsCard';
 import PanelHeader from '../../components/ui/PanelHeader';
 import Logo from '../../components/ui/Logo';
+import { useEffect } from 'react';
+import getLeanerStatsRequest from '../../api/learner.api';
 
 const MOCK_STATS = {
   totalSessions: 24,
@@ -68,6 +70,14 @@ export default function LearnerDashboard () {
         logout();
         navigate(ROUTES.LOGIN, { replace: true});
     };
+
+    useEffect(() => {
+      const fetchStats = async () => {
+        const response = getLeanerStatsRequest();
+        console.log(response)
+      }
+      fetchStats();
+    }, [])
 
     const handleStartScenario  = (id: string ) => {
         //  TODO: navigate to chat page with session creation

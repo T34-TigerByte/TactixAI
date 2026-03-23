@@ -1,32 +1,40 @@
-import type { User, Role } from "./auth.types";
+import type { Role } from "./auth.types";
 
 
 export interface AdminStats {
     total_users: number;
     active_learners: number;
-    total_sessions: number;                                                                                               
-    uptime: number;                                                                                                       
+    total_sessions: number;
+    uptime: number;
 }
 
-export interface AdminUser extends User {}
+export interface UserSession {
+    completed: number;
+    last_session_at: number | null;  // Unix timestamp
+    total_time_spent: number;
+}
 
-export interface AdminUserListItem extends User {
-    last_session?: string;
-    completed_sessions?: number;
-    time_spent?: number;
+export interface AdminUserListItem {
+    id: number;
+    name: string;
+    email: string;
+    joined_at: number;  // Unix timestamp
+    company: string;
+    session: UserSession;
 }
 
 export interface CreateUserPayload {
-    username: string;
+    first_name: string;
+    last_name: string;
     email: string;
-    password: string;
     role: Role;
-    company?: string;
+    company: string;
 }
 
 export interface UpdateUserPayload {
-    username?: string;
-    email?: string;
-    role?: Role;
-    company?: string;
+    first_name?: string;
+    last_name?: string;
+    // email?: string;
+    // role?: Role;
+    // company?: string;
 }

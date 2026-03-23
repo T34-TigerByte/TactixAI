@@ -9,11 +9,9 @@ export async function getAdminStatsRequest(): Promise<AdminStats> {
 }
 
 /* Fetch users list in User Management Tab */
-export async function getUsersRequest(query: string): Promise<AdminUserListItem[]> {
-    const response = await api.get<AdminUserListItem[]>('/admin/users', {
-        params: query ? { q: query } : undefined
-    });
-    return response.data
+export async function getUsersRequest(): Promise<AdminUserListItem[]> {
+    const response = await api.get<{ data: AdminUserListItem[] }>('/admin/users');
+    return response.data.data
 }
 
 /* Fetch one user detail data for view detail page*/
@@ -27,11 +25,11 @@ export async function createUserRequest(payload: CreateUserPayload): Promise<Adm
     return response.data
 }
 
-export async function updateUserRequest(payload: UpdateUserPayload): Promise<AdminUserListItem> {
-    const response = await api.put<AdminUserListItem>('/admin/users', payload);
+export async function updateUserRequest(userId: number, payload: UpdateUserPayload): Promise<AdminUserListItem> {
+    const response = await api.put<AdminUserListItem>(`/admin/users/${userId}`, payload);
     return response.data;
 }
 
-export async function deleteUserRequest(userId: string): Promise<void> {
+export async function deleteUserRequest(userId: number): Promise<void> {
     await api.delete(`/admin/users/${userId}`);
 }

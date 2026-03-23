@@ -19,7 +19,9 @@ export default function UserList({ users, onCheckDetails, onEdit, onDelete }: Pr
             <th className='text-left px-6 py-4 font-medium'>Name</th>
             <th className='text-left px-6 py-4 font-medium'>Company</th>
             <th className='text-left px-6 py-4 font-medium'>Last Session</th>
-            <th className='text-left px-6 py-4 font-medium'>Completed Sessions</th>
+            <th className='text-left px-6 py-4 font-medium'>
+              Completed Sessions
+            </th>
             <th className='text-left px-6 py-4 font-medium'>Time Spent</th>
             <th className='text-left px-6 py-4 font-medium'>Actions</th>
           </tr>
@@ -28,15 +30,23 @@ export default function UserList({ users, onCheckDetails, onEdit, onDelete }: Pr
           {users.map((user) => (
             <tr key={user.email} className='hover:bg-gray-50'>
               <td className='px-6 py-4'>
-                <p className='font-semibold text-gray-900'>{user.username}</p>
+                <p className='font-semibold text-gray-900'>{user.name}</p>
                 <p className='text-gray-400 text-xs'>{user.email}</p>
-                <p className='text-gray-400 text-xs'>Joined {user.created_at}</p>
+                <p className='text-gray-400 text-xs'>
+                  Joined {user.joined_at}
+                </p>
               </td>
               <td className='px-6 py-4 text-gray-700'>{user.company ?? '—'}</td>
-              <td className='px-6 py-4 text-gray-700'>{user.last_session ?? '—'}</td>
-              <td className='px-6 py-4 text-gray-700'>{user.completed_sessions ?? '—'}</td>
+              <td className='px-6 py-4 text-gray-700'>
+                {user.session.last_session_at ?? '—'}
+              </td>
+              <td className='px-6 py-4 text-gray-700'>
+                {user.session.completed ?? '—'}
+              </td>
               <td className='px-6 py-4 text-gray-500'>
-                {user.time_spent != null ? `${user.time_spent} mins` : '—'}
+                {user.session.total_time_spent != null
+                  ? `${user.session.total_time_spent} mins`
+                  : '—'}
               </td>
               <td className='px-6 py-4'>
                 <div className='flex items-center gap-2'>
@@ -56,15 +66,13 @@ export default function UserList({ users, onCheckDetails, onEdit, onDelete }: Pr
                   >
                     <Pencil className='w-3.5 h-3.5' />
                   </button>
-                  {user.role === 'learner' && (
-                    <button
-                      onClick={() => onDelete(user)}
-                      className='p-1.5 rounded-lg border border-gray-300 hover:bg-red-50
-                                 text-red-500 transition-colors cursor-pointer'
-                    >
-                      <Trash2 className='w-3.5 h-3.5' />
-                    </button>
-                  )}
+                  <button
+                    onClick={() => onDelete(user)}
+                    className='p-1.5 rounded-lg border border-gray-300 hover:bg-red-50
+                               text-red-500 transition-colors cursor-pointer'
+                  >
+                    <Trash2 className='w-3.5 h-3.5' />
+                  </button>
                 </div>
               </td>
             </tr>

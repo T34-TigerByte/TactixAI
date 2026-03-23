@@ -58,15 +58,17 @@ export default function LearnerDetailsPage() {
     <div className='min-h-screen bg-gray-100'>
       <DashboardHeader
         title='Learner Details'
-        subtitle={user.username}
+        subtitle={user.name}
         onBack={handleBack}
         onLogout={handleLogout}
       />
 
       <main className='max-w-4xl mx-auto px-4 sm:px-8 py-6 space-y-4'>
         {/* User Info Card */}
-        <div className='bg-white rounded-xl border border-gray-200 shadow-sm px-6 py-4
-                        grid grid-cols-2 sm:grid-cols-4 gap-4'>
+        <div
+          className='bg-white rounded-xl border border-gray-200 shadow-sm px-6 py-4
+                        grid grid-cols-2 sm:grid-cols-4 gap-4'
+        >
           <div>
             <p className='text-gray-400 text-xs mb-1'>Email</p>
             <p className='text-gray-900 text-sm font-medium'>{user.email}</p>
@@ -82,14 +84,14 @@ export default function LearnerDetailsPage() {
             <p className='text-gray-400 text-xs mb-1'>Last Session</p>
             <p className='text-gray-900 text-sm font-medium flex items-center gap-1'>
               <Clock className='w-3.5 h-3.5 text-gray-400' />
-              {user.last_session ?? '—'}
+              {user.session.last_session_at ?? '—'}
             </p>
           </div>
           <div>
             <p className='text-gray-400 text-xs mb-1'>Joined Date</p>
             <p className='text-gray-900 text-sm font-medium flex items-center gap-1'>
               <Calendar className='w-3.5 h-3.5 text-gray-400' />
-              {user.created_at}
+              {user.joined_at}
             </p>
           </div>
         </div>
@@ -98,12 +100,16 @@ export default function LearnerDetailsPage() {
         <div className='grid grid-cols-2 gap-4'>
           <StatsCard
             label='Completed Sessions'
-            value={user.completed_sessions ?? 0}
+            value={user.session.completed ?? 0}
             icon={<CheckCircle2 className='w-8 h-8 text-teal-400' />}
           />
           <StatsCard
             label='Time Spent'
-            value={user.time_spent != null ? `${user.time_spent}m` : '—'}
+            value={
+              user.session.total_time_spent != null
+                ? `${user.session.total_time_spent}m`
+                : '—'
+            }
             icon={<Clock className='w-8 h-8 text-orange-400' />}
           />
         </div>
@@ -122,18 +128,27 @@ export default function LearnerDetailsPage() {
         {activeTab === 'session_history' && (
           <div className='bg-white rounded-xl border border-gray-200 shadow-sm divide-y divide-gray-100'>
             {MOCK_SESSIONS.map((session) => (
-              <div key={session.id} className='px-6 py-4 flex items-center justify-between'>
+              <div
+                key={session.id}
+                className='px-6 py-4 flex items-center justify-between'
+              >
                 <div>
-                  <p className='font-semibold text-gray-900'>{session.scenario_name}</p>
+                  <p className='font-semibold text-gray-900'>
+                    {session.scenario_name}
+                  </p>
                   <p className='text-gray-400 text-sm mt-0.5'>{session.date}</p>
                 </div>
                 <div className='flex items-center gap-2'>
-                  <button className='px-4 py-1.5 rounded-lg border border-orange-600 text-orange-600
-                                     hover:bg-orange-50 text-sm font-medium transition-colors cursor-pointer'>
+                  <button
+                    className='px-4 py-1.5 rounded-lg border border-orange-600 text-orange-600
+                                     hover:bg-orange-50 text-sm font-medium transition-colors cursor-pointer'
+                  >
                     View Chat
                   </button>
-                  <button className='flex items-center gap-1.5 px-4 py-1.5 rounded-lg border border-orange-600
-                                     text-orange-600 hover:bg-orange-50 text-sm font-medium transition-colors cursor-pointer'>
+                  <button
+                    className='flex items-center gap-1.5 px-4 py-1.5 rounded-lg border border-orange-600
+                                     text-orange-600 hover:bg-orange-50 text-sm font-medium transition-colors cursor-pointer'
+                  >
                     <FileText className='w-3.5 h-3.5' />
                     Export
                   </button>
@@ -150,8 +165,12 @@ export default function LearnerDetailsPage() {
               {MOCK_SKILLS.map((skill, i) => (
                 <div key={skill.skill_name} className='px-6 py-5 space-y-3'>
                   <div className='flex items-start justify-between gap-2'>
-                    <p className='font-semibold text-gray-900 text-sm'>{skill.skill_name}</p>
-                    <span className='text-teal-500 text-xs font-medium whitespace-nowrap shrink-0'>↑ +{skill.delta}</span>
+                    <p className='font-semibold text-gray-900 text-sm'>
+                      {skill.skill_name}
+                    </p>
+                    <span className='text-teal-500 text-xs font-medium whitespace-nowrap shrink-0'>
+                      ↑ +{skill.delta}
+                    </span>
                   </div>
                   <div className='flex justify-between text-gray-500 text-xs'>
                     <span>Current: {skill.current_score}%</span>

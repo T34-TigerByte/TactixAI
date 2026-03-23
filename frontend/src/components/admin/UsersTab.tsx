@@ -1,104 +1,121 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Plus, Search } from 'lucide-react';
 
 import type { AdminUserListItem } from '../../types/admin.types';
 import UserList from './UserList';
+import CreateUserForm from './CreateUserForm';
+import EditUserForm from './EditUserForm';
 import { useNavigate } from 'react-router-dom';
+import { getUsersRequest, deleteUserRequest } from '../../api/admin.api';
 
 type View = 'list' | 'create' | 'edit';
 
-const MOCK_USERS: AdminUserListItem[] = [
-  {
-    username: 'Alex Johnson',
-    email: 'alex.johnson@company.com',
-    role: 'learner',
-    company: 'TechCorp Inc.',
-    created_at: '2024-01-15',
-    updated_at: '2024-03-15',
-    last_session: '2024-03-15',
-    completed_sessions: 24,
-    time_spent: 1080,
-  },
-  {
-    username: 'John Doe',
-    email: 'john.doe@company.com',
-    role: 'learner',
-    company: 'SunCorp Inc.',
-    created_at: '2024-01-15',
-    updated_at: '2024-03-15',
-    last_session: '2024-03-15',
-    completed_sessions: 24,
-    time_spent: 1080,
-  },
-  {
-    username: 'Lina Lee',
-    email: 'lina.lee@company.com',
-    role: 'learner',
-    company: 'TechCorp Inc.',
-    created_at: '2024-01-15',
-    updated_at: '2024-03-15',
-    last_session: '2024-03-15',
-    completed_sessions: 24,
-    time_spent: 1080,
-  },
-];
-
 export default function UsersTab() {
   const [searchQuery, setSearchQuery] = useState('');
-  const [filteredUsers, setFilteredUsers] = useState(MOCK_USERS);
-  const [view, setView] = useState<View>('list'); // initially users list
+  const [allUsers, setAllUsers] = useState<AdminUserListItem[]>([]);
+  const [filteredUsers, setFilteredUsers] = useState<AdminUserListItem[]>([]);
+  const [view, setView] = useState<View>('list');
   const [selectedUser, setSelectedUser] = useState<AdminUserListItem | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<AdminUserListItem | null>(null);
 
   const navigate = useNavigate();
 
+  useEffect(() => {
+    const fetchUsers = async () => {
+      const data = await getUsersRequest();
+      setAllUsers(data);
+      setFilteredUsers(data);
+    };
+    fetchUsers();
+  }, []);
+
   const handleCheckDetails = (user: AdminUserListItem) => {
     navigate(`/admin/users/${user.email}`, { state: { user } }); // TODO: replace with userId after API connects
-  }
+  };
 
-  const handleClickEdit = (user: AdminUserListItem) => {
+  const handleEdit = (user: AdminUserListItem) => {
     setSelectedUser(user);
     setView('edit');
-  }
+  };
 
-  const handleClickCreateUser = () => {
-    setView('create');
-  }
+  const handleDelete = (user: AdminUserListItem) => {
+    setDeleteTarget(user);
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteTarget) return;
+    // TODO: await deleteUserRequest(deleteTarget.id);
+    await deleteUserRequest(deleteTarget.id);
+    const updated = allUsers.filter((u) => u.id !== deleteTarget.id);
+    setAllUsers(updated);
+    setFilteredUsers(updated);
+    setDeleteTarget(null);
+  };
 
   const handleSearch = () => {
     const q = searchQuery.toLowerCase();
     setFilteredUsers(
-      MOCK_USERS.filter(
+      allUsers.filter(
         (u) =>
-          u.username.toLowerCase().includes(q) ||
-          u.company?.toLowerCase().includes(q)
+          u.name.toLowerCase().includes(q) ||
+          u.company.toLowerCase().includes(q)
       )
     );
   };
 
   const handleClear = () => {
     setSearchQuery('');
-    setFilteredUsers(MOCK_USERS);
+    setFilteredUsers(allUsers);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') handleSearch();
   };
 
-  // TODO: open Create modal
-  const handleCreateUser = () => {};
+  if (view === 'create') {
+    return <CreateUserForm onBack={() => setView('list')} />;
+  }
 
-  // TODO: show Edit view
-  const handleEdit: (user: AdminUserListItem) => void = () => {};
-
-  // TODO: show Delete confirm view
-  const handleDelete: (user: AdminUserListItem) => void = () => {};
+  if (view === 'edit' && selectedUser) {
+    return <EditUserForm user={selectedUser} onBack={() => setView('list')} />;
+  }
 
   return (
     <div className='space-y-4'>
+      {/* Delete Confirm Dialog */}
+      {deleteTarget && (
+        <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/40'>
+          <div className='bg-white rounded-xl shadow-lg p-6 w-full max-w-sm space-y-4'>
+            <h3 className='text-base font-semibold text-gray-800'>Delete User</h3>
+            <p className='text-sm text-gray-600'>
+              Are you sure you want to delete{' '}
+              <span className='font-medium text-gray-900'>{deleteTarget.name}</span>?
+              This action cannot be undone.
+            </p>
+            <div className='flex justify-end gap-3'>
+              <button
+                onClick={() => setDeleteTarget(null)}
+                className='px-4 py-2 rounded-lg border border-gray-300 hover:bg-gray-50
+                           text-gray-700 text-sm font-medium transition-colors cursor-pointer'
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmDelete}
+                className='px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700
+                           text-white text-sm font-medium transition-colors cursor-pointer'
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Create New User */}
       <div className='flex justify-end'>
         <button
-          onClick={handleCreateUser}
+          onClick={() => setView('create')}
           className='flex items-center gap-2 px-4 py-2 rounded-lg
                      bg-orange-600 hover:bg-orange-700 text-white text-sm font-medium
                      transition-colors cursor-pointer'
@@ -139,26 +156,15 @@ export default function UsersTab() {
 
       {/* User Overview Table */}
       <div className='rounded-xl overflow-hidden border border-gray-200 shadow-sm'>
-        { view === 'list' ? 
-          <>
-            <div className='bg-slate-900 px-6 py-4'>
-              <h3 className='text-white font-semibold'>User Overview</h3>
-            </div>
-            <UserList
-              users={filteredUsers}
-              onCheckDetails={handleCheckDetails}
-              onEdit={handleEdit}
-              onDelete={handleDelete}
-              />
-          </>
-          : view === 'create' ? 
-          <div>
-          </div>
-          : 
-          <div>
-            
-          </div>
-        }
+        <div className='bg-slate-900 px-6 py-4'>
+          <h3 className='text-white font-semibold'>User Overview</h3>
+        </div>
+        <UserList
+          users={filteredUsers}
+          onCheckDetails={handleCheckDetails}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+        />
       </div>
     </div>
   );
