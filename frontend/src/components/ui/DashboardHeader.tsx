@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { LogOut, CheckCircle, Menu, X } from 'lucide-react';
+import { LogOut, CheckCircle, Menu, X, ArrowLeft } from 'lucide-react';
 import Logo from './Logo';
 
 interface DashboardHeaderProps {
@@ -7,15 +7,26 @@ interface DashboardHeaderProps {
   subtitle: string;
   uptime?: number;
   onLogout: () => void;
+  onBack?: () => void; // For nested page (optional)
 }
 
-export default function DashboardHeader({ title, subtitle, uptime, onLogout }: DashboardHeaderProps) {
+export default function DashboardHeader({ title, subtitle, uptime, onLogout, onBack }: DashboardHeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
     <header className='bg-slate-900 px-4 sm:px-8 py-4'>
       <div className='max-w-7xl mx-auto flex items-center justify-between'>
         <div className='flex items-center gap-3 sm:gap-6 min-w-0'>
+          {onBack && (
+            <button
+              onClick={onBack}
+              className='flex items-center gap-2 px-3 py-1.5 rounded-lg border border-slate-600
+                         text-slate-300 hover:border-slate-400 hover:text-white transition-colors text-sm cursor-pointer'
+            >
+              <ArrowLeft className='w-4 h-4' />
+              Back
+            </button>
+          )}
           <Logo />
           <div className='h-6 w-px bg-slate-600 shrink-0' />
           <div className='min-w-0'>

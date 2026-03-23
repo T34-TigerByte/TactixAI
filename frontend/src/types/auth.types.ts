@@ -1,22 +1,12 @@
-export type Roles = 'admin' | 'learner';
-
-export interface UserSession {
-    total: number;
-    average_score: number;
-    total_hours: number;
-}
-
-export interface UserProgress {
-    communication: number;
-    negotication: number;
-    risk_management: number;
-}
+export type Role = 'admin' | 'learner';
 
 export interface User {
-    role: Roles;
-    username?: string;
-    session?: UserSession;
-    progress?: UserProgress;
+    role: Role;
+    username: string;
+    email: string;
+    company?: string;
+    created_at: string;
+    updated_at: string;
 }
 
 export interface LoginCredentials {

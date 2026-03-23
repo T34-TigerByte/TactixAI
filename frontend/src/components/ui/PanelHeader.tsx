@@ -2,7 +2,7 @@ const PanelHeader = ({
   icon,
   title,
 }: {
-  icon: React.ReactNode;
+  icon?: React.ReactNode;
   title: string;
 }) => (
   <div className='flex items-center gap-3 px-6 py-4 bg-slate-900 rounded-t-xl'>
