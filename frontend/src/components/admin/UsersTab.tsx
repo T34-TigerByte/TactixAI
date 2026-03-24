@@ -6,7 +6,7 @@ import UserList from './UserList';
 import CreateUserForm from './CreateUserForm';
 import EditUserForm from './EditUserForm';
 import { useNavigate } from 'react-router-dom';
-import { getUsersRequest, deleteUserRequest } from '../../api/admin.api';
+import { getUsersRequest, deleteUserRequest, getUserByIdRequest } from '../../api/admin.api';
 
 type View = 'list' | 'create' | 'edit';
 
@@ -20,17 +20,27 @@ export default function UsersTab() {
 
   const navigate = useNavigate();
 
+  const fetchUsers = async () => {
+    const data = await getUsersRequest();
+    setAllUsers(data);
+    setFilteredUsers(data);
+  };
+
   useEffect(() => {
-    const fetchUsers = async () => {
-      const data = await getUsersRequest();
-      setAllUsers(data);
-      setFilteredUsers(data);
-    };
     fetchUsers();
   }, []);
 
-  const handleCheckDetails = (user: AdminUserListItem) => {
-    navigate(`/admin/users/${user.email}`, { state: { user } }); // TODO: replace with userId after API connects
+  const handleCheckDetails = async (user: AdminUserListItem) => {
+    try {
+      const userData = await getUserByIdRequest(user.id);
+      setSelectedUser(userData);
+
+      // Navigate immediately with the fetched data
+      navigate(`/admin/users/${userData.id}`, { state: { user: userData } });
+
+    } catch(error) {
+      console.log(error.message)
+    } 
   };
 
   const handleEdit = (user: AdminUserListItem) => {
@@ -77,7 +87,15 @@ export default function UsersTab() {
   }
 
   if (view === 'edit' && selectedUser) {
-    return <EditUserForm user={selectedUser} onBack={() => setView('list')} />;
+    return (
+      <EditUserForm
+        user={selectedUser}
+        onBack={async () => {
+          await fetchUsers();
+          setView('list');
+        }}
+      />
+    );
   }
 
   return (

@@ -11,6 +11,7 @@ import PanelHeader from '../../components/ui/PanelHeader';
 import TabNav from '../../components/ui/TabNav';
 import type { AdminUserListItem } from '../../types/admin.types';
 import type { Session, SkillProgress } from '../../types/session.types';
+import { formatDate } from '../../utils/format.utils';
 
 // TODO: replace with API calls
 const MOCK_SESSIONS: Session[] = [
@@ -37,7 +38,8 @@ export default function LearnerDetailsPage() {
   const user = state?.user as AdminUserListItem | undefined;
   const [activeTab, setActiveTab] = useState<Tab>('session_history');
 
-  const handleBack = () => navigate(ROUTES.ADMIN.DASHBOARD);
+  const handleBack = () => navigate(`${ROUTES.ADMIN.DASHBOARD}?tab=users`);
+  
   const handleLogout = () => {
     logout();
     navigate(ROUTES.LOGIN, { replace: true });
@@ -58,7 +60,7 @@ export default function LearnerDetailsPage() {
     <div className='min-h-screen bg-gray-100'>
       <DashboardHeader
         title='Learner Details'
-        subtitle={user.name}
+        subtitle={user.email}
         onBack={handleBack}
         onLogout={handleLogout}
       />
@@ -84,14 +86,14 @@ export default function LearnerDetailsPage() {
             <p className='text-gray-400 text-xs mb-1'>Last Session</p>
             <p className='text-gray-900 text-sm font-medium flex items-center gap-1'>
               <Clock className='w-3.5 h-3.5 text-gray-400' />
-              {user.session.last_session_at ?? '—'}
+              {user.session.last_session_at ? formatDate(user.session.last_session_at) : '—'}
             </p>
           </div>
           <div>
             <p className='text-gray-400 text-xs mb-1'>Joined Date</p>
             <p className='text-gray-900 text-sm font-medium flex items-center gap-1'>
               <Calendar className='w-3.5 h-3.5 text-gray-400' />
-              {user.joined_at}
+              {formatDate(user.joined_at)}
             </p>
           </div>
         </div>

@@ -4,6 +4,7 @@ export const ROUTES = {
   LEARNER: {
     DASHBOARD: '/learner/dashboard',
     CHAT: '/learner/chat/:sessionId',
+    PROFILE: '/learner/profile',
   },
   ADMIN: {
     DASHBOARD: '/admin/dashboard',

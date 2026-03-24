@@ -15,7 +15,7 @@ export async function getUsersRequest(): Promise<AdminUserListItem[]> {
 }
 
 /* Fetch one user detail data for view detail page*/
-export async function getUserByIdRequest(userId: string): Promise<AdminUserListItem> {
+export async function getUserByIdRequest(userId: number): Promise<AdminUserListItem> {
     const response = await api.get<AdminUserListItem>(`/admin/users/${userId}`);
     return response.data
 }

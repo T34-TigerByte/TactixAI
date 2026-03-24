@@ -1,7 +1,7 @@
 import { createContext, useState, useEffect, type ReactNode } from "react";
 import { getToken, saveToken, clearToken } from "../utils/auth.utils.ts";
 import type { AuthResponse } from "../api/auth.api.ts";
-import { LoginRequest, getMeRequest } from "../api/auth.api.ts";
+import { LoginRequest, getMeRequest, logoutRequest } from "../api/auth.api.ts";
 import type { User, LoginCredentials, AuthContextType } from "../types/auth.types.ts";
 
 export const AuthContext = createContext<AuthContextType | null>(null);
@@ -31,8 +31,12 @@ export function AuthProvider({children} : {children: ReactNode}) {
     }
 
     const logout = async () => {
-        clearToken();
-        setUser(null);
+        try {
+            await logoutRequest();
+        } finally {
+            clearToken();
+            setUser(null);
+        }
     }
 
     return (

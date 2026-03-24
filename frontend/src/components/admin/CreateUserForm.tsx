@@ -4,6 +4,7 @@ import { User, Mail, Building2, UserPlus } from 'lucide-react';
 
 import type { CreateUserPayload } from '../../types/admin.types';
 import { createUserRequest } from '../../api/admin.api';
+import PanelHeader from '../ui/PanelHeader';
 
 interface Props {
   onBack: () => void;
@@ -25,22 +26,15 @@ export default function CreateUserForm({ onBack }: Props) {
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // TODO: await createUserRequest(formData);
     await createUserRequest(formData);
     onBack();
   };
 
   return (
     <div className='space-y-4'>
-      {/* Form Card */}
       <div className='rounded-xl overflow-hidden border border-gray-200 shadow-sm'>
-        {/* Card Header */}
-        <div className='bg-slate-900 px-6 py-4 flex items-center gap-2'>
-          <UserPlus className='w-5 h-5 text-teal-400' />
-          <h3 className='text-white font-semibold'>User Information</h3>
-        </div>
+        <PanelHeader icon={<UserPlus className='w-5 h-5' />} title='User Information' />
 
-        {/* Card Body */}
         <div className='bg-white px-8 py-6'>
           <form onSubmit={handleSubmit} className='space-y-5'>
             {/* First Name */}
@@ -145,27 +139,24 @@ export default function CreateUserForm({ onBack }: Props) {
               </div>
             </div>
 
-            {/* Divider */}
-            <div className='border-t border-gray-200 pt-4'>
-              <div className='flex gap-3'>
-                <button
-                  type='submit'
-                  className='flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg
-                             bg-red-600 hover:bg-red-700 text-white text-sm font-medium
-                             transition-colors cursor-pointer'
-                >
-                  <UserPlus className='w-4 h-4' />
-                  Create User
-                </button>
-                <button
-                  type='button'
-                  onClick={onBack}
-                  className='flex-1 px-4 py-2.5 rounded-lg border border-gray-300 hover:bg-gray-50
-                             text-gray-800 text-sm font-medium transition-colors cursor-pointer'
-                >
-                  Cancel
-                </button>
-              </div>
+            <div className='border-t border-gray-200 pt-4 flex gap-3'>
+              <button
+                type='submit'
+                className='flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg
+                           bg-red-600 hover:bg-red-700 text-white text-sm font-medium
+                           transition-colors cursor-pointer'
+              >
+                <UserPlus className='w-4 h-4' />
+                Create User
+              </button>
+              <button
+                type='button'
+                onClick={onBack}
+                className='flex-1 px-4 py-2.5 rounded-lg border border-gray-300 hover:bg-gray-50
+                           text-gray-800 text-sm font-medium transition-colors cursor-pointer'
+              >
+                Cancel
+              </button>
             </div>
           </form>
         </div>
@@ -173,9 +164,7 @@ export default function CreateUserForm({ onBack }: Props) {
 
       {/* Invitation Process Info */}
       <div className='rounded-xl bg-teal-50 border border-teal-100 px-6 py-4 flex gap-4'>
-        <div className='shrink-0 mt-0.5'>
-          <Mail className='w-5 h-5 text-teal-500' />
-        </div>
+        <Mail className='w-5 h-5 text-teal-500 shrink-0 mt-0.5' />
         <div>
           <p className='text-sm font-semibold text-gray-800'>Invitation Process</p>
           <p className='text-sm text-gray-600 mt-0.5'>

@@ -1,19 +1,15 @@
 import { useState } from 'react';
 import type { FormEvent, ChangeEvent } from 'react';
-import { User } from 'lucide-react';
+import { User, Mail, Building2, Save } from 'lucide-react';
 
 import type { AdminUserListItem, UpdateUserPayload } from '../../types/admin.types';
 import { updateUserRequest } from '../../api/admin.api';
+import { splitName } from '../../utils/format.utils';
+import PanelHeader from '../ui/PanelHeader';
 
 interface Props {
   user: AdminUserListItem;
   onBack: () => void;
-}
-
-function splitName(fullName: string): { first: string; last: string } {
-  const idx = fullName.indexOf(' ');
-  if (idx === -1) return { first: fullName, last: '' };
-  return { first: fullName.slice(0, idx), last: fullName.slice(idx + 1) };
 }
 
 export default function EditUserForm({ user, onBack }: Props) {
@@ -35,93 +31,81 @@ export default function EditUserForm({ user, onBack }: Props) {
   };
 
   return (
-    <div className='space-y-4'>
-      {/* Form Card */}
-      <div className='rounded-xl overflow-hidden border border-gray-200 shadow-sm'>
-        {/* Card Header */}
-        <div className='bg-slate-900 px-6 py-4 flex items-center gap-2'>
-          <User className='w-5 h-5 text-teal-400' />
-          <h3 className='text-white font-semibold'>Edit User Profile</h3>
-        </div>
+    <div className='rounded-xl overflow-hidden border border-gray-200 shadow-sm'>
+      <PanelHeader icon={<User className='w-5 h-5' />} title='Edit User Profile' />
 
-        {/* Card Body */}
-        <div className='bg-white px-8 py-6'>
-          <form onSubmit={handleSubmit} className='space-y-5'>
-            {/* First Name */}
-            <div>
-              <label className='block text-sm font-semibold text-gray-800 mb-1'>First Name</label>
+      <div className='bg-white px-8 py-6'>
+        <form onSubmit={handleSubmit} className='space-y-5'>
+          {/* First Name */}
+          <div>
+            <label className='block text-sm font-semibold text-gray-800 mb-1'>First Name</label>
+            <div className='flex items-center gap-2 border border-gray-300 rounded-lg px-3 py-2
+                            focus-within:border-orange-500 focus-within:ring-1 focus-within:ring-orange-500'>
+              <User className='w-4 h-4 text-gray-400 shrink-0' />
               <input
                 type='text'
                 name='first_name'
                 value={formData.first_name}
                 onChange={handleChange}
                 required
-                className='w-full rounded-lg border border-gray-300 px-3 py-2 text-sm
-                           outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500'
+                className='flex-1 text-sm outline-none text-gray-700 bg-transparent'
               />
             </div>
+          </div>
 
-            {/* Last Name */}
-            <div>
-              <label className='block text-sm font-semibold text-gray-800 mb-1'>Last Name</label>
+          {/* Last Name */}
+          <div>
+            <label className='block text-sm font-semibold text-gray-800 mb-1'>Last Name</label>
+            <div className='flex items-center gap-2 border border-gray-300 rounded-lg px-3 py-2
+                            focus-within:border-orange-500 focus-within:ring-1 focus-within:ring-orange-500'>
+              <User className='w-4 h-4 text-gray-400 shrink-0' />
               <input
                 type='text'
                 name='last_name'
                 value={formData.last_name}
                 onChange={handleChange}
-                className='w-full rounded-lg border border-gray-300 px-3 py-2 text-sm
-                           outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500'
+                className='flex-1 text-sm outline-none text-gray-700 bg-transparent'
               />
             </div>
+          </div>
 
-            {/* Email Address — read only */}
-            <div>
-              <label className='block text-sm font-semibold text-gray-800 mb-1'>Email Address</label>
-              <input
-                type='email'
-                value={user.email}
-                disabled
-                placeholder={user.email}
-                className='w-full rounded-lg border border-gray-200 px-3 py-2 text-sm
-                           text-gray-400 bg-gray-50 cursor-not-allowed'
-              />
+          {/* Email — read only */}
+          <div>
+            <label className='block text-sm font-semibold text-gray-800 mb-1'>Email Address</label>
+            <div className='flex items-center gap-2 border border-gray-200 rounded-lg px-3 py-2 bg-gray-50'>
+              <Mail className='w-4 h-4 text-gray-400 shrink-0' />
+              <span className='text-sm text-gray-400'>{user.email}</span>
             </div>
+          </div>
 
-            {/* Company — read only */}
-            <div>
-              <label className='block text-sm font-semibold text-gray-800 mb-1'>Company</label>
-              <input
-                type='text'
-                value={user.company}
-                disabled
-                placeholder={user.company}
-                className='w-full rounded-lg border border-gray-200 px-3 py-2 text-sm
-                           text-gray-400 bg-gray-50 cursor-not-allowed'
-              />
+          {/* Company — read only */}
+          <div>
+            <label className='block text-sm font-semibold text-gray-800 mb-1'>Company</label>
+            <div className='flex items-center gap-2 border border-gray-200 rounded-lg px-3 py-2 bg-gray-50'>
+              <Building2 className='w-4 h-4 text-gray-400 shrink-0' />
+              <span className='text-sm text-gray-400'>{user.company}</span>
             </div>
+          </div>
 
-            {/* User Role — read only */}
-            <div>
-              <label className='block text-sm font-semibold text-gray-800 mb-1'>User Role</label>
-              <input
-                type='text'
-                value='Learner'
-                disabled
-                className='w-full rounded-lg border border-gray-200 px-3 py-2 text-sm
-                           text-gray-400 bg-gray-50 cursor-not-allowed'
-              />
+          {/* User Role — read only */}
+          <div>
+            <label className='block text-sm font-semibold text-gray-800 mb-1'>User Role</label>
+            <div className='flex items-center gap-2 border border-gray-200 rounded-lg px-3 py-2 bg-gray-50'>
+              <User className='w-4 h-4 text-gray-400 shrink-0' />
+              <span className='text-sm text-gray-400'>Learner</span>
             </div>
+          </div>
 
-            {/* Update Button */}
-            <button
-              type='submit'
-              className='w-full py-2.5 rounded-lg bg-red-600 hover:bg-red-700
-                         text-white text-sm font-medium transition-colors cursor-pointer'
-            >
-              Update
-            </button>
-          </form>
-        </div>
+          <button
+            type='submit'
+            className='w-full flex items-center justify-center gap-2 py-2.5 rounded-lg
+                       bg-red-600 hover:bg-red-700 text-white text-sm font-medium
+                       transition-colors cursor-pointer'
+          >
+            <Save className='w-4 h-4' />
+            Update
+          </button>
+        </form>
       </div>
     </div>
   );
