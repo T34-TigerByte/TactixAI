@@ -1,7 +1,6 @@
 import PanelHeader from "../ui/PanelHeader";
 import { Settings, Users, Activity, FileText } from "lucide-react";
 
-
 const MOCK_ACTIVITY = [
   {
     id: '1',
@@ -40,7 +39,7 @@ const MOCK_ACTIVITY = [
   },
 ];
 
-const OverviewTab = () => (
+const OverviewTab = ({ onClick }: { onClick: (tab: string) => void }) => (
   <div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
     {/* Recent Activity */}
     <section className='bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden'>
@@ -83,6 +82,7 @@ const OverviewTab = () => (
           className='w-full flex items-center gap-3 px-5 py-4 rounded-lg
                            bg-orange-600 hover:bg-orange-700 text-white font-medium
                            transition-colors cursor-pointer'
+          onClick={() => { onClick('users')}}
         >
           <Users className='w-5 h-5' />
           Manage Users

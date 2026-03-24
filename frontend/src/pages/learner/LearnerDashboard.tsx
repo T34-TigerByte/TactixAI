@@ -8,7 +8,7 @@ import StatsCard from '../../components/ui/StatsCard';
 import PanelHeader from '../../components/ui/PanelHeader';
 import Logo from '../../components/ui/Logo';
 import { useEffect, useState } from 'react';
-import { getLearnerStatsRequest, updateLearnerProfileRequest }  from '../../api/learner.api';
+import { getLearnerStatsRequest } from '../../api/learner.api';
 import type { LearnerStats } from '../../types/learner.types';
 
 // const MOCK_STATS = {
@@ -101,7 +101,7 @@ export default function LearnerDashboard () {
                   Learner Dashboard
                 </h1>
                 <p className='text-slate-400 text-sm'>
-                  Welcome back, {user?.username ?? 'Learner'}
+                  Welcome back, {user?.first_name ?? 'Learner'}
                 </p>
               </div>
             </div>

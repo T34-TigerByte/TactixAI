@@ -39,8 +39,8 @@ export default function UsersTab() {
       navigate(`/admin/users/${userData.id}`, { state: { user: userData } });
 
     } catch(error) {
-      console.log(error.message)
-    } 
+      console.log(String(error))
+    }
   };
 
   const handleEdit = (user: AdminUserListItem) => {

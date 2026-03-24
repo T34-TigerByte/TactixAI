@@ -1,4 +1,3 @@
-import type { User } from "../types/auth.types";
 import type { Learner, LearnerStats, UpdateProfilePayload } from "../types/learner.types";
 import api from "./client";
 
