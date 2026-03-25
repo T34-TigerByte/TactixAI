@@ -132,7 +132,7 @@ export default function LearnerDetailsPage() {
             {MOCK_SESSIONS.map((session) => (
               <div
                 key={session.id}
-                className='px-6 py-4 flex items-center justify-between'
+                className='px-6 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3'
               >
                 <div>
                   <p className='font-semibold text-gray-900'>
@@ -140,16 +140,16 @@ export default function LearnerDetailsPage() {
                   </p>
                   <p className='text-gray-400 text-sm mt-0.5'>{session.date}</p>
                 </div>
-                <div className='flex items-center gap-2'>
+                <div className='flex items-center gap-2 shrink-0'>
                   <button
-                    className='px-4 py-1.5 rounded-lg border border-orange-600 text-orange-600
-                                     hover:bg-orange-50 text-sm font-medium transition-colors cursor-pointer'
+                    className='flex-1 sm:flex-none px-4 py-1.5 rounded-lg border border-orange-600 text-orange-600
+                               hover:bg-orange-50 text-sm font-medium transition-colors cursor-pointer'
                   >
                     View Chat
                   </button>
                   <button
-                    className='flex items-center gap-1.5 px-4 py-1.5 rounded-lg border border-orange-600
-                                     text-orange-600 hover:bg-orange-50 text-sm font-medium transition-colors cursor-pointer'
+                    className='flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-4 py-1.5 rounded-lg border border-orange-600
+                               text-orange-600 hover:bg-orange-50 text-sm font-medium transition-colors cursor-pointer'
                   >
                     <FileText className='w-3.5 h-3.5' />
                     Export

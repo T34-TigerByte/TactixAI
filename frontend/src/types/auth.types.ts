@@ -1,15 +1,7 @@
 export type Role = 'admin' | 'learner';
 
-export interface User {
-    id: number;
-    role: Role;
-    first_name: string;
-    last_name: string;
-    email: string;
-    company?: string;
-    created_at: string;
-    updated_at: string;
-}
+export type { User } from '../schemas/api.schema';
+import type { User } from '../schemas/api.schema';
 
 export interface LoginCredentials {
     email: string;

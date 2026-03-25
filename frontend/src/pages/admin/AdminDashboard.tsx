@@ -13,6 +13,7 @@ import StatsCard from '../../components/ui/StatsCard';
 import DashboardHeader from '../../components/ui/DashboardHeader';
 import TabNav from '../../components/ui/TabNav';
 import { getAdminStatsRequest } from '../../api/admin.api';
+import type { AdminTab } from '../../types/admin.types';
 
 // MOCK DATA
 // TODO: replace with API calls when backend is ready
@@ -26,22 +27,20 @@ const MOCK_STATS = {
   uptime: 99.8,
 };
 
-type Tab = 'overview' | 'users' | 'analytics';
-
 export default function AdminDashboardPage() {
   const { logout } = useAuth();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const activeTab = (searchParams.get('tab') as Tab) ?? 'overview';
-  const setActiveTab = (tab: Tab) => setSearchParams({ tab });
+  const activeTab = (searchParams.get('tab') as AdminTab) ?? 'overview';
+  const setActiveTab = (tab: AdminTab) => setSearchParams({ tab });
 
   const handleLogout = () => {
     logout();
     navigate(ROUTES.LOGIN, { replace: true });
   };
 
-  const TABS: { key: Tab; label: string }[] = [
+  const TABS: { key: AdminTab; label: string }[] = [
     { key: 'overview', label: 'Overview' },
     { key: 'users', label: 'User Management' },
     { key: 'analytics', label: 'Analytics' },
@@ -65,7 +64,7 @@ export default function AdminDashboardPage() {
         onLogout={handleLogout}
       />
 
-      <main className='max-w-7xl mx-auto px-4 sm:px-8 py-6 sm:py-8 space-y-6'>
+      <main id='main' className='max-w-7xl mx-auto px-4 sm:px-8 py-6 sm:py-8 space-y-6'>
         {/* ── Stat Cards ── */}
         <div className='grid grid-cols-1 lg:grid-cols-3 gap-4'>
           <StatsCard

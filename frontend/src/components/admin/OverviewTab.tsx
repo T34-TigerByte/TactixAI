@@ -1,5 +1,6 @@
 import PanelHeader from "../ui/PanelHeader";
 import { Settings, Users, Activity, FileText } from "lucide-react";
+import type { AdminTab } from "../../types/admin.types";
 
 const MOCK_ACTIVITY = [
   {
@@ -39,7 +40,7 @@ const MOCK_ACTIVITY = [
   },
 ];
 
-const OverviewTab = ({ onClick }: { onClick: (tab: string) => void }) => (
+const OverviewTab = ({ onClick }: { onClick: (tab: AdminTab) => void }) => (
   <div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
     {/* Recent Activity */}
     <section className='bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden'>
