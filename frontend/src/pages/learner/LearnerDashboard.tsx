@@ -1,4 +1,4 @@
-import { Target, Clock, TrendingUp, BookOpen, BarChart2, Play, LogOut, MessageSquare, User } from 'lucide-react';
+import { Target, Clock, TrendingUp, BookOpen, BarChart2, Play, MessageSquare } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth }  from '../../hooks/useAuth';
 import { ROUTES } from '../../router/routes';
@@ -6,7 +6,7 @@ import DifficultyBadge from '../../components/ui/DifficultyBadge';
 import SkillProgressPanel from '../../components/ui/SkillProgressPanel';
 import StatsCard from '../../components/ui/StatsCard';
 import PanelHeader from '../../components/ui/PanelHeader';
-import Logo from '../../components/ui/Logo';
+import DashboardHeader from '../../components/ui/DashboardHeader';
 import { useEffect, useState } from 'react';
 import { getLearnerStatsRequest } from '../../api/learner.api';
 import type { LearnerStats } from '../../types/learner.types';
@@ -89,49 +89,14 @@ export default function LearnerDashboard () {
 
     return (
       <div className='min-h-screen bg-gray-100'>
-        {/* Header */}
-        <header className='bg-slate-900 px-8 py-4'>
-          <div className='max-w-7xl mx-auto flex items-center justify-between'>
-            {/* Logo / Title */}
-            <div className='flex items-center gap-6'>
-              <Logo />
-              <div className='h-6 w-px bg-slate-600' />
-              <div>
-                <h1 className='text-white font-bold text-lg leading-tight'>
-                  Learner Dashboard
-                </h1>
-                <p className='text-slate-400 text-sm'>
-                  Welcome back, {user?.first_name ?? 'Learner'}
-                </p>
-              </div>
-            </div>
-            {/* Logout Button */}
-            <div className='flex items-center gap-3'>
-              <button
-                className='flex items-center gap-2 px-4 py-2 rounded-lg
-                         bg-orange-600 text-white text-sm font-medium cursor-pointer'
-                onClick={() => navigate(ROUTES.LEARNER.PROFILE)}
-              >
-                <User className='w-4 h-4'/>
-                Profile
-              </button>
+        <DashboardHeader
+          title='Learner Dashboard'
+          subtitle={`Welcome back, ${user?.first_name ?? 'Learner'}`}
+          onProfile={() => navigate(ROUTES.LEARNER.PROFILE)}
+          onLogout={handleLogout}
+        />
 
-              <button
-                onClick={handleLogout}
-                className='flex items-center gap-2 px-4 py-2 rounded-lg
-                                    border border-red-400 text-red-400
-                                    hover:border-red-600 hover:text-red-600
-                                    transition-colors text-sm font-medium
-                                    cursor-pointer'
-              >
-                <LogOut className='w-4 h-4' />
-                <span>Logout</span>
-              </button>
-            </div>
-          </div>
-        </header>
-
-        <main className='max-w-7xl mx-auto px-8 py-8 space-y-8'>
+        <main id='main' className='max-w-7xl mx-auto px-4 sm:px-8 py-8 space-y-8'>
           {/* ── Stats Row ── */}
           <div className='grid grid-cols-2 lg:grid-cols-4 gap-4'>
             {learnerStats && (
