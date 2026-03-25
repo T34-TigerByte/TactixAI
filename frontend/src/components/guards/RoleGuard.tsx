@@ -1,11 +1,11 @@
 import { Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import {ROUTES} from '../../router/routes.ts';
-import type { Roles } from '../../types/auth.types.ts';
+import type { Role } from '../../types/auth.types.ts';
 
 
 interface Props {
-    allowedRoles: Roles[];
+    allowedRoles: Role[];
 }
 
 export default function RoleGuard({ allowedRoles }: Props) {

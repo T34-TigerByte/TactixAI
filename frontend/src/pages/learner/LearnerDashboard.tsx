@@ -1,18 +1,22 @@
-import { Target, Clock, TrendingUp, BookOpen, BarChart2, Play, LogOut, Shield, MessageSquare } from 'lucide-react';
+import { Target, Clock, TrendingUp, BookOpen, BarChart2, Play, LogOut, MessageSquare, User } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth }  from '../../hooks/useAuth';
 import { ROUTES } from '../../router/routes';
 import DifficultyBadge from '../../components/ui/DifficultyBadge';
+import SkillProgressPanel from '../../components/ui/SkillProgressPanel';
 import StatsCard from '../../components/ui/StatsCard';
 import PanelHeader from '../../components/ui/PanelHeader';
 import Logo from '../../components/ui/Logo';
+import { useEffect, useState } from 'react';
+import { getLearnerStatsRequest } from '../../api/learner.api';
+import type { LearnerStats } from '../../types/learner.types';
 
-const MOCK_STATS = {
-  totalSessions: 24,
-  averageScore: 78,
-  trainingHours: 32,
-  currentStreak: 5,
-};
+// const MOCK_STATS = {
+//   totalSessions: 24,
+//   averageScore: 78,
+//   trainingHours: 32,
+//   currentStreak: 5,
+// };
 
 const MOCK_SCENARIOS = [
   {
@@ -62,12 +66,21 @@ const MOCK_ACTIVITY = [
 export default function LearnerDashboard () {
     const navigate = useNavigate();
     const { user, logout } = useAuth();
+    const [learnerStats, setLearnerStats] = useState<LearnerStats>();
     
 
     const handleLogout = () => {
         logout();
         navigate(ROUTES.LOGIN, { replace: true});
     };
+
+    useEffect(() => {
+      const fetchStats = async () => {
+        const response = await getLearnerStatsRequest();
+        setLearnerStats(response);
+      }
+      fetchStats();
+    }, [])
 
     const handleStartScenario  = (id: string ) => {
         //  TODO: navigate to chat page with session creation
@@ -88,20 +101,20 @@ export default function LearnerDashboard () {
                   Learner Dashboard
                 </h1>
                 <p className='text-slate-400 text-sm'>
-                  Welcome back, {user?.username ?? 'Learner'}
+                  Welcome back, {user?.first_name ?? 'Learner'}
                 </p>
               </div>
             </div>
             {/* Logout Button */}
             <div className='flex items-center gap-3'>
-              <div
+              <button
                 className='flex items-center gap-2 px-4 py-2 rounded-lg
-                                        bg-orange-600 text-white text-sm font-medium'
+                         bg-orange-600 text-white text-sm font-medium cursor-pointer'
+                onClick={() => navigate(ROUTES.LEARNER.PROFILE)}
               >
-                <Shield className='w-4 h-4' />
-                <span>Intermediate</span>
-                {/* TODO: Replace with user.level */}
-              </div>
+                <User className='w-4 h-4'/>
+                Profile
+              </button>
 
               <button
                 onClick={handleLogout}
@@ -121,29 +134,38 @@ export default function LearnerDashboard () {
         <main className='max-w-7xl mx-auto px-8 py-8 space-y-8'>
           {/* ── Stats Row ── */}
           <div className='grid grid-cols-2 lg:grid-cols-4 gap-4'>
-            <StatsCard
-              label='Total Sessions'
-              value={MOCK_STATS.totalSessions}
-              icon={<MessageSquare className='w-5 h-5 text-teal-500' />}
-            />
-            <StatsCard
-              label='Average Score'
-              value={`${MOCK_STATS.averageScore}%`}
-              valueColor='text-orange-500'
-              icon={<Target className='w-5 h-5 text-orange-400' />}
-            />
-            <StatsCard
-              label='Training Hours'
-              value={`${MOCK_STATS.trainingHours}h`}
-              icon={<Clock className='w-5 h-5 text-purple-500' />}
-            />
-            <StatsCard
-              label='Current Streak'
-              value={MOCK_STATS.currentStreak}
-              valueColor='text-red-500'
-              icon={<TrendingUp className='w-5 h-5 text-red-500' />}
-            />
+            {learnerStats && (
+              <>
+                <StatsCard
+                  label='Total Sessions'
+                  value={learnerStats.session.total}
+                  icon={<MessageSquare className='w-5 h-5 text-teal-500' />}
+                />
+                <StatsCard
+                  label='Average Score'
+                  value={`${learnerStats.session.average_score}%`}
+                  valueColor='text-orange-500'
+                  icon={<Target className='w-5 h-5 text-orange-400' />}
+                />
+                <StatsCard
+                  label='Training Hours'
+                  value={`${learnerStats.session.total_hours}h`}
+                  icon={<Clock className='w-5 h-5 text-purple-500' />}
+                />
+                <StatsCard
+                  label='Current Streak'
+                  value={5}
+                  valueColor='text-red-500'
+                  icon={<TrendingUp className='w-5 h-5 text-red-500' />}
+                />
+              </>
+            )}
           </div>
+
+          {/* ── Skill Development Progress ── */}
+          {learnerStats?.progress && (
+            <SkillProgressPanel progress={learnerStats.progress} />
+          )}
 
           {/* ── 2 Rows at the bottom ── */}
           <div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
@@ -269,7 +291,7 @@ export default function LearnerDashboard () {
                 ))}
 
                 {/* View Detailed Progress */}
-                
+
                 <button
                   className='w-full py-3 rounded-xl border border-gray-200
                                             text-red-600 font-medium text-sm

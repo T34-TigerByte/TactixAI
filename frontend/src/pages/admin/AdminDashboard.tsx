@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import { Users, UserCheck, BarChart2 } from 'lucide-react';
 
@@ -31,7 +31,10 @@ type Tab = 'overview' | 'users' | 'analytics';
 export default function AdminDashboardPage() {
   const { logout } = useAuth();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<Tab>('overview');
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const activeTab = (searchParams.get('tab') as Tab) ?? 'overview';
+  const setActiveTab = (tab: Tab) => setSearchParams({ tab });
 
   const handleLogout = () => {
     logout();
@@ -45,9 +48,13 @@ export default function AdminDashboardPage() {
   ];
 
   useEffect(() => {
+    const fetchAdminStats = async () => {
       const response = getAdminStatsRequest();
       console.log(response);
-  }, [])
+    };
+    fetchAdminStats();
+  }, []);
+
 
   return (
     <div className='min-h-screen bg-gray-100'>
@@ -82,7 +89,7 @@ export default function AdminDashboardPage() {
         <TabNav tabs={TABS} activeTab={activeTab} onChange={setActiveTab} />
 
         {/* ── Tab Content ── */}
-        {activeTab === 'overview' && <OverviewTab />}
+        {activeTab === 'overview' && <OverviewTab onClick={setActiveTab} />}
         {activeTab === 'users' && <UsersTab />}
         {activeTab === 'analytics' && <AnalyticsTab />}
       </main>

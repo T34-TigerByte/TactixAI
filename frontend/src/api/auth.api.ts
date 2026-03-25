@@ -17,6 +17,10 @@ export async function getMeRequest(): Promise<User> {
     return response.data;
 }
 
+export async function logoutRequest(): Promise<void> {
+    await api.post('/auth/logout');
+}
+
 /*
 const mockLogin = async (credentials: LoginCredentials): Promise<AuthResponse> => {
     await new Promise(resolve => setTimeout(resolve, 1000)) // simulate network delay

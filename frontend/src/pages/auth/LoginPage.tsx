@@ -3,12 +3,11 @@ import type { SubmitEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 import { ROUTES } from "../../router/routes";
-import type { Roles } from "../../types/auth.types";
 import Logo from "../../components/ui/Logo";
 import { BookOpen, Users, BarChart2 } from "lucide-react";
 
 
-const ROLE_REDIRECT: Record<Roles, string> = {
+const ROLE_REDIRECT: Record<string, string> = {
   admin:    ROUTES.ADMIN.DASHBOARD,
   learner:  ROUTES.LEARNER.DASHBOARD,
 }
@@ -63,7 +62,7 @@ const LoginPage = () => {
     const fillDemo = (demoEmail: string, role: string) => {
         setEmail(demoEmail)
         if (role === 'Learner') {
-          setPassword('learner1234');
+          setPassword('new-user-1234');
         } else {
           setPassword('admin1234')
         }
@@ -213,7 +212,7 @@ const LoginPage = () => {
                     <div className='space-y-2'>
                       {[
                         { email: 'admin@dev.local', role: 'Admin' },
-                        { email: 'learner@test.com', role: 'Learner' },
+                        { email: 'test2@dev.local', role: 'Learner' },
                       ].map(({ email, role }) => (
                         <button
                           key={role}
