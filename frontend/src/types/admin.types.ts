@@ -1,4 +1,3 @@
-
 export type AdminTab = 'overview' | 'users' | 'analytics';
 
 export type { AdminStats, AdminUserListItem, AdminUserById } from '../schemas/api.schema';
