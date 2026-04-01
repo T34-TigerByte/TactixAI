@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import { Users, UserCheck, BarChart2 } from 'lucide-react';
@@ -13,19 +13,9 @@ import StatsCard from '../../components/ui/StatsCard';
 import DashboardHeader from '../../components/ui/DashboardHeader';
 import TabNav from '../../components/ui/TabNav';
 import { getAdminStatsRequest } from '../../api/admin.api';
-import type { AdminTab } from '../../types/admin.types';
+import type { AdminStats, AdminTab } from '../../types/admin.types';
 
-// MOCK DATA
-// TODO: replace with API calls when backend is ready
 
-const MOCK_STATS = {
-  totalUsers: 247,
-  userGrowth: 12.5,
-  activeLearners: 156,
-  totalSessions: 1847,
-  avgScore: 76,
-  uptime: 99.8,
-};
 
 export default function AdminDashboardPage() {
   const { logout } = useAuth();
@@ -34,6 +24,9 @@ export default function AdminDashboardPage() {
 
   const activeTab = (searchParams.get('tab') as AdminTab) ?? 'overview';
   const setActiveTab = (tab: AdminTab) => setSearchParams({ tab });
+
+  const [stats, setStats ] = useState<AdminStats>();
+
 
   const handleLogout = () => {
     logout();
@@ -48,11 +41,16 @@ export default function AdminDashboardPage() {
 
   useEffect(() => {
     const fetchAdminStats = async () => {
-      const response = getAdminStatsRequest();
-      console.log(response);
+      const response = await getAdminStatsRequest();
+      setStats(response);
     };
     fetchAdminStats();
   }, []);
+
+  const userGrowthSubText = 
+    `${Number(stats?.user_growth_percentage) < 0 
+      ? `-${Number(stats?.user_growth_percentage)}` 
+      : `+${Number(stats?.user_growth_percentage)}`}`; 
 
 
   return (
@@ -60,26 +58,32 @@ export default function AdminDashboardPage() {
       <DashboardHeader
         title='Admin Dashboard'
         subtitle='System Overview & Management'
-        uptime={MOCK_STATS.uptime}
+        uptime={99.8}
         onLogout={handleLogout}
       />
 
-      <main id='main' className='max-w-7xl mx-auto px-4 sm:px-8 py-6 sm:py-8 space-y-6'>
+      <main
+        id='main'
+        className='max-w-7xl mx-auto px-4 sm:px-8 py-6 sm:py-8 space-y-6'
+      >
         {/* ── Stat Cards ── */}
         <div className='grid grid-cols-1 lg:grid-cols-3 gap-4'>
           <StatsCard
             label='Total Users'
-            value={MOCK_STATS.totalUsers}
+            value={stats?.total_users}
+            subText={`${userGrowthSubText} % this month`}
             icon={<Users className='w-5 h-5 text-teal-500' />}
           />
           <StatsCard
             label='Active Learners'
-            value={MOCK_STATS.activeLearners}
+            value={stats?.active_users}
+            subText='training participants'
             icon={<UserCheck className='w-5 h-5 text-blue-500' />}
           />
           <StatsCard
             label='Total Sessions'
-            value={MOCK_STATS.totalSessions}
+            value={stats?.total_sessions}
+            subText={`Avg Score: ${stats?.session_growth_percentage}%`}
             icon={<BarChart2 className='w-5 h-5 text-purple-500' />}
           />
         </div>

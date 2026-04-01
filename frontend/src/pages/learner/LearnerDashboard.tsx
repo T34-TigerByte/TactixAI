@@ -1,4 +1,4 @@
-import { Target, Clock, TrendingUp, BookOpen, BarChart2, Play, MessageSquare } from 'lucide-react';
+import { Target, Clock, TrendingUp, BookOpen, BarChart2, MessageSquare } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth }  from '../../hooks/useAuth';
 import { ROUTES } from '../../router/routes';
@@ -8,8 +8,10 @@ import StatsCard from '../../components/ui/StatsCard';
 import PanelHeader from '../../components/ui/PanelHeader';
 import DashboardHeader from '../../components/ui/DashboardHeader';
 import { useEffect, useState } from 'react';
-import { getLearnerStatsRequest } from '../../api/learner.api';
+import { getLearnerStatsRequest, getScenariosRequest } from '../../api/learner.api';
 import type { LearnerStats } from '../../types/learner.types';
+import type { LearnerScenario } from '../../schemas/api.schema';
+import ScenarioCard from '../../components/learner/ScenarioCard';
 
 // const MOCK_STATS = {
 //   totalSessions: 24,
@@ -18,22 +20,36 @@ import type { LearnerStats } from '../../types/learner.types';
 //   currentStreak: 5,
 // };
 
-const MOCK_SCENARIOS = [
-  {
-    id: '1',
-    title: 'Advanced Ransomware Negotiation',
-    desc: 'Practice high-stakes negotiations with sophisticated threat actors using psychological pressure tactics.',
-    difficulty: 'advanced' as const,
-    duration: 45,
-  },
-  {
-    id: '2',
-    title: 'Financial Institution Ransomware',
-    desc: 'Handle a ransomware attack on financial systems with regulatory pressures and high-value data theft.',
-    difficulty: 'advanced' as const,
-    duration: 60,
-  },
-];
+// const MOCK_SCENARIOS: LearnerScenario[] = [
+//   {
+//     uuid: '00000000-0000-0000-0000-000000000003',
+//     title: 'Advanced Ransomware Negotiation',
+//     description:
+//       'Practice high-stakes negotiations with sophisticated threat actors using psychological pressure tactics.',
+//     difficulty: 'advanced',
+//     time_estimate: 45,
+//     objectives: 5,
+//     threat_actor: {
+//       name: 'Vladimir "CryptoKing" Petrov',
+//       description: 'Psychological pressure with business-like professionalism',
+//       aggression: 8,
+//     },
+//   },
+//   {
+//     uuid: '00000000-0000-0000-0000-000000000005',
+//     title: 'Financial Institution Ransomware',
+//     description:
+//       'Handle a ransomware attack on financial systems with regulatory pressures and high-value data theft.',
+//     difficulty: 'intermediate',
+//     time_estimate: 40,
+//     objectives: 5,
+//     threat_actor: {
+//       name: 'Viktor "PressureCooker" Ivanov',
+//       description: 'Aggressive financial leverage with tight deadlines',
+//       aggression: 7,
+//     },
+//   },
+// ];
 
 const MOCK_ACTIVITY = [
   {
@@ -67,6 +83,7 @@ export default function LearnerDashboard () {
     const navigate = useNavigate();
     const { user, logout } = useAuth();
     const [learnerStats, setLearnerStats] = useState<LearnerStats>();
+    const [scenarios, setScenarios] = useState<LearnerScenario[]>();
     
 
     const handleLogout = () => {
@@ -79,12 +96,22 @@ export default function LearnerDashboard () {
         const response = await getLearnerStatsRequest();
         setLearnerStats(response);
       }
+      const fetchScenario = async () => {
+        const response = await getScenariosRequest();
+        setScenarios(response);        
+      }
       fetchStats();
+      fetchScenario();
     }, [])
 
     const handleStartScenario  = (id: string ) => {
         //  TODO: navigate to chat page with session creation
+        return
         navigate(`/learner/chat/${id}`);
+    }
+
+    const handleViewAllScenario = () => {
+        navigate(ROUTES.LEARNER.SCENARIOS, { state: { scenarios } });
     }
 
     return (
@@ -147,43 +174,8 @@ export default function LearnerDashboard () {
 
               {/* Scenario Cards */}
               <div className='p-4 space-y-3'>
-                {MOCK_SCENARIOS.map((scenario) => (
-                  <div
-                    key={scenario.id}
-                    className='p-4 rounded-xl border border-gray-200
-                                        hover:border-gray-300 hover:shadow-sm
-                                        transition-all space-y-3'
-                  >
-                    <div>
-                      <h3 className='font-semibold text-gray-900 mb-1'>
-                        {scenario.title}
-                      </h3>
-                      <p className='text-gray-500 text-sm leading-relaxed'>
-                        {scenario.desc}
-                      </p>
-                    </div>
-
-                    <div className='flex items-center justify-between'>
-                      <div className='flex items-center gap-3'>
-                        <DifficultyBadge level={scenario.difficulty} />
-                        <div className='flex items-center gap-1 text-gray-500 text-sm'>
-                          <Clock className='w-3.5 h-3.5' />
-                          <span>{scenario.duration}m</span>
-                        </div>
-                      </div>
-                      <button
-                        onClick={() => handleStartScenario(scenario.id)}
-                        className='flex items-center gap-2 px-4 py-2 rounded-lg
-                                            bg-orange-600 hover:bg-orange-700 active:bg-orange-800
-                                            text-white text-sm font-medium
-                                            transition-colors
-                                            cursor-pointer'
-                      >
-                        <Play className='w-3.5 h-3.5 fill-white' />
-                        Start
-                      </button>
-                    </div>
-                  </div>
+                {scenarios?.map((scenario) => (
+                  <ScenarioCard key={scenario.uuid} scenario={scenario} onClick={handleStartScenario}/>
                 ))}
 
                 {/* View All */}
@@ -192,6 +184,7 @@ export default function LearnerDashboard () {
                                             text-red-600 font-medium text-sm
                                             hover:bg-orange-50 transition-colors mt-1
                                             cursor-pointer'
+                  onClick={handleViewAllScenario}
                 >
                   View All Scenarios
                 </button>

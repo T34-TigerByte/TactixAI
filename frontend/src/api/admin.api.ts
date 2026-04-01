@@ -7,11 +7,18 @@ import {
   adminUserByIdSchema,
   adminUserListSchema,
   type AdminUserById,
+  type LearnerActivity,
+  learnerActivitySchema,
 } from '../schemas/api.schema';
 
 export async function getAdminStatsRequest(): Promise<AdminStats> {
   const response = await api.get('/admin/stats');
   return parseResponse(adminStatsSchema, response.data, 'getAdminStatsRequest');
+}
+
+export async function getUserActivitiesRequest(): Promise<LearnerActivity[]> {
+  const response = await api.get<{data: LearnerActivity[] }>('/admin/activities');
+  return parseResponse(learnerActivitySchema, response.data.data, 'getUserActivitiesRequest');
 }
 
 export async function getUsersRequest(): Promise<AdminUserListItem[]> {

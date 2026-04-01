@@ -1,6 +1,9 @@
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { ROUTES } from './routes';
 import LearnerDashboard from '../pages/learner/LearnerDashboard';
+import ScenarioListPage from '../pages/learner/ScenarioListPage';
+import type { Scenario } from '../pages/learner/ScenarioListPage';
+import ChatRoomPage from '../pages/learner/ChatRoomPage';
 import ProfileSettingPage from '../pages/learner/ProfileSettingPage';
 import AdminDashboard from '../pages/admin/AdminDashboard';
 import LearnerDetailsPage from '../pages/admin/LearnerDetailsPage';
@@ -11,6 +14,17 @@ import { useAuth } from '../hooks/useAuth';
 // Guard Routes for RBAC
 import ProtectedRoute from '../components/guards/ProtectedRoute';
 import RoleGuard from '../components/guards/RoleGuard';
+
+
+// Wrapper to inject the start-scenario handler via useNavigate
+function ScenarioListPageRoute() {
+    const navigate = useNavigate();
+    const handleStartScenario = (scenario: Scenario) => {
+        // TODO: create session then navigate
+        navigate(`/learner/chat/${scenario.uuid}`, { state: scenario });
+    };
+    return <ScenarioListPage onStartScenario={handleStartScenario} />;
+}
 
 export default function AppRouter() {
     const { isLoading } = useAuth(); // Custom hook to check auth status
@@ -27,11 +41,13 @@ export default function AppRouter() {
             <Route path={ROUTES.UNAUTHORIZED} element={<div>Unauthorized Access</div>} />
 
             {/* Protected Routes */}
-            
+
             {/* Learner Routes */}
-            <Route element={<ProtectedRoute />}> 
+            <Route element={<ProtectedRoute />}>
                 <Route element={<RoleGuard allowedRoles={['learner']} />}>
                     <Route path={ROUTES.LEARNER.DASHBOARD} element={<LearnerDashboard />} />
+                    <Route path={ROUTES.LEARNER.SCENARIOS} element={<ScenarioListPageRoute />} />
+                    <Route path={ROUTES.LEARNER.CHAT} element={<ChatRoomPage />} />
                     <Route path={ROUTES.LEARNER.PROFILE} element={<ProfileSettingPage />} />
                     {/* Add more learner routes here */}
                 </Route>
