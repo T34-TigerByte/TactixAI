@@ -3,48 +3,10 @@ import { Settings, Users, Activity, FileText } from "lucide-react";
 import type { AdminTab } from "../../types/admin.types";
 import { useOverviewTab } from "../../hooks/useOverviewTab";
 
-const MOCK_ACTIVITY = [
-  {
-    id: '1',
-    name: 'Test user1',
-    action: 'registered as Learner',
-    time: '3/15/2024, 8:30:00 PM',
-    status: 'success' as const,
-  },
-  {
-    id: '2',
-    name: 'Test user2',
-    action: 'completed Advanced Ransomware scenario',
-    time: '3/15/2024, 7:45:00 PM',
-    status: 'success' as const,
-  },
-  {
-    id: '3',
-    name: 'System',
-    action: 'High memory usage detected',
-    time: '3/15/2024, 7:15:00 PM',
-    status: 'warning' as const,
-  },
-  {
-    id: '4',
-    name: 'Test user3',
-    action: 'completed Financial Institution scenario',
-    time: '3/15/2024, 6:50:00 PM',
-    status: 'success' as const,
-  },
-  {
-    id: '5',
-    name: 'System',
-    action: 'Backup completed successfully',
-    time: '3/15/2024, 6:00:00 PM',
-    status: 'success' as const,
-  },
-];
+const OverviewTab = ({ onClick }: { onClick: (tab: AdminTab) => void }) => {
 
-const OverviewTab = ({ onClick }: { onClick: (tab: AdminTab) => void }) => { 
-
-  const { state, dispatch } = useOverviewTab();
-  const { activities, isLoading, error } = state;
+  const { state } = useOverviewTab();
+  const { activities } = state;
 
 
   return (

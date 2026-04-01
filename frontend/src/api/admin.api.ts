@@ -18,7 +18,7 @@ export async function getAdminStatsRequest(): Promise<AdminStats> {
 
 export async function getUserActivitiesRequest(): Promise<LearnerActivity[]> {
   const response = await api.get<{data: LearnerActivity[] }>('/admin/activities');
-  return parseResponse(learnerActivitySchema, response.data.data, 'getUserActivitiesRequest');
+  return parseResponse(learnerActivitySchema.array(), response.data.data, 'getUserActivitiesRequest');
 }
 
 export async function getUsersRequest(): Promise<AdminUserListItem[]> {
