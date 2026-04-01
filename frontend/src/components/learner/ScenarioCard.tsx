@@ -1,6 +1,6 @@
 import type { LearnerScenario } from "../../schemas/api.schema";
 // import DifficultyBadge from "../ui/DifficultyBadge";
-import { Clock, Play } from "lucide-react";
+import { Play } from "lucide-react";
 
 interface ScenarioCardProps {
   scenario: LearnerScenario,

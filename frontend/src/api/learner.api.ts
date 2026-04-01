@@ -4,7 +4,6 @@ import api from './client';
 import { parseResponse } from '../utils/parse.utils';
 import { learnerStatsSchema, learnerProfileSchema, updateProfileResponseSchema, learnerScenarioSchema } from '../schemas/api.schema';
 import type { LearnerProfile, LearnerScenario } from '../schemas/api.schema';
-import type { Session } from '../types/session.types';
 
 export async function getLearnerStatsRequest(): Promise<LearnerStats> {
   const response = await api.get('/stats');
