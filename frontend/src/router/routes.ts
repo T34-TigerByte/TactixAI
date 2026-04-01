@@ -3,6 +3,7 @@ export const ROUTES = {
   UNAUTHORIZED: '/unauthorized',
   LEARNER: {
     DASHBOARD: '/learner/dashboard',
+    SCENARIOS: '/learner/scenarios',
     CHAT: '/learner/chat/:sessionId',
     PROFILE: '/learner/profile',
   },
