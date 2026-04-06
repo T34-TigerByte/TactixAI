@@ -10,7 +10,7 @@ import OverviewTab from '../../components/admin/OverviewTab';
 import UsersTab from '../../components/admin/UsersTab';
 import AnalyticsTab from '../../components/admin/AnalyticsTab';
 import StatsCard from '../../components/ui/StatsCard';
-import DashboardHeader from '../../components/ui/DashboardHeader';
+import DashboardHeader from '../../components/ui/DashboardHeader.tsx';
 import TabNav from '../../components/ui/TabNav';
 import { getAdminStatsRequest } from '../../api/admin.api';
 import type { AdminStats, AdminTab } from '../../types/admin.types';

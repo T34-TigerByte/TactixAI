@@ -5,7 +5,7 @@ import { Building2, Clock, Calendar, CheckCircle2, FileText } from 'lucide-react
 
 import { useAuth } from '../../hooks/useAuth';
 import { ROUTES } from '../../router/routes';
-import DashboardHeader from '../../components/ui/DashboardHeader';
+import DashboardHeader from '../../components/ui/DashboardHeader.tsx';
 import StatsCard from '../../components/ui/StatsCard';
 import PanelHeader from '../../components/ui/PanelHeader';
 import TabNav from '../../components/ui/TabNav';
