@@ -3,7 +3,7 @@ import { User, Mail, Lock, Save } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
-import DashboardHeader from '../../components/ui/DashboardHeader';
+import DashboardHeader from '../../components/ui/DashboardHeader.tsx';
 import { useAuth } from '../../hooks/useAuth';
 import { ROUTES } from '../../router/routes';
 import PanelHeader from '../../components/ui/PanelHeader';

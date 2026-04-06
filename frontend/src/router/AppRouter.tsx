@@ -2,7 +2,7 @@ import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { ROUTES } from './routes';
 import LearnerDashboard from '../pages/learner/LearnerDashboard';
 import ScenarioListPage from '../pages/learner/ScenarioListPage';
-import type { Scenario } from '../pages/learner/ScenarioListPage';
+import type { LearnerScenario } from '../schemas/api.schema';
 import ChatRoomPage from '../pages/learner/ChatRoomPage';
 import ProfileSettingPage from '../pages/learner/ProfileSettingPage';
 import AdminDashboard from '../pages/admin/AdminDashboard';
@@ -14,12 +14,10 @@ import { useAuth } from '../hooks/useAuth';
 // Guard Routes for RBAC
 import ProtectedRoute from '../components/guards/ProtectedRoute';
 import RoleGuard from '../components/guards/RoleGuard';
-
-
 // Wrapper to inject the start-scenario handler via useNavigate
 function ScenarioListPageRoute() {
     const navigate = useNavigate();
-    const handleStartScenario = (scenario: Scenario) => {
+    const handleStartScenario = (scenario: LearnerScenario) => {
         // TODO: create session then navigate
         navigate(`/learner/chat/${scenario.uuid}`, { state: scenario });
     };

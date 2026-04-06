@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Send, Clock, MessageSquare, ClipboardList } from 'lucide-react';
-import DashboardHeader from '../../components/ui/DashboardHeader';
+import DashboardHeader from '../../components/ui/DashboardHeader.tsx';
 import { ROUTES } from '../../router/routes';
 import { useAuth } from '../../hooks/useAuth';
 

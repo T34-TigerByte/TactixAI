@@ -12,14 +12,22 @@ export function AuthProvider({children} : {children: ReactNode}) {
 
     useEffect(() => {
         const token = getToken();
-        if (token) {
-            getMeRequest()
-                .then(setUser)
-                .catch(() => clearToken())
-                .finally(() => setIsLoading(false));
-        } else {
-            setIsLoading(false);
+
+        const fetchUser = async () => {
+            try {
+                if (token) {
+                    const user = await getMeRequest();
+                    setUser(user);
+                } else {
+                    setIsLoading(false);
+                }
+            } catch {
+                clearToken();
+            } finally {
+                setIsLoading(false);
+            }
         }
+        fetchUser();
     }, []);
 
     const login = async (credentials: LoginCredentials): Promise<User> => {

@@ -6,12 +6,12 @@ import DifficultyBadge from '../../components/ui/DifficultyBadge';
 import SkillProgressPanel from '../../components/ui/SkillProgressPanel';
 import StatsCard from '../../components/ui/StatsCard';
 import PanelHeader from '../../components/ui/PanelHeader';
-import DashboardHeader from '../../components/ui/DashboardHeader';
+import DashboardHeader from '../../components/ui/DashboardHeader.tsx';
 import { useEffect, useState } from 'react';
-import { getLearnerStatsRequest, getScenariosRequest } from '../../api/learner.api';
+import { getLearnerStatsRequest } from '../../api/learner.api';
 import type { LearnerStats } from '../../types/learner.types';
-import type { LearnerScenario } from '../../schemas/api.schema';
 import ScenarioCard from '../../components/learner/ScenarioCard';
+import { useScenario } from '../../hooks/useScenario.ts';
 
 // const MOCK_STATS = {
 //   totalSessions: 24,
@@ -83,8 +83,8 @@ export default function LearnerDashboard () {
     const navigate = useNavigate();
     const { user, logout } = useAuth();
     const [learnerStats, setLearnerStats] = useState<LearnerStats>();
-    const [scenarios, setScenarios] = useState<LearnerScenario[]>();
-    
+    // const [scenarios, setScenarios] = useState<LearnerScenario[]>();
+    const { scenarios } = useScenario();
 
     const handleLogout = () => {
         logout();
@@ -96,12 +96,12 @@ export default function LearnerDashboard () {
         const response = await getLearnerStatsRequest();
         setLearnerStats(response);
       }
-      const fetchScenario = async () => {
-        const response = await getScenariosRequest();
-        setScenarios(response);        
-      }
+      // const fetchScenario = async () => {
+      //   const response = await getScenariosRequest();
+      //   setScenarios(response);        
+      // }
       fetchStats();
-      fetchScenario();
+      // fetchScenario();
     }, [])
 
     const handleStartScenario  = (id: string ) => {

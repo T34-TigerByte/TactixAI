@@ -122,7 +122,7 @@ export const learnerScenarioSchema = z.object({
   title: z.string(),
   description: z.string(),
   // difficulty: z.enum(['beginner', 'intermediate', 'advanced']),
-  // time_estimate: z.number(),
+  time_estimate: z.number(),
   // objectives: z.number(),
   threat_actor: z.string(), // TO BE: Replaced by a threat_actor obj type
 });
