@@ -10,16 +10,19 @@ import LearnerDetailsPage from '../pages/admin/LearnerDetailsPage';
 import LoginPage from '../pages/auth/LoginPage';
 
 import { useAuth } from '../hooks/useAuth';
+import { useScenario } from '../hooks/useScenario';
 
 // Guard Routes for RBAC
 import ProtectedRoute from '../components/guards/ProtectedRoute';
 import RoleGuard from '../components/guards/RoleGuard';
+
 // Wrapper to inject the start-scenario handler via useNavigate
 function ScenarioListPageRoute() {
     const navigate = useNavigate();
+    const { setSelectedScenario } = useScenario();
     const handleStartScenario = (scenario: LearnerScenario) => {
-        // TODO: create session then navigate
-        navigate(`/learner/chat/${scenario.uuid}`, { state: scenario });
+        setSelectedScenario(scenario);
+        navigate(`/learner/chat/${scenario.uuid}`);
     };
     return <ScenarioListPage onStartScenario={handleStartScenario} />;
 }

@@ -1,54 +1,19 @@
 import { useState, useEffect, useRef } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Send, Clock, MessageSquare, ClipboardList } from 'lucide-react';
 import DashboardHeader from '../../components/ui/DashboardHeader.tsx';
 import { ROUTES } from '../../router/routes';
 import { useAuth } from '../../hooks/useAuth';
 import WarningModal from '../../components/ui/WarningModal.tsx';
-
-const MOCK_TASKS = [
-  {
-    id: '1',
-    question: '1. How did the data breach happen?',
-    type: 'radio' as const,
-    options: [
-      'Phishing email with malicious attachment',
-      'Exploited unpatched vulnerability in VPN',
-      'Compromised third-party vendor access',
-      'Stolen or weak credentials',
-    ],
-  },
-  {
-    id: '2',
-    question: '2. What specific system has been exploited?',
-    type: 'radio' as const,
-    options: [
-      'File servers and databases',
-      'Email and communication systems',
-      'Backup systems',
-      'Cloud storage infrastructure',
-    ],
-  },
-  {
-    id: '3',
-    question: '3. What is the encrypted data?',
-    type: 'radio' as const,
-    options: [
-      'Customer database and PII',
-      'Financial records and transactions',
-      'Intellectual property and R&D',
-      'Employee records and HR data',
-    ],
-  },
-  {
-    id: '4',
-    question: '4. Decryption Key for Proof',
-    type: 'checkbox' as const,
-    options: [
-      'I have requested proof of decryption capability from the threat actor',
-    ],
-  },
-];
+import * as _ws from 'react-use-websocket';
+// Rolldown (Vite 8) double-wraps CJS modules: _ws.default = exports object, _ws.default.default = actual hook
+const _wsInner = _ws.default as unknown as typeof _ws;
+const useWebSocket = _wsInner.default as typeof _ws.default;
+const { ReadyState } = _ws;
+import { useScenario } from '../../hooks/useScenario';
+import { getToken } from '../../utils/auth.utils';
+import { startSessionRequest, getSessionRequest } from '../../api/learner.api';
+import type { SessionDetails } from '../../schemas/api.schema';
 
 interface Message {
   id: string;
@@ -65,28 +30,71 @@ function formatTime(seconds: number): string {
 
 export default function ChatRoomPage() {
   const navigate = useNavigate();
-  const { state: scenario } = useLocation();
+  const { selectedScenario: scenario } = useScenario();
   const { logout } = useAuth();
 
   const scenarioTitle: string = scenario?.title ?? 'Training Session';
   const threatActorName: string = scenario?.threat_actor ?? 'Negotiator';
 
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: '1',
-      sender: 'system',
-      content: `Welcome to the "${scenarioTitle}" ransomware training scenario. You are about to engage with a Negotiator. Remember to document all required information in the task panel while negotiating. Stay calm and apply your training.`,
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-    },
-  ]);
-
+  const [sessionDetails, setSessionDetails] = useState<SessionDetails | null>(null);
+  const [sessionUuid, setSessionUuid] = useState<string | null>(null);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [showWarning, setShowWarning] = useState(false);
-
   const [inputText, setInputText] = useState('');
-  const [timeLeft, setTimeLeft] = useState(30 * 60);
+  const [timeLeft, setTimeLeft] = useState(0);
   const [taskAnswers, setTaskAnswers] = useState<Record<string, string[]>>({});
+  const [mobileTab, setMobileTab] = useState<'chat' | 'tasks'>('chat');
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Create session and fetch session details on mount
+  useEffect(() => {
+    if (!scenario?.uuid) return;
+    const initSession = async () => {
+      const { id } = await startSessionRequest(scenario.uuid);
+      const details = await getSessionRequest(id);
+      setSessionUuid(id); 
+      setSessionDetails(details);
+      setTimeLeft(details.time_estimate * 60);
+      setMessages([{
+        id: '1',
+        sender: 'system',
+        content: details.system_message ?? `Welcome to the "${scenarioTitle}" training scenario. Stay calm and apply your training.`,
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      }]);
+    };
+    initSession();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [scenario?.uuid]);
+
+  const { sendJsonMessage, lastJsonMessage, readyState } = useWebSocket(
+    `${import.meta.env.VITE_PROD_WS_BASE_URL}/ws/${sessionUuid ?? ''}`,
+    {
+      onClose: () => console.log('WebSocket connection closed'),
+      shouldReconnect: (event) => event.code !== 4001,
+    },
+    !!sessionUuid,
+  );
+
+  // Send auth token as first message once connection opens
+  useEffect(() => {
+    if (readyState !== ReadyState.OPEN) return;
+    sendJsonMessage({ type: 'auth', token: getToken() });
+  }, [readyState, sendJsonMessage]);
+
+  useEffect(() => {
+    if (lastJsonMessage === null) return;
+    const data = lastJsonMessage as { content: string };
+    setMessages((prev) => [
+      ...prev,
+      {
+        id: Date.now().toString(),
+        sender: 'system',
+        content: data.content,
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      },
+    ]);
+  }, [lastJsonMessage]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -100,13 +108,17 @@ export default function ChatRoomPage() {
   }, [messages]);
 
   const handleSend = () => {
-    if (!inputText.trim()) return;
+    const text = inputText.trim();
+    if (!text) return;
+
+    sendJsonMessage({ content: text });
+
     setMessages((prev) => [
       ...prev,
       {
         id: Date.now().toString(),
         sender: 'user',
-        content: inputText.trim(),
+        content: text,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       },
     ]);
@@ -129,7 +141,8 @@ export default function ChatRoomPage() {
     });
   };
 
-  const completedCount = MOCK_TASKS.filter((t) => (taskAnswers[t.id] ?? []).length > 0).length;
+  const questions = sessionDetails?.questions ?? [];
+  const completedCount = questions.filter((q) => (taskAnswers[q.question_key] ?? []).length > 0).length;
 
   const handleBack = () => { 
     setShowWarning(true);
@@ -148,9 +161,25 @@ export default function ChatRoomPage() {
         onLogout={handleLogout}
       />
 
-      <main className='flex-1 max-w-7xl w-full mx-auto px-4 sm:px-8 py-6 flex gap-6 min-h-0'>
+      {/* Mobile tab switcher */}
+      <div className='lg:hidden max-w-7xl w-full mx-auto px-4 sm:px-8 pt-4 flex gap-2'>
+        <button
+          onClick={() => setMobileTab('chat')}
+          className={`flex-1 py-2 rounded-lg text-sm font-semibold transition-colors cursor-pointer ${mobileTab === 'chat' ? 'bg-[#0f1c35] text-white' : 'bg-white border border-gray-200 text-gray-600'}`}
+        >
+          Negotiation Chat
+        </button>
+        <button
+          onClick={() => setMobileTab('tasks')}
+          className={`flex-1 py-2 rounded-lg text-sm font-semibold transition-colors cursor-pointer ${mobileTab === 'tasks' ? 'bg-[#0f1c35] text-white' : 'bg-white border border-gray-200 text-gray-600'}`}
+        >
+          Investigation Tasks {completedCount > 0 && `(${completedCount}/${questions.length})`}
+        </button>
+      </div>
+
+      <main className='flex-1 max-w-7xl w-full mx-auto px-4 sm:px-8 py-4 lg:py-6 flex gap-6 min-h-0'>
         {/* Left: Chat Panel */}
-        <div className='flex-1 bg-white rounded-xl border border-gray-200 shadow-sm flex flex-col'>
+        <div className={`flex-1 bg-white rounded-xl border border-gray-200 shadow-sm flex-col ${mobileTab === 'chat' ? 'flex' : 'hidden lg:flex'}`}>
           {/* Chat header */}
           <div className='flex items-center justify-between px-5 py-4 border-b border-gray-200 shrink-0'>
             <div className='flex items-center gap-2 text-gray-700 font-semibold text-sm'>
@@ -234,7 +263,7 @@ export default function ChatRoomPage() {
         </div>
 
         {/* Right: Investigation Tasks */}
-        <div className='w-80 xl:w-96 bg-white rounded-xl border border-gray-200 shadow-sm flex flex-col'>
+        <div className={`w-full lg:w-80 xl:w-96 bg-white rounded-xl border border-gray-200 shadow-sm flex-col ${mobileTab === 'tasks' ? 'flex' : 'hidden lg:flex'}`}>
           {/* Tasks header */}
           <div className='flex items-center justify-between px-5 py-4 border-b border-gray-200 shrink-0'>
             <div className='flex items-center gap-2 text-gray-700 font-semibold text-sm'>
@@ -242,17 +271,17 @@ export default function ChatRoomPage() {
               Investigation Tasks
             </div>
             <span className='text-sm font-semibold text-gray-500'>
-              {completedCount}/{MOCK_TASKS.length}
+              {completedCount}/{questions.length}
             </span>
           </div>
 
           {/* Tasks list */}
           <div className='flex-1 overflow-y-auto px-5 py-4 space-y-5'>
-            {MOCK_TASKS.map((task) => {
-              const selected = taskAnswers[task.id] ?? [];
+            {questions.map((task) => {
+              const selected = taskAnswers[task.question_key] ?? [];
               const isDone = selected.length > 0;
               return (
-                <div key={task.id} className='space-y-2'>
+                <div key={task.question_key} className='space-y-2'>
                   <div className='flex items-start gap-2'>
                     {isDone ? (
                       <span className='text-teal-500 text-sm mt-0.5 shrink-0'>
@@ -264,24 +293,24 @@ export default function ChatRoomPage() {
                       </span>
                     )}
                     <p className='text-sm font-semibold text-gray-800 leading-snug'>
-                      {task.question}
+                      {task.title}
                     </p>
                   </div>
                   <div className='pl-5 space-y-1.5'>
                     {task.options.map((opt) => (
                       <label
-                        key={opt}
+                        key={opt.answer_key}
                         className='flex items-start gap-2 cursor-pointer group'
                       >
                         <input
-                          type={task.type}
-                          name={`task-${task.id}`}
-                          checked={selected.includes(opt)}
-                          onChange={() => toggleOption(task.id, opt, task.type)}
+                          type='radio'
+                          name={`task-${task.question_key}`}
+                          checked={selected.includes(opt.answer_key)}
+                          onChange={() => toggleOption(task.question_key, opt.answer_key, 'radio')}
                           className='accent-orange-500 cursor-pointer mt-0.5 shrink-0'
                         />
                         <span className='text-xs text-gray-600 group-hover:text-gray-900 transition-colors leading-relaxed'>
-                          {opt}
+                          {opt.title}
                         </span>
                       </label>
                     ))}
