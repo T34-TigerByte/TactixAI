@@ -38,7 +38,7 @@ export const updateProfileSchema = z
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           path: ['new_password_confirmation'],
-          message: 'Passwords do not match',
+          message: 'Password do not match',
         });
       }
     }

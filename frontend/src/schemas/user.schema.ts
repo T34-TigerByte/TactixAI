@@ -9,8 +9,8 @@ export const createUserSchema = z.object({
 });
 
 export const updateUserSchema = z.object({
-  first_name: z.string().optional(),
-  last_name: z.string().optional(),
+  first_name: z.string().min(1).optional(),
+  last_name: z.string().min(1).optional(),
 });
 
 export type CreateUserPayload = z.infer<typeof createUserSchema>;

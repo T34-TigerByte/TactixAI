@@ -78,11 +78,10 @@ export default function ProfileSettingPage() {
                       errors.first_name ? 'profile_first_name-error' : undefined
                     }
                     className={`w-full rounded-lg border px-3 py-2 text-sm outline-none
-                               focus:ring-1 ${
-                                 errors.first_name
-                                   ? 'border-red-400 focus:border-red-400 focus:ring-red-400'
-                                   : 'border-gray-300 focus:border-orange-500 focus:ring-orange-500'
-                               }`}
+                               focus:ring-1 ${errors.first_name
+                        ? 'border-red-400 focus:border-red-400 focus:ring-red-400'
+                        : 'border-gray-300 focus:border-orange-500 focus:ring-orange-500'
+                      }`}
                     {...register('first_name')}
                   />
                   {errors.first_name && (
@@ -110,11 +109,10 @@ export default function ProfileSettingPage() {
                       errors.last_name ? 'profile_last_name-error' : undefined
                     }
                     className={`w-full rounded-lg border px-3 py-2 text-sm outline-none
-                               focus:ring-1 ${
-                                 errors.last_name
-                                   ? 'border-red-400 focus:border-red-400 focus:ring-red-400'
-                                   : 'border-gray-300 focus:border-orange-500 focus:ring-orange-500'
-                               }`}
+                               focus:ring-1 ${errors.last_name
+                        ? 'border-red-400 focus:border-red-400 focus:ring-red-400'
+                        : 'border-gray-300 focus:border-orange-500 focus:ring-orange-500'
+                      }`}
                     {...register('last_name')}
                   />
                   {errors.last_name && (
@@ -169,11 +167,10 @@ export default function ProfileSettingPage() {
                     </label>
                     <div
                       className={`flex items-center gap-2 border rounded-lg px-3 py-2
-                                    focus-within:ring-1 ${
-                                      errors.current_password
-                                        ? 'border-red-400 focus-within:border-red-400 focus-within:ring-red-400'
-                                        : 'border-gray-300 focus-within:border-orange-500 focus-within:ring-orange-500'
-                                    }`}
+                                    focus-within:ring-1 ${errors.current_password
+                          ? 'border-red-400 focus-within:border-red-400 focus-within:ring-red-400'
+                          : 'border-gray-300 focus-within:border-orange-500 focus-within:ring-orange-500'
+                        }`}
                     >
                       <Lock
                         className='w-4 h-4 text-gray-400 shrink-0'
@@ -214,11 +211,10 @@ export default function ProfileSettingPage() {
                     </label>
                     <div
                       className={`flex items-center gap-2 border rounded-lg px-3 py-2
-                                    focus-within:ring-1 ${
-                                      errors.new_password
-                                        ? 'border-red-400 focus-within:border-red-400 focus-within:ring-red-400'
-                                        : 'border-gray-300 focus-within:border-orange-500 focus-within:ring-orange-500'
-                                    }`}
+                                    focus-within:ring-1 ${errors.new_password
+                          ? 'border-red-400 focus-within:border-red-400 focus-within:ring-red-400'
+                          : 'border-gray-300 focus-within:border-orange-500 focus-within:ring-orange-500'
+                        }`}
                     >
                       <Lock
                         className='w-4 h-4 text-gray-400 shrink-0'
@@ -257,11 +253,10 @@ export default function ProfileSettingPage() {
                     </label>
                     <div
                       className={`flex items-center gap-2 border rounded-lg px-3 py-2
-                                    focus-within:ring-1 ${
-                                      errors.new_password_confirmation
-                                        ? 'border-red-400 focus-within:border-red-400 focus-within:ring-red-400'
-                                        : 'border-gray-300 focus-within:border-orange-500 focus-within:ring-orange-500'
-                                    }`}
+                                    focus-within:ring-1 ${errors.new_password_confirmation
+                          ? 'border-red-400 focus-within:border-red-400 focus-within:ring-red-400'
+                          : 'border-gray-300 focus-within:border-orange-500 focus-within:ring-orange-500'
+                        }`}
                     >
                       <Lock
                         className='w-4 h-4 text-gray-400 shrink-0'

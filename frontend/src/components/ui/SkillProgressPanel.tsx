@@ -13,10 +13,10 @@ const SKILLS: {
   color: string;
   bar: string;
 }[] = [
-  { label: 'Communication Effectiveness', key: 'communication', color: 'text-teal-500', bar: 'bg-teal-400' },
-  { label: 'Negotiation Strategy', key: 'negotication', color: 'text-orange-500', bar: 'bg-orange-500' },
-  { label: 'Risk Management', key: 'risk_management', color: 'text-purple-500', bar: 'bg-purple-500' },
-];
+    { label: 'Communication Effectiveness', key: 'communication', color: 'text-teal-500', bar: 'bg-teal-400' },
+    { label: 'Negotiation Strategy', key: 'negotiation', color: 'text-orange-500', bar: 'bg-orange-500' },
+    { label: 'Risk Management', key: 'risk_management', color: 'text-purple-500', bar: 'bg-purple-500' },
+  ];
 
 export default function SkillProgressPanel({ progress }: Props) {
   return (

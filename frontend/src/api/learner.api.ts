@@ -7,6 +7,8 @@ import type { LearnerProfile, LearnerScenario } from '../schemas/api.schema';
 
 export async function getLearnerStatsRequest(): Promise<LearnerStats> {
   const response = await api.get('/stats');
+  console.log('getLearnerStatsRequest raw:', response.data);
+  console.log('progress raw:', response.data?.progress);
   return parseResponse(learnerStatsSchema, response.data, 'getLearnerStatsRequest');
 }
 
