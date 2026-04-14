@@ -1,35 +1,55 @@
-import { Target, Clock, TrendingUp, BookOpen, BarChart2, Play, LogOut, Shield, MessageSquare } from 'lucide-react';
+import { Target, Clock, TrendingUp, BookOpen, BarChart2, MessageSquare } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth }  from '../../hooks/useAuth';
 import { ROUTES } from '../../router/routes';
-import DifficultyBadge from '../../components/common/DifficultyBadge';
-import StatsCard from '../../components/common/StatsCard';
-import PanelHeader from '../../components/common/PanelHeader';
-import Logo from '../../components/common/Logo';
+import DifficultyBadge from '../../components/ui/DifficultyBadge';
+import SkillProgressPanel from '../../components/ui/SkillProgressPanel';
+import StatsCard from '../../components/ui/StatsCard';
+import PanelHeader from '../../components/ui/PanelHeader';
+import DashboardHeader from '../../components/ui/DashboardHeader.tsx';
+import { useEffect, useState } from 'react';
+import { getLearnerStatsRequest } from '../../api/learner.api';
+import type { LearnerStats } from '../../types/learner.types';
+import ScenarioCard from '../../components/learner/ScenarioCard';
+import { useScenario } from '../../hooks/useScenario.ts';
 
-const MOCK_STATS = {
-  totalSessions: 24,
-  averageScore: 78,
-  trainingHours: 32,
-  currentStreak: 5,
-};
+// const MOCK_STATS = {
+//   totalSessions: 24,
+//   averageScore: 78,
+//   trainingHours: 32,
+//   currentStreak: 5,
+// };
 
-const MOCK_SCENARIOS = [
-  {
-    id: '1',
-    title: 'Advanced Ransomware Negotiation',
-    desc: 'Practice high-stakes negotiations with sophisticated threat actors using psychological pressure tactics.',
-    difficulty: 'advanced' as const,
-    duration: 45,
-  },
-  {
-    id: '2',
-    title: 'Financial Institution Ransomware',
-    desc: 'Handle a ransomware attack on financial systems with regulatory pressures and high-value data theft.',
-    difficulty: 'advanced' as const,
-    duration: 60,
-  },
-];
+// const MOCK_SCENARIOS: LearnerScenario[] = [
+//   {
+//     uuid: '00000000-0000-0000-0000-000000000003',
+//     title: 'Advanced Ransomware Negotiation',
+//     description:
+//       'Practice high-stakes negotiations with sophisticated threat actors using psychological pressure tactics.',
+//     difficulty: 'advanced',
+//     time_estimate: 45,
+//     objectives: 5,
+//     threat_actor: {
+//       name: 'Vladimir "CryptoKing" Petrov',
+//       description: 'Psychological pressure with business-like professionalism',
+//       aggression: 8,
+//     },
+//   },
+//   {
+//     uuid: '00000000-0000-0000-0000-000000000005',
+//     title: 'Financial Institution Ransomware',
+//     description:
+//       'Handle a ransomware attack on financial systems with regulatory pressures and high-value data theft.',
+//     difficulty: 'intermediate',
+//     time_estimate: 40,
+//     objectives: 5,
+//     threat_actor: {
+//       name: 'Viktor "PressureCooker" Ivanov',
+//       description: 'Aggressive financial leverage with tight deadlines',
+//       aggression: 7,
+//     },
+//   },
+// ];
 
 const MOCK_ACTIVITY = [
   {
@@ -62,92 +82,81 @@ const MOCK_ACTIVITY = [
 export default function LearnerDashboard () {
     const navigate = useNavigate();
     const { user, logout } = useAuth();
-    
+    const [learnerStats, setLearnerStats] = useState<LearnerStats>();
+    // const [scenarios, setScenarios] = useState<LearnerScenario[]>();
+    const { scenarios } = useScenario();
 
     const handleLogout = () => {
         logout();
         navigate(ROUTES.LOGIN, { replace: true});
     };
 
+    useEffect(() => {
+      const fetchStats = async () => {
+        const response = await getLearnerStatsRequest();
+        setLearnerStats(response);
+      }
+      // const fetchScenario = async () => {
+      //   const response = await getScenariosRequest();
+      //   setScenarios(response);        
+      // }
+      fetchStats();
+      // fetchScenario();
+    }, [])
+
     const handleStartScenario  = (id: string ) => {
         //  TODO: navigate to chat page with session creation
         navigate(`/learner/chat/${id}`);
     }
 
+    const handleViewAllScenario = () => {
+        navigate(ROUTES.LEARNER.SCENARIOS, { state: { scenarios } });
+    }
+
     return (
       <div className='min-h-screen bg-gray-100'>
-        {/* Header */}
-        <header className='bg-slate-900 px-8 py-4'>
-          <div className='max-w-7xl mx-auto flex items-center justify-between'>
-            {/* Logo / Title */}
-            <div className='flex items-center gap-6'>
-              <Logo />
-              <div className='h-6 w-px bg-slate-600' />
-              <div>
-                <h1 className='text-white font-bold text-lg leading-tight'>
-                  Learner Dashboard
-                </h1>
-                <p className='text-slate-400 text-sm'>
-                  Welcome back, {user?.username ?? 'Learner'}
-                </p>
-              </div>
-            </div>
-            {/* Logout Button */}
-            <div className='flex items-center gap-3'>
-              <div
-                className='flex items-center gap-2 px-4 py-2 rounded-lg
-                                        bg-orange-600 text-white text-sm font-medium'
-              >
-                <Shield className='w-4 h-4' />
-                <span>Intermediate</span>
-                {/* TODO: Replace with user.level */}
-              </div>
+        <DashboardHeader
+          title='Learner Dashboard'
+          subtitle={`Welcome back, ${user?.first_name ?? 'Learner'}`}
+          onProfile={() => navigate(ROUTES.LEARNER.PROFILE)}
+          onLogout={handleLogout}
+        />
 
-              <button
-                onClick={handleLogout}
-                className='flex items-center gap-2 px-4 py-2 rounded-lg
-                                    border border-red-400 text-red-400
-                                    hover:border-red-600 hover:text-red-600
-                                    transition-colors text-sm font-medium
-                                    cursor-pointer'
-              >
-                <LogOut className='w-4 h-4' />
-                <span>Logout</span>
-              </button>
-            </div>
-          </div>
-        </header>
-
-        <main className='max-w-7xl mx-auto px-8 py-8 space-y-8'>
+        <main id='main' className='max-w-7xl mx-auto px-4 sm:px-8 py-8 space-y-8'>
           {/* ── Stats Row ── */}
           <div className='grid grid-cols-2 lg:grid-cols-4 gap-4'>
-            <StatsCard
-              label='Total Sessions'
-              value={MOCK_STATS.totalSessions}
-              icon={<MessageSquare className='w-5 h-5 text-teal-500' />}
-              iconBg='bg-teal-50'
-            />
-            <StatsCard
-              label='Average Score'
-              value={`${MOCK_STATS.averageScore}%`}
-              valueColor='text-orange-500'
-              icon={<Target className='w-5 h-5 text-orange-400' />}
-              iconBg='bg-orange-50'
-            />
-            <StatsCard
-              label='Training Hours'
-              value={`${MOCK_STATS.trainingHours}h`}
-              icon={<Clock className='w-5 h-5 text-purple-500' />}
-              iconBg='bg-purple-50'
-            />
-            <StatsCard
-              label='Current Streak'
-              value={MOCK_STATS.currentStreak}
-              valueColor='text-red-500'
-              icon={<TrendingUp className='w-5 h-5 text-red-500' />}
-              iconBg='bg-orange-50'
-            />
+            {learnerStats && (
+              <>
+                <StatsCard
+                  label='Total Sessions'
+                  value={learnerStats.session.total}
+                  icon={<MessageSquare className='w-5 h-5 text-teal-500' />}
+                />
+                <StatsCard
+                  label='Average Score'
+                  value={`${learnerStats.session.average_score}%`}
+                  valueColor='text-orange-500'
+                  icon={<Target className='w-5 h-5 text-orange-400' />}
+                />
+                <StatsCard
+                  label='Training Hours'
+                  value={`${learnerStats.session.total_hours}h`}
+                  icon={<Clock className='w-5 h-5 text-purple-500' />}
+                />
+                <StatsCard
+                  label='Current Streak'
+                  value={5}
+                  valueColor='text-red-500'
+                  icon={<TrendingUp className='w-5 h-5 text-red-500' />}
+                />
+              </>
+            )}
           </div>
+
+          {/* ── Skill Development Progress ── */}
+          {learnerStats?.progress && (
+            <SkillProgressPanel progress={learnerStats.progress} />
+          )}
 
           {/* ── 2 Rows at the bottom ── */}
           <div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
@@ -164,43 +173,8 @@ export default function LearnerDashboard () {
 
               {/* Scenario Cards */}
               <div className='p-4 space-y-3'>
-                {MOCK_SCENARIOS.map((scenario) => (
-                  <div
-                    key={scenario.id}
-                    className='p-4 rounded-xl border border-gray-200
-                                        hover:border-gray-300 hover:shadow-sm
-                                        transition-all space-y-3'
-                  >
-                    <div>
-                      <h3 className='font-semibold text-gray-900 mb-1'>
-                        {scenario.title}
-                      </h3>
-                      <p className='text-gray-500 text-sm leading-relaxed'>
-                        {scenario.desc}
-                      </p>
-                    </div>
-
-                    <div className='flex items-center justify-between'>
-                      <div className='flex items-center gap-3'>
-                        <DifficultyBadge level={scenario.difficulty} />
-                        <div className='flex items-center gap-1 text-gray-500 text-sm'>
-                          <Clock className='w-3.5 h-3.5' />
-                          <span>{scenario.duration}m</span>
-                        </div>
-                      </div>
-                      <button
-                        onClick={() => handleStartScenario(scenario.id)}
-                        className='flex items-center gap-2 px-4 py-2 rounded-lg
-                                            bg-orange-600 hover:bg-orange-700 active:bg-orange-800
-                                            text-white text-sm font-medium
-                                            transition-colors
-                                            cursor-pointer'
-                      >
-                        <Play className='w-3.5 h-3.5 fill-white' />
-                        Start
-                      </button>
-                    </div>
-                  </div>
+                {scenarios?.map((scenario) => (
+                  <ScenarioCard key={scenario.uuid} scenario={scenario} onClick={handleStartScenario}/>
                 ))}
 
                 {/* View All */}
@@ -209,6 +183,7 @@ export default function LearnerDashboard () {
                                             text-red-600 font-medium text-sm
                                             hover:bg-orange-50 transition-colors mt-1
                                             cursor-pointer'
+                  onClick={handleViewAllScenario}
                 >
                   View All Scenarios
                 </button>
@@ -273,7 +248,7 @@ export default function LearnerDashboard () {
                 ))}
 
                 {/* View Detailed Progress */}
-                
+
                 <button
                   className='w-full py-3 rounded-xl border border-gray-200
                                             text-red-600 font-medium text-sm

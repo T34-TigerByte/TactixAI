@@ -1,5 +1,5 @@
 import { BarChart2, Activity } from "lucide-react";
-import PanelHeader from "./PanelHeader";
+import PanelHeader from "../ui/PanelHeader";
 
 
 const MOCK_GROWTH = [

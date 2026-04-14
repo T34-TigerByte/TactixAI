@@ -1,15 +1,7 @@
-export type Roles = 'admin' | 'learner';
+export type Role = 'admin' | 'learner';
 
-export interface User {
-    id: string;
-    username: string;
-    company: string;
-    email: string;
-    password: string;
-    role: Roles;
-    created_at: Date;
-    updated_at: Date;
-}
+export type { User } from '../schemas/api.schema';
+import type { User } from '../schemas/api.schema';
 
 export interface LoginCredentials {
     email: string;
@@ -20,7 +12,7 @@ export interface AuthContextType {
     user: User | null;
     isLoading: boolean;
     isAuthenticated: boolean;
-    login: (credentials: LoginCredentials) => Promise<void>;
+    login: (credentials: LoginCredentials) => Promise<User>;
     logout: () => void;
 }
 
