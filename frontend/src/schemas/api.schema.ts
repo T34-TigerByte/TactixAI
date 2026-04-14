@@ -127,6 +127,29 @@ export const learnerScenarioSchema = z.object({
   threat_actor: z.string(), // TO BE: Replaced by a threat_actor obj type
 });
 
+/* Session */
+
+export const sessionStartSchema = z.object({
+  id: z.uuid(),
+});
+
+const sessionOptionSchema = z.object({
+  title: z.string(),
+  answer_key: z.string(),
+});
+
+const sessionQuestionSchema = z.object({
+  title: z.string(),
+  question_key: z.string(),
+  options: z.array(sessionOptionSchema),
+});
+
+export const sessionDetailsSchema = z.object({
+  time_estimate: z.number(),
+  system_message: z.string().optional(),
+  questions: z.array(sessionQuestionSchema),
+});
+
 /* DEFINE SESSION SCHEMA */
 
 // PUT /profile response — Assume BE server returns updated profile data
@@ -150,3 +173,5 @@ export type LearnerProgress = z.infer<typeof learnerProgressSchema>;
 export type LearnerStats = z.infer<typeof learnerStatsSchema>;
 export type LearnerScenario = z.infer<typeof learnerScenarioSchema>;
 export type LearnerActivity = z.infer<typeof learnerActivitySchema>;
+export type SessionStart = z.infer<typeof sessionStartSchema>;
+export type SessionDetails = z.infer<typeof sessionDetailsSchema>;

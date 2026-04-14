@@ -106,7 +106,6 @@ export default function LearnerDashboard () {
 
     const handleStartScenario  = (id: string ) => {
         //  TODO: navigate to chat page with session creation
-        return
         navigate(`/learner/chat/${id}`);
     }
 

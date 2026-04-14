@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { Search, SlidersHorizontal, Clock } from 'lucide-react';
+import { ChevronDown, Clock } from 'lucide-react';
 import DashboardHeader from '../../components/ui/DashboardHeader.tsx';
 import { ROUTES } from '../../router/routes';
 import { useAuth } from '../../hooks/useAuth';
@@ -74,7 +74,7 @@ export default function ScenarioListPage({ onStartScenario }: ScenarioListPagePr
   const { logout } = useAuth();
   const { scenarios } = useScenario();
 
-  const [search, setSearch] = useState('');
+  const [threatActorFilter, setThreatActorFilter] = useState('all');
 
   const handleBack = () => navigate(ROUTES.LEARNER.DASHBOARD);
   const handleLogout = () => {
@@ -82,14 +82,16 @@ export default function ScenarioListPage({ onStartScenario }: ScenarioListPagePr
     navigate(ROUTES.LOGIN, { replace: true });
   };
 
+  const threatActors = useMemo(
+    () => [...new Set(scenarios.map((s) => s.threat_actor))],
+    [scenarios],
+  );
+
   const filtered = useMemo(() => {
-    return scenarios.filter((s) => {
-      return (
-        s.title.toLowerCase().includes(search.toLowerCase()) ||
-        s.description.toLowerCase().includes(search.toLowerCase())
-      );
-    });
-  }, [search, scenarios]);
+    return scenarios.filter((s) =>
+      threatActorFilter === 'all' ? true : s.threat_actor === threatActorFilter,
+    );
+  }, [threatActorFilter, scenarios]);
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -103,23 +105,37 @@ export default function ScenarioListPage({ onStartScenario }: ScenarioListPagePr
       <main className="max-w-7xl mx-auto px-4 sm:px-8 py-8 space-y-6">
         {/* Filter Bar */}
         <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 flex flex-wrap items-center gap-3">
-          <div className="relative flex-1 min-w-[200px]">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Search scenarios..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 rounded-lg border border-gray-200
-                         text-sm text-gray-700 placeholder-gray-400
-                         focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-transparent"
-            />
+          {/* Industry dropdown — placeholder until BE adds field */}
+          <div className="relative">
+            <select
+              disabled
+              className="appearance-none pl-4 pr-9 py-2.5 rounded-xl border border-gray-200
+                         text-sm font-medium text-[#0f1c35] bg-white cursor-not-allowed
+                         focus:outline-none focus:ring-2 focus:ring-orange-300"
+            >
+              <option>All Industries</option>
+            </select>
+            <ChevronDown className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
           </div>
 
-          <div className="flex items-center gap-2 text-sm text-gray-500 ml-auto">
-            <SlidersHorizontal className="w-4 h-4" />
-            <span>{filtered.length} scenarios found</span>
+          {/* Threat Actor dropdown */}
+          <div className="relative">
+            <select
+              value={threatActorFilter}
+              onChange={(e) => setThreatActorFilter(e.target.value)}
+              className="appearance-none pl-4 pr-9 py-2.5 rounded-xl border border-gray-200
+                         text-sm font-medium text-[#0f1c35] bg-white cursor-pointer
+                         focus:outline-none focus:ring-2 focus:ring-orange-300"
+            >
+              <option value="all">All Threat Actors</option>
+              {threatActors.map((actor) => (
+                <option key={actor} value={actor}>{actor}</option>
+              ))}
+            </select>
+            <ChevronDown className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
           </div>
+
+          <span className="ml-auto text-sm text-gray-400">{filtered.length} scenarios found</span>
         </div>
 
         {/* Scenario Grid */}

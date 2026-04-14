@@ -2,8 +2,8 @@ import type { LearnerStats, Learner } from '../types/learner.types';
 import type { UpdateProfilePayload } from '../types/learner.types';
 import api from './client';
 import { parseResponse } from '../utils/parse.utils';
-import { learnerStatsSchema, learnerProfileSchema, updateProfileResponseSchema, learnerScenarioSchema } from '../schemas/api.schema';
-import type { LearnerProfile, LearnerScenario } from '../schemas/api.schema';
+import { learnerStatsSchema, learnerProfileSchema, updateProfileResponseSchema, learnerScenarioSchema, sessionStartSchema, sessionDetailsSchema } from '../schemas/api.schema';
+import type { LearnerProfile, LearnerScenario, SessionStart, SessionDetails } from '../schemas/api.schema';
 
 export async function getLearnerStatsRequest(): Promise<LearnerStats> {
   const response = await api.get('/stats');
@@ -25,6 +25,12 @@ export async function getScenariosRequest(): Promise<LearnerScenario[]> {
   return parseResponse(learnerScenarioSchema.array(), response.data.data, 'getScenariosRequest');
 }
 
-// export async function getSessionRequest(): Promise<Session> {
-//   const response = await api.get('/')
-// }
+export async function startSessionRequest(scenarioUuid: string): Promise<SessionStart> {
+  const response = await api.post('/sessions/start', { scenario_uuid: scenarioUuid });
+  return parseResponse(sessionStartSchema, response.data, 'startSessionRequest');
+}
+
+export async function getSessionRequest(sessionUuid: string): Promise<SessionDetails> {
+  const response = await api.get(`/sessions/${sessionUuid}`);
+  return parseResponse(sessionDetailsSchema, response.data, 'getSessionRequest');
+}
