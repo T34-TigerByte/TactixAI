@@ -1,5 +1,14 @@
 import { z } from 'zod';
 
+/* Shared */
+export const paginationSchema = z.object({
+  next_cursor: z.string().nullable(),
+  prev_cursor: z.string().nullable(),
+  has_next: z.boolean(),
+  has_prev: z.boolean(),
+  limit: z.number(),
+});
+
 /* Auth */
 export const authResponseSchema = z.object({
   access_token: z.string(),
@@ -51,6 +60,12 @@ export const adminUserByIdSchema = z.object({
 
 export const adminUserListSchema = z.array(adminUserSchema);
 
+export const adminUserListPageSchema = z.object({
+  total: z.number(),
+  pagination: paginationSchema,
+  data: z.array(adminUserSchema),
+});
+
 /* Learner */
 
 export const learnerProfileSchema = z.object({
@@ -90,6 +105,12 @@ export const learnerActivitySchema = z.object({
   meta_data: learnerActivityMetaDataSchema,
 });
 
+export const adminActivitiesPageSchema = z.object({
+  total: z.number(),
+  pagination: paginationSchema,
+  data: z.array(learnerActivitySchema),
+});
+
 export const learnerChatSchema = z.object({
   content: z.string(),
   session_id: z.uuid()
@@ -127,6 +148,12 @@ export const learnerScenarioSchema = z.object({
   threat_actor: z.string(), // TO BE: Replaced by a threat_actor obj type
 });
 
+export const scenarioPageSchema = z.object({
+  total: z.number(),
+  pagination: paginationSchema,
+  data: z.array(learnerScenarioSchema),
+});
+
 /* Session */
 
 export const sessionStartSchema = z.object({
@@ -150,6 +177,33 @@ export const sessionDetailsSchema = z.object({
   questions: z.array(sessionQuestionSchema),
 });
 
+export const sessionListItemSchema = z.object({
+  uuid: z.uuid(),
+  scenario_title: z.string(),
+  status: z.string(),
+  created_at: z.number(),
+  score: z.number().nullable(),
+});
+
+export const sessionListPageSchema = z.object({
+  total: z.number(),
+  pagination: paginationSchema,
+  data: z.array(sessionListItemSchema),
+});
+
+export const chatMessageSchema = z.object({
+  id: z.string(),
+  role: z.enum(['user', 'assistant', 'system']),
+  content: z.string(),
+  created_at: z.number(),
+});
+
+export const chatMessagesPageSchema = z.object({
+  total: z.number(),
+  pagination: paginationSchema,
+  data: z.array(chatMessageSchema),
+});
+
 /* DEFINE SESSION SCHEMA */
 
 // PUT /profile response — Assume BE server returns updated profile data
@@ -164,6 +218,9 @@ export type User = z.infer<typeof userSchema>;
 export type AdminStats = z.infer<typeof adminStatsSchema>;
 export type AdminUserListItem = z.infer<typeof adminUserSchema>;
 export type AdminUserById = z.infer<typeof adminUserByIdSchema>;
+export type AdminUserListPage = z.infer<typeof adminUserListPageSchema>;
+export type AdminActivitiesPage = z.infer<typeof adminActivitiesPageSchema>;
+export type CursorPagination = z.infer<typeof paginationSchema>;
 
 /* learner page*/
 
@@ -173,5 +230,10 @@ export type LearnerProgress = z.infer<typeof learnerProgressSchema>;
 export type LearnerStats = z.infer<typeof learnerStatsSchema>;
 export type LearnerScenario = z.infer<typeof learnerScenarioSchema>;
 export type LearnerActivity = z.infer<typeof learnerActivitySchema>;
+export type ScenarioPage = z.infer<typeof scenarioPageSchema>;
 export type SessionStart = z.infer<typeof sessionStartSchema>;
 export type SessionDetails = z.infer<typeof sessionDetailsSchema>;
+export type SessionListItem = z.infer<typeof sessionListItemSchema>;
+export type SessionListPage = z.infer<typeof sessionListPageSchema>;
+export type ChatMessage = z.infer<typeof chatMessageSchema>;
+export type ChatMessagesPage = z.infer<typeof chatMessagesPageSchema>;

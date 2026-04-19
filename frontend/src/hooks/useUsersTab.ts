@@ -1,6 +1,6 @@
 import { useEffect, useReducer, useRef } from 'react';
 
-import type { AdminUserListItem } from '../types/admin.types';
+import type { AdminUserListItem, CursorPagination } from '../schemas/api.schema';
 import { getUsersRequest, deleteUserRequest, getUserByIdRequest } from '../api/admin.api';
 
 /* Types */
@@ -10,6 +10,8 @@ export type View = 'list' | 'create' | 'edit';
 interface State {
   allUsers: AdminUserListItem[];
   filteredUsers: AdminUserListItem[];
+  pagination: CursorPagination | null;
+  total: number;
   view: View;
   selectedUser: AdminUserListItem | null;
   deleteTarget: AdminUserListItem | null;
@@ -20,7 +22,7 @@ interface State {
 
 // Explicitly declare all possible events that can change state
 type Action =
-  | { type: 'SET_USERS'; payload: AdminUserListItem[] }
+  | { type: 'SET_PAGE_DATA'; payload: { users: AdminUserListItem[]; pagination: CursorPagination; total: number } }
   | { type: 'SET_VIEW'; payload: View }
   | { type: 'SET_SELECTED_USER'; payload: AdminUserListItem | null }
   | { type: 'SET_DELETE_TARGET'; payload: AdminUserListItem | null }
@@ -36,6 +38,8 @@ type Action =
 const initialState: State = {
   allUsers: [],
   filteredUsers: [],
+  pagination: null,
+  total: 0,
   view: 'list',
   selectedUser: null,
   deleteTarget: null,
@@ -48,8 +52,14 @@ const initialState: State = {
 
 function reducer(state: State, action: Action): State {
   switch (action.type) {
-    case 'SET_USERS':
-      return { ...state, allUsers: action.payload, filteredUsers: action.payload };
+    case 'SET_PAGE_DATA':
+      return {
+        ...state,
+        allUsers: action.payload.users,
+        filteredUsers: action.payload.users,
+        pagination: action.payload.pagination,
+        total: action.payload.total,
+      };
 
     case 'SET_VIEW':
       return { ...state, view: action.payload };
@@ -60,10 +70,16 @@ function reducer(state: State, action: Action): State {
     case 'SET_DELETE_TARGET':
       return { ...state, deleteTarget: action.payload };
 
-    // Atomically updates allUsers, filteredUsers, and deleteTarget in one dispatch
+    // Removes deleted user from current page data; server total is decremented locally to stay in sync
     case 'CONFIRM_DELETE': {
       const updated = state.allUsers.filter((u) => u.id !== action.payload);
-      return { ...state, allUsers: updated, filteredUsers: updated, deleteTarget: null };
+      return {
+        ...state,
+        allUsers: updated,
+        filteredUsers: state.filteredUsers.filter((u) => u.id !== action.payload),
+        deleteTarget: null,
+        total: Math.max(0, state.total - 1),
+      };
     }
 
     case 'SET_SEARCH_QUERY':
@@ -104,20 +120,22 @@ export function useUsersTab() {
   const deleteTriggerRef = useRef<HTMLButtonElement | null>(null);
   const cancelButtonRef = useRef<HTMLButtonElement>(null);
 
+  const loadPage = async (cursor?: string) => {
+    dispatch({ type: 'SET_LOADING', payload: true });
+    dispatch({ type: 'SET_ERROR', payload: null });
+    try {
+      const { data, pagination, total } = await getUsersRequest(cursor);
+      dispatch({ type: 'SET_PAGE_DATA', payload: { users: data, pagination, total } });
+    } catch {
+      dispatch({ type: 'SET_ERROR', payload: 'Failed to load users. Please try again.' });
+    } finally {
+      dispatch({ type: 'SET_LOADING', payload: false });
+    }
+  };
+
   // Initial data load
   useEffect(() => {
-    const load = async () => {
-      dispatch({ type: 'SET_LOADING', payload: true });
-      try {
-        const data = await getUsersRequest();
-        dispatch({ type: 'SET_USERS', payload: data });
-      } catch {
-        dispatch({ type: 'SET_ERROR', payload: 'Failed to load users. Please try again.' });
-      } finally {
-        dispatch({ type: 'SET_LOADING', payload: false });
-      }
-    };
-    load();
+    loadPage();
   }, []);
 
   // Auto-dismiss error after 5 seconds
@@ -142,15 +160,18 @@ export function useUsersTab() {
   /* Async Actions — side effects handled outside the reducer */
 
   const reloadUsers = async () => {
-    dispatch({ type: 'SET_LOADING', payload: true });
-    dispatch({ type: 'SET_ERROR', payload: null });
-    try {
-      const data = await getUsersRequest();
-      dispatch({ type: 'SET_USERS', payload: data });
-    } catch {
-      dispatch({ type: 'SET_ERROR', payload: 'Failed to reload users. Please try again.' });
-    } finally {
-      dispatch({ type: 'SET_LOADING', payload: false });
+    await loadPage();
+  };
+
+  const nextPage = async () => {
+    if (state.pagination?.has_next && state.pagination.next_cursor) {
+      await loadPage(state.pagination.next_cursor);
+    }
+  };
+
+  const prevPage = async () => {
+    if (state.pagination?.has_prev && state.pagination.prev_cursor) {
+      await loadPage(state.pagination.prev_cursor);
     }
   };
 
@@ -178,6 +199,6 @@ export function useUsersTab() {
     state,
     dispatch,
     refs: { deleteTriggerRef, cancelButtonRef },
-    actions: { reloadUsers, confirmDelete, fetchUserById },
+    actions: { reloadUsers, confirmDelete, fetchUserById, nextPage, prevPage },
   };
 }

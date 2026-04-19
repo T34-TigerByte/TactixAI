@@ -27,11 +27,11 @@ export const updateProfileSchema = z
           message: 'New password is required',
         });
       }
-      if (data.new_password && data.new_password.length < 8) {
+      if (data.new_password && data.new_password.length < 10) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           path: ['new_password'],
-          message: 'Password must be at least 8 characters',
+          message: 'Password must be at least 10 characters',
         });
       }
       if (data.new_password !== data.new_password_confirmation) {

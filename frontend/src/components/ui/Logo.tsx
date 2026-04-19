@@ -10,7 +10,7 @@ const Logo = () => {
       <span className='hidden sm:inline text-orange-500 font-semibold text-lg'>
         FlameTree
       </span>
-      <span className='font-semibold text-lg text-white'>TactixAI.</span>
+      <span className='hidden sm:inline font-semibold text-lg text-white'>TactixAI.</span>
     </div>
   );
 };

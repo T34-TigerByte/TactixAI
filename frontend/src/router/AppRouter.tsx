@@ -15,6 +15,7 @@ import { useScenario } from '../hooks/useScenario';
 // Guard Routes for RBAC
 import ProtectedRoute from '../components/guards/ProtectedRoute';
 import RoleGuard from '../components/guards/RoleGuard';
+import AppLayout from '../components/layout/AppLayout';
 
 // Wrapper to inject the start-scenario handler via useNavigate
 function ScenarioListPageRoute() {
@@ -45,21 +46,21 @@ export default function AppRouter() {
 
             {/* Learner Routes */}
             <Route element={<ProtectedRoute />}>
-                <Route element={<RoleGuard allowedRoles={['learner']} />}>
-                    <Route path={ROUTES.LEARNER.DASHBOARD} element={<LearnerDashboard />} />
-                    <Route path={ROUTES.LEARNER.SCENARIOS} element={<ScenarioListPageRoute />} />
-                    <Route path={ROUTES.LEARNER.CHAT} element={<ChatRoomPage />} />
-                    <Route path={ROUTES.LEARNER.PROFILE} element={<ProfileSettingPage />} />
-                    {/* Add more learner routes here */}
-                </Route>
-            </Route>
+                <Route element={<AppLayout />}>
+                    <Route element={<RoleGuard allowedRoles={['learner']} />}>
+                        <Route path={ROUTES.LEARNER.DASHBOARD} element={<LearnerDashboard />} />
+                        <Route path={ROUTES.LEARNER.SCENARIOS} element={<ScenarioListPageRoute />} />
+                        <Route path={ROUTES.LEARNER.CHAT} element={<ChatRoomPage />} />
+                        <Route path={ROUTES.LEARNER.PROFILE} element={<ProfileSettingPage />} />
+                        {/* Add more learner routes here */}
+                    </Route>
 
-            {/* Admin Routes */}
-            <Route element={<ProtectedRoute />}>
-                <Route element={<RoleGuard allowedRoles={['admin']} />}>
-                    <Route path={ROUTES.ADMIN.DASHBOARD} element={<AdminDashboard />} />
-                    <Route path={ROUTES.ADMIN.LEARNER_DETAILS} element={<LearnerDetailsPage />} />
-                    {/* Add more admin routes here */}
+                    {/* Admin Routes */}
+                    <Route element={<RoleGuard allowedRoles={['admin']} />}>
+                        <Route path={ROUTES.ADMIN.DASHBOARD} element={<AdminDashboard />} />
+                        <Route path={ROUTES.ADMIN.LEARNER_DETAILS} element={<LearnerDetailsPage />} />
+                        {/* Add more admin routes here */}
+                    </Route>
                 </Route>
             </Route>
                 

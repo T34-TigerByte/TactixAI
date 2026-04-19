@@ -41,7 +41,7 @@ export function useOverviewTab() {
     const load = async () => {
       dispatch({ type: 'SET_LOADING', payload: true });
       try {
-        const data = await getUserActivitiesRequest();
+        const { data } = await getUserActivitiesRequest();
         dispatch({ type: 'SET_ACTIVITIES', payload: data });
       } catch {
         dispatch({

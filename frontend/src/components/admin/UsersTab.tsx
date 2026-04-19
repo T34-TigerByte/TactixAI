@@ -4,11 +4,12 @@ import { useNavigate } from 'react-router-dom';
 import UserList from './UserList';
 import CreateUserForm from './CreateUserForm';
 import EditUserForm from './EditUserForm';
+import Pagination from '../ui/Pagination';
 import { useUsersTab } from '../../hooks/useUsersTab';
 
 export default function UsersTab() {
   const { state, dispatch, refs, actions } = useUsersTab();
-  const { filteredUsers, view, selectedUser, deleteTarget, searchQuery, isLoading, error } = state;
+  const { filteredUsers, view, selectedUser, deleteTarget, searchQuery, isLoading, error, pagination, total } = state;
   const { deleteTriggerRef, cancelButtonRef } = refs;
 
   const navigate = useNavigate();
@@ -184,7 +185,7 @@ export default function UsersTab() {
         {/* Loading skeleton — row count matches previous data to prevent layout shift */}
         {isLoading ? (
           <div className='bg-white divide-y divide-gray-100' aria-busy='true' aria-label='Loading users'>
-            {Array.from({ length: state.allUsers.length || 4 }).map((_, i) => (
+            {Array.from({ length: state.filteredUsers.length || 4 }).map((_, i) => (
               <div key={i} className='px-6 py-4 flex gap-4 animate-pulse'>
                 <div className='flex-1 space-y-2'>
                   <div className='h-3 bg-gray-200 rounded w-1/3' />
@@ -208,6 +209,14 @@ export default function UsersTab() {
                 deleteTriggerRef.current = trigger;
                 dispatch({ type: 'SET_DELETE_TARGET', payload: user });
               }}
+            />
+            <Pagination
+              hasNext={pagination?.has_next ?? false}
+              hasPrev={pagination?.has_prev ?? false}
+              total={total}
+              onNext={actions.nextPage}
+              onPrev={actions.prevPage}
+              isLoading={isLoading}
             />
           </div>
         )}

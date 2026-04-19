@@ -15,14 +15,14 @@ export default function DashboardHeader({ title, subtitle, uptime, onLogout, onB
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <header className='bg-slate-900 px-4 sm:px-8 py-4'>
+    <header className='fixed top-0 left-0 right-0 z-50 bg-slate-900 px-4 sm:px-8 py-4'>
       <div className='max-w-7xl mx-auto flex items-center justify-between'>
         <div className='flex items-center gap-3 sm:gap-6 min-w-0'>
           {onBack && (
             <button
               onClick={onBack}
               aria-label='Back to dashboard'
-              className='flex items-center gap-2 px-3 py-1.5 rounded-lg border border-slate-600
+              className='hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg border border-slate-600
                          text-slate-300 hover:border-slate-400 hover:text-white transition-colors text-sm cursor-pointer'
             >
               <ArrowLeft className='w-4 h-4' aria-hidden='true' />
@@ -84,6 +84,15 @@ export default function DashboardHeader({ title, subtitle, uptime, onLogout, onB
       {/* Mobile dropdown */}
       {mobileMenuOpen && (
         <div className='sm:hidden mt-3 pt-3 border-t border-slate-700 flex flex-col gap-2'>
+          {onBack && (
+            <button
+              onClick={onBack}
+              className='flex items-center gap-2 px-4 py-2 rounded-lg border border-slate-600 text-slate-300 hover:border-slate-400 hover:text-white transition-colors text-sm font-medium w-full cursor-pointer'
+            >
+              <ArrowLeft className='w-4 h-4' />
+              Back
+            </button>
+          )}
           {uptime !== undefined && (
             <div className='flex items-center gap-2 px-4 py-2 rounded-lg bg-teal-500/20 border border-teal-500/30 text-teal-400 text-sm font-medium w-full'>
               <CheckCircle className='w-4 h-4' />
