@@ -7,9 +7,8 @@ import SkillProgressPanel from '../../components/ui/SkillProgressPanel';
 import StatsCard from '../../components/ui/StatsCard';
 import PanelHeader from '../../components/ui/PanelHeader';
 import DashboardHeader from '../../components/ui/DashboardHeader.tsx';
-import { useEffect, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { getLearnerStatsRequest } from '../../api/learner.api';
-import type { LearnerStats } from '../../types/learner.types';
 import ScenarioCard from '../../components/learner/ScenarioCard';
 import { useScenario } from '../../hooks/useScenario.ts';
 
@@ -82,32 +81,21 @@ const MOCK_ACTIVITY = [
 export default function LearnerDashboard () {
     const navigate = useNavigate();
     const { user, logout } = useAuth();
-    const [learnerStats, setLearnerStats] = useState<LearnerStats>();
-    // const [scenarios, setScenarios] = useState<LearnerScenario[]>();
-    const { scenarios } = useScenario();
+    const { data: learnerStats } = useQuery({
+      queryKey: ['learner', 'stats'],
+      queryFn: getLearnerStatsRequest,
+    });
+    const { scenarios, setSelectedScenario } = useScenario();
 
     const handleLogout = () => {
         logout();
         navigate(ROUTES.LOGIN, { replace: true});
     };
 
-    useEffect(() => {
-      const fetchStats = async () => {
-        const response = await getLearnerStatsRequest();
-        setLearnerStats(response);
-      }
-      // const fetchScenario = async () => {
-      //   const response = await getScenariosRequest();
-      //   setScenarios(response);        
-      // }
-      fetchStats();
-      // fetchScenario();
-    }, [])
-
-    const handleStartScenario  = (id: string ) => {
-        //  TODO: navigate to chat page with session creation
-        navigate(`/learner/chat/${id}`);
-    }
+    const handleStartScenario = (scenario: Parameters<typeof setSelectedScenario>[0]) => {
+        setSelectedScenario(scenario);
+        navigate(`/learner/chat/${scenario.uuid}`);
+    };
 
     const handleViewAllScenario = () => {
         navigate(ROUTES.LEARNER.SCENARIOS, { state: { scenarios } });

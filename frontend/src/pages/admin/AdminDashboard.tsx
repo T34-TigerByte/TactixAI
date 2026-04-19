@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 
 import { Users, UserCheck, BarChart2 } from 'lucide-react';
 
@@ -13,9 +13,7 @@ import StatsCard from '../../components/ui/StatsCard';
 import DashboardHeader from '../../components/ui/DashboardHeader.tsx';
 import TabNav from '../../components/ui/TabNav';
 import { getAdminStatsRequest } from '../../api/admin.api';
-import type { AdminStats, AdminTab } from '../../types/admin.types';
-
-
+import type { AdminTab } from '../../types/admin.types';
 
 export default function AdminDashboardPage() {
   const { logout } = useAuth();
@@ -25,8 +23,10 @@ export default function AdminDashboardPage() {
   const activeTab = (searchParams.get('tab') as AdminTab) ?? 'overview';
   const setActiveTab = (tab: AdminTab) => setSearchParams({ tab });
 
-  const [stats, setStats ] = useState<AdminStats>();
-
+  const { data: stats } = useQuery({
+    queryKey: ['admin', 'stats'],
+    queryFn: getAdminStatsRequest,
+  });
 
   const handleLogout = () => {
     logout();
@@ -39,19 +39,10 @@ export default function AdminDashboardPage() {
     { key: 'analytics', label: 'Analytics' },
   ];
 
-  useEffect(() => {
-    const fetchAdminStats = async () => {
-      const response = await getAdminStatsRequest();
-      setStats(response);
-    };
-    fetchAdminStats();
-  }, []);
-
-  const userGrowthSubText = 
-    `${Number(stats?.user_growth_percentage) < 0 
-      ? `-${Number(stats?.user_growth_percentage)}` 
-      : `+${Number(stats?.user_growth_percentage)}`}`; 
-
+  const userGrowthSubText =
+    `${Number(stats?.user_growth_percentage) < 0
+      ? `-${Number(stats?.user_growth_percentage)}`
+      : `+${Number(stats?.user_growth_percentage)}`} % this month`;
 
   return (
     <div className='min-h-screen bg-gray-100'>
@@ -71,7 +62,7 @@ export default function AdminDashboardPage() {
           <StatsCard
             label='Total Users'
             value={stats?.total_users}
-            subText={`${userGrowthSubText} % this month`}
+            subText={userGrowthSubText}
             icon={<Users className='w-5 h-5 text-teal-500' />}
           />
           <StatsCard
@@ -99,4 +90,3 @@ export default function AdminDashboardPage() {
     </div>
   );
 }
-

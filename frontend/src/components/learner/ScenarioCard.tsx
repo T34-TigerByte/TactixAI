@@ -4,7 +4,7 @@ import { Play } from "lucide-react";
 
 interface ScenarioCardProps {
   scenario: LearnerScenario,
-  onClick: (title: string) => void;
+  onClick: (scenario: LearnerScenario) => void;
 }
 
 
@@ -33,7 +33,7 @@ export default function ScenarioCard ({scenario, onClick}: ScenarioCardProps) {
             </div> */}
           </div>
           <button
-            onClick={() => onClick(scenario.uuid)}
+            onClick={() => onClick(scenario)}
             className='flex items-center gap-2 px-4 py-2 rounded-lg
                                             bg-orange-600 hover:bg-orange-700 active:bg-orange-800
                                             text-white text-sm font-medium

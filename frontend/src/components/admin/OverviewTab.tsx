@@ -1,12 +1,12 @@
 import PanelHeader from "../ui/PanelHeader";
+import Pagination from "../ui/Pagination";
 import { Settings, Users, Activity, FileText } from "lucide-react";
 import type { AdminTab } from "../../types/admin.types";
 import { useOverviewTab } from "../../hooks/useOverviewTab";
 
 const OverviewTab = ({ onClick }: { onClick: (tab: AdminTab) => void }) => {
 
-  const { state } = useOverviewTab();
-  const { activities } = state;
+  const { activities, pagination, total, isLoading, nextPage, prevPage } = useOverviewTab();
 
 
   return (
@@ -29,16 +29,17 @@ const OverviewTab = ({ onClick }: { onClick: (tab: AdminTab) => void }) => {
                 <p className='text-gray-500 text-xs'>{item.type}</p>
                 <p className='text-gray-400 text-xs'>{item.created_at}</p>
               </div>
-              {/* <span
-                className={`text-sm font-medium shrink-0 ml-4 ${
-                  item.status === 'warning' ? 'text-orange-500' : 'text-gray-500'
-                }`}
-              >
-                {item.status}
-              </span> */}
             </div>
           ))}
         </div>
+        <Pagination
+          hasNext={pagination?.has_next ?? false}
+          hasPrev={pagination?.has_prev ?? false}
+          total={total}
+          onNext={nextPage}
+          onPrev={prevPage}
+          isLoading={isLoading}
+        />
       </section>
 
       {/* Quick Actions */}
