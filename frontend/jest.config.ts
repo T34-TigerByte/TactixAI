@@ -9,7 +9,7 @@ const config: Config = {
     '\\.(css|less|scss|sass)$': '<rootDir>/src/__mocks__/fileMock.ts',
   },
   transform: {
-    '^.+\\.tsx?$': ['ts-jest', { tsconfig: 'tsconfig.test.json' }],
+    '^.+\\.tsx?$': ['ts-jest', { tsconfig: 'tsconfig.test.json', diagnostics: false }],
   },
   testMatch: ['**/__tests__/**/*.test.{ts,tsx}'],
 };

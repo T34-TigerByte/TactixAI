@@ -4,6 +4,9 @@ import {
   adminUserSchema,
   adminUserByIdSchema,
   learnerStatsSchema,
+  learnerScenarioSchema,
+  scenarioPageSchema,
+  sessionDetailsSchema,
 } from '../schemas/api.schema';
 import { createUserSchema, updateUserSchema } from '../schemas/user.schema';
 
@@ -159,5 +162,134 @@ describe('updateUserSchema', () => {
 
   it('passes with partial fields', () => {
     expect(updateUserSchema.safeParse({ first_name: 'Jane' }).success).toBe(true);
+  });
+});
+
+/* learnerScenarioSchema */
+describe('learnerScenarioSchema', () => {
+  const valid = {
+    uuid: '550e8400-e29b-41d4-a716-446655440000',
+    title: 'Healthcare Data Breach',
+    description: 'A ransomware attack on hospital records.',
+    time_estimate: 40,
+    threat_actor: 'RansomCrew',
+  };
+
+  it('passes with all required fields', () => {
+    expect(learnerScenarioSchema.safeParse(valid).success).toBe(true);
+  });
+
+  it('fails when uuid is not a valid UUID', () => {
+    expect(learnerScenarioSchema.safeParse({ ...valid, uuid: 'not-a-uuid' }).success).toBe(false);
+  });
+
+  it('fails when title is missing', () => {
+    const { title: _, ...rest } = valid;
+    expect(learnerScenarioSchema.safeParse(rest).success).toBe(false);
+  });
+
+  it('fails when time_estimate is not a number', () => {
+    expect(learnerScenarioSchema.safeParse({ ...valid, time_estimate: '40' }).success).toBe(false);
+  });
+});
+
+/* scenarioPageSchema */
+describe('scenarioPageSchema', () => {
+  const valid = {
+    total: 10,
+    pagination: {
+      next_cursor: 'cursor-abc',
+      prev_cursor: null,
+      has_next: true,
+      has_prev: false,
+      limit: 5,
+    },
+    data: [
+      {
+        uuid: '550e8400-e29b-41d4-a716-446655440000',
+        title: 'Healthcare Data Breach',
+        description: 'Ransomware on hospital records.',
+        time_estimate: 40,
+        threat_actor: 'RansomCrew',
+      },
+    ],
+  };
+
+  it('passes with valid page', () => {
+    expect(scenarioPageSchema.safeParse(valid).success).toBe(true);
+  });
+
+  it('passes when next_cursor is null', () => {
+    const result = scenarioPageSchema.safeParse({
+      ...valid,
+      pagination: { ...valid.pagination, next_cursor: null, has_next: false },
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it('passes with empty data array', () => {
+    expect(scenarioPageSchema.safeParse({ ...valid, data: [] }).success).toBe(true);
+  });
+
+  it('fails when pagination is missing', () => {
+    const { pagination: _, ...rest } = valid;
+    expect(scenarioPageSchema.safeParse(rest).success).toBe(false);
+  });
+
+  it('fails when has_next is not a boolean', () => {
+    const result = scenarioPageSchema.safeParse({
+      ...valid,
+      pagination: { ...valid.pagination, has_next: 1 },
+    });
+    expect(result.success).toBe(false);
+  });
+});
+
+/* sessionDetailsSchema */
+describe('sessionDetailsSchema', () => {
+  const valid = {
+    time_estimate: 40,
+    system_message: 'Welcome to the training.',
+    questions: [
+      {
+        title: 'What is the threat actor motivation?',
+        question_key: 'q1',
+        options: [
+          { title: 'Financial gain', answer_key: 'a1' },
+          { title: 'Espionage', answer_key: 'a2' },
+        ],
+      },
+    ],
+  };
+
+  it('passes with all fields present', () => {
+    expect(sessionDetailsSchema.safeParse(valid).success).toBe(true);
+  });
+
+  it('passes without optional system_message', () => {
+    const { system_message: _, ...rest } = valid;
+    expect(sessionDetailsSchema.safeParse(rest).success).toBe(true);
+  });
+
+  it('passes with empty questions array', () => {
+    expect(sessionDetailsSchema.safeParse({ ...valid, questions: [] }).success).toBe(true);
+  });
+
+  it('fails when questions is missing', () => {
+    const { questions: _, ...rest } = valid;
+    expect(sessionDetailsSchema.safeParse(rest).success).toBe(false);
+  });
+
+  it('fails when an option is missing answer_key', () => {
+    const result = sessionDetailsSchema.safeParse({
+      ...valid,
+      questions: [
+        {
+          ...valid.questions[0],
+          options: [{ title: 'Financial gain' }],
+        },
+      ],
+    });
+    expect(result.success).toBe(false);
   });
 });

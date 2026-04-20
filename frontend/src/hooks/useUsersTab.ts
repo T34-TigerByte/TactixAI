@@ -1,95 +1,57 @@
-import { useEffect, useReducer, useRef } from 'react';
+import { useEffect, useMemo, useReducer, useRef, useState } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
-import type { AdminUserListItem } from '../types/admin.types';
+import type { AdminUserListItem } from '../schemas/api.schema';
 import { getUsersRequest, deleteUserRequest, getUserByIdRequest } from '../api/admin.api';
 
 /* Types */
 
 export type View = 'list' | 'create' | 'edit';
 
-interface State {
-  allUsers: AdminUserListItem[];
-  filteredUsers: AdminUserListItem[];
+// UI-only state — server state is managed by TanStack Query
+interface UIState {
   view: View;
   selectedUser: AdminUserListItem | null;
   deleteTarget: AdminUserListItem | null;
   searchQuery: string;
-  isLoading: boolean;
+  appliedSearch: string;
   error: string | null;
 }
 
-// Explicitly declare all possible events that can change state
-type Action =
-  | { type: 'SET_USERS'; payload: AdminUserListItem[] }
+type UIAction =
   | { type: 'SET_VIEW'; payload: View }
   | { type: 'SET_SELECTED_USER'; payload: AdminUserListItem | null }
   | { type: 'SET_DELETE_TARGET'; payload: AdminUserListItem | null }
-  | { type: 'CONFIRM_DELETE'; payload: number }
   | { type: 'SET_SEARCH_QUERY'; payload: string }
   | { type: 'FILTER_USERS' }
   | { type: 'CLEAR_SEARCH' }
-  | { type: 'SET_LOADING'; payload: boolean }
   | { type: 'SET_ERROR'; payload: string | null };
 
-/* Initial State */
-
-const initialState: State = {
-  allUsers: [],
-  filteredUsers: [],
+const initialUIState: UIState = {
   view: 'list',
   selectedUser: null,
   deleteTarget: null,
   searchQuery: '',
-  isLoading: false,
+  appliedSearch: '',
   error: null,
 };
 
-/* Reducer — centralizes all state change logic; every action and its effect is visible at a glance */
-
-function reducer(state: State, action: Action): State {
+function uiReducer(state: UIState, action: UIAction): UIState {
   switch (action.type) {
-    case 'SET_USERS':
-      return { ...state, allUsers: action.payload, filteredUsers: action.payload };
-
     case 'SET_VIEW':
       return { ...state, view: action.payload };
-
     case 'SET_SELECTED_USER':
       return { ...state, selectedUser: action.payload };
-
     case 'SET_DELETE_TARGET':
       return { ...state, deleteTarget: action.payload };
-
-    // Atomically updates allUsers, filteredUsers, and deleteTarget in one dispatch
-    case 'CONFIRM_DELETE': {
-      const updated = state.allUsers.filter((u) => u.id !== action.payload);
-      return { ...state, allUsers: updated, filteredUsers: updated, deleteTarget: null };
-    }
-
     case 'SET_SEARCH_QUERY':
       return { ...state, searchQuery: action.payload };
-
-    case 'FILTER_USERS': {
-      const q = state.searchQuery.toLowerCase();
-      return {
-        ...state,
-        filteredUsers: state.allUsers.filter(
-          (u) =>
-            u.name.toLowerCase().includes(q) ||
-            u.company.toLowerCase().includes(q)
-        ),
-      };
-    }
-
+    case 'FILTER_USERS':
+      return { ...state, appliedSearch: state.searchQuery };
     case 'CLEAR_SEARCH':
-      return { ...state, searchQuery: '', filteredUsers: state.allUsers };
-
-    case 'SET_LOADING':
-      return { ...state, isLoading: action.payload };
-
+      return { ...state, searchQuery: '', appliedSearch: '' };
     case 'SET_ERROR':
       return { ...state, error: action.payload };
-
     default:
       return state;
   }
@@ -98,86 +60,107 @@ function reducer(state: State, action: Action): State {
 /* Hook */
 
 export function useUsersTab() {
-  const [state, dispatch] = useReducer(reducer, initialState);
+  const queryClient = useQueryClient();
+  const [cursor, setCursor] = useState<string | undefined>();
+  const [uiState, dispatch] = useReducer(uiReducer, initialUIState);
 
-  // DOM refs for focus trap — kept outside reducer since they are imperative, not declarative state
   const deleteTriggerRef = useRef<HTMLButtonElement | null>(null);
   const cancelButtonRef = useRef<HTMLButtonElement>(null);
 
-  // Initial data load
-  useEffect(() => {
-    const load = async () => {
-      dispatch({ type: 'SET_LOADING', payload: true });
-      try {
-        const data = await getUsersRequest();
-        dispatch({ type: 'SET_USERS', payload: data });
-      } catch {
-        dispatch({ type: 'SET_ERROR', payload: 'Failed to load users. Please try again.' });
-      } finally {
-        dispatch({ type: 'SET_LOADING', payload: false });
-      }
-    };
-    load();
-  }, []);
+  /* Server state */
 
-  // Auto-dismiss error after 5 seconds
+  const { data, isLoading: isQueryLoading, error: queryError, refetch } = useQuery({
+    queryKey: ['admin', 'users', cursor],
+    queryFn: () => getUsersRequest(cursor),
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: deleteUserRequest,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'users', cursor] });
+    },
+    onError: () => {
+      dispatch({ type: 'SET_ERROR', payload: 'Failed to delete user. Please try again.' });
+      dispatch({ type: 'SET_DELETE_TARGET', payload: null });
+    },
+  });
+
+  /* Derived state */
+
+  const allUsers = data?.data ?? [];
+
+  const filteredUsers = useMemo(() => {
+    if (!uiState.appliedSearch) return allUsers;
+    const q = uiState.appliedSearch.toLowerCase();
+    return allUsers.filter(
+      (u) => u.name.toLowerCase().includes(q) || u.company.toLowerCase().includes(q)
+    );
+  }, [allUsers, uiState.appliedSearch]);
+
+  // Merge query error and mutation error for display
+  const error = uiState.error ?? (queryError ? 'Failed to load users. Please try again.' : null);
+  const isLoading = isQueryLoading || deleteMutation.isPending;
+
+  /* Side effects */
+
+  // Auto-dismiss mutation errors after 5 seconds
   useEffect(() => {
-    if (!state.error) return;
-    const timer = setTimeout(() => {
-      dispatch({ type: 'SET_ERROR', payload: null });
-    }, 5000);
+    if (!uiState.error) return;
+    const timer = setTimeout(() => dispatch({ type: 'SET_ERROR', payload: null }), 5000);
     return () => clearTimeout(timer);
-  }, [state.error]);
+  }, [uiState.error]);
 
-  // Focus Cancel button when modal opens; restore focus to trigger when modal closes
+  // Focus trap for delete modal
   useEffect(() => {
-    if (state.deleteTarget) {
+    if (uiState.deleteTarget) {
       cancelButtonRef.current?.focus();
     } else {
       deleteTriggerRef.current?.focus();
       deleteTriggerRef.current = null;
     }
-  }, [state.deleteTarget]);
+  }, [uiState.deleteTarget]);
 
-  /* Async Actions — side effects handled outside the reducer */
+  /* Actions */
 
-  const reloadUsers = async () => {
-    dispatch({ type: 'SET_LOADING', payload: true });
-    dispatch({ type: 'SET_ERROR', payload: null });
-    try {
-      const data = await getUsersRequest();
-      dispatch({ type: 'SET_USERS', payload: data });
-    } catch {
-      dispatch({ type: 'SET_ERROR', payload: 'Failed to reload users. Please try again.' });
-    } finally {
-      dispatch({ type: 'SET_LOADING', payload: false });
+  const reloadUsers = () => refetch();
+
+  const nextPage = () => {
+    if (data?.pagination.has_next && data.pagination.next_cursor) {
+      setCursor(data.pagination.next_cursor);
+    }
+  };
+
+  const prevPage = () => {
+    if (data?.pagination.has_prev && data.pagination.prev_cursor) {
+      setCursor(data.pagination.prev_cursor);
     }
   };
 
   const confirmDelete = async () => {
-    if (!state.deleteTarget) return;
-    dispatch({ type: 'SET_LOADING', payload: true });
-    dispatch({ type: 'SET_ERROR', payload: null });
-    try {
-      await deleteUserRequest(state.deleteTarget.id);
-      dispatch({ type: 'CONFIRM_DELETE', payload: state.deleteTarget.id });
-    } catch {
-      dispatch({ type: 'SET_ERROR', payload: 'Failed to delete user. Please try again.' });
-      dispatch({ type: 'SET_DELETE_TARGET', payload: null });
-    } finally {
-      dispatch({ type: 'SET_LOADING', payload: false });
-    }
+    if (!uiState.deleteTarget) return;
+    await deleteMutation.mutateAsync(uiState.deleteTarget.id);
+    dispatch({ type: 'SET_DELETE_TARGET', payload: null });
   };
 
-  // Fetches detail data for a list item — does not update state; caller uses the return value for navigation
-  const fetchUserById = async (user: AdminUserListItem) => {
-    return await getUserByIdRequest(user.id);
+  const fetchUserById = (user: AdminUserListItem) => getUserByIdRequest(user.id);
+
+  // Expose merged state with same shape as before so UsersTab.tsx needs no changes
+  const state = {
+    filteredUsers,
+    view: uiState.view,
+    selectedUser: uiState.selectedUser,
+    deleteTarget: uiState.deleteTarget,
+    searchQuery: uiState.searchQuery,
+    pagination: data?.pagination ?? null,
+    total: data?.total ?? 0,
+    isLoading,
+    error,
   };
 
   return {
     state,
     dispatch,
     refs: { deleteTriggerRef, cancelButtonRef },
-    actions: { reloadUsers, confirmDelete, fetchUserById },
+    actions: { reloadUsers, confirmDelete, fetchUserById, nextPage, prevPage },
   };
 }

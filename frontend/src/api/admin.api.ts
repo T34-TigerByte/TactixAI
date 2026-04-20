@@ -5,10 +5,13 @@ import {
   adminStatsSchema,
   adminUserSchema,
   adminUserByIdSchema,
-  adminUserListSchema,
+  adminUserListPageSchema,
+  adminActivitiesPageSchema,
+  chatMessagesPageSchema,
   type AdminUserById,
-  type LearnerActivity,
-  learnerActivitySchema,
+  type AdminUserListPage,
+  type AdminActivitiesPage,
+  type ChatMessagesPage,
 } from '../schemas/api.schema';
 
 export async function getAdminStatsRequest(): Promise<AdminStats> {
@@ -16,14 +19,16 @@ export async function getAdminStatsRequest(): Promise<AdminStats> {
   return parseResponse(adminStatsSchema, response.data, 'getAdminStatsRequest');
 }
 
-export async function getUserActivitiesRequest(): Promise<LearnerActivity[]> {
-  const response = await api.get<{data: LearnerActivity[] }>('/admin/activities');
-  return parseResponse(learnerActivitySchema.array(), response.data.data, 'getUserActivitiesRequest');
+export async function getUserActivitiesRequest(cursor?: string): Promise<AdminActivitiesPage> {
+  const params = cursor ? { cursor } : {};
+  const response = await api.get('/admin/activities', { params });
+  return parseResponse(adminActivitiesPageSchema, response.data, 'getUserActivitiesRequest');
 }
 
-export async function getUsersRequest(): Promise<AdminUserListItem[]> {
-  const response = await api.get<{ data: AdminUserListItem[] }>('/admin/users');
-  return parseResponse(adminUserListSchema, response.data.data, 'getUsersRequest');
+export async function getUsersRequest(cursor?: string): Promise<AdminUserListPage> {
+  const params = cursor ? { cursor } : {};
+  const response = await api.get('/admin/users', { params });
+  return parseResponse(adminUserListPageSchema, response.data, 'getUsersRequest');
 }
 
 export async function getUserByIdRequest(userId: number): Promise<AdminUserById> {
@@ -43,4 +48,10 @@ export async function updateUserRequest(userId: number, payload: UpdateUserPaylo
 
 export async function deleteUserRequest(userId: number): Promise<void> {
   await api.delete(`/admin/users/${userId}`);
+}
+
+export async function getAdminSessionMessagesRequest(sessionUuid: string, cursor?: string): Promise<ChatMessagesPage> {
+  const params = cursor ? { cursor } : {};
+  const response = await api.get(`/admin/sessions/${sessionUuid}/messages`, { params });
+  return parseResponse(chatMessagesPageSchema, response.data, 'getAdminSessionMessagesRequest');
 }

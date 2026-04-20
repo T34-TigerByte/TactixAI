@@ -212,7 +212,7 @@ const LoginPage = () => {
                     <div className='space-y-2'>
                       {[
                         { email: 'admin@dev.local', role: 'Admin' },
-                        { email: 'test2@dev.local', role: 'Learner' },
+                        { email: 'test3@dev.local', role: 'Learner' },
                       ].map(({ email, role }) => (
                         <button
                           key={role}
