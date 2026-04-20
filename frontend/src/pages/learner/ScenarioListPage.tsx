@@ -75,6 +75,7 @@ export default function ScenarioListPage({ onStartScenario }: ScenarioListPagePr
   const { scenarios } = useScenario();
 
   const [threatActorFilter, setThreatActorFilter] = useState('all');
+  const [industryFilter, setIndustryFilter] = useState('all'); // Placeholder for future industry filter
 
   const handleBack = () => navigate(ROUTES.LEARNER.DASHBOARD);
   const handleLogout = () => {
@@ -88,10 +89,20 @@ export default function ScenarioListPage({ onStartScenario }: ScenarioListPagePr
   );
 
   const filtered = useMemo(() => {
-    return scenarios.filter((s) =>
-      threatActorFilter === 'all' ? true : s.threat_actor === threatActorFilter,
-    );
-  }, [threatActorFilter, scenarios]);
+    return scenarios.filter((s) => {
+
+      const matchesThreatActor = threatActorFilter === 'all' || s.threat_actor === threatActorFilter;
+      
+      /* manually filter industry, by checking if scenario title or description includes such industry string */
+      const matchesIndustry =
+        industryFilter === 'all' ||
+        s.title.toLowerCase().includes(industryFilter.toLowerCase()) ||
+        s.description.toLowerCase().includes(industryFilter.toLowerCase());
+
+      return matchesThreatActor && matchesIndustry;
+    });
+
+  }, [threatActorFilter, industryFilter, scenarios]);
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -108,12 +119,17 @@ export default function ScenarioListPage({ onStartScenario }: ScenarioListPagePr
           {/* Industry dropdown — placeholder until BE adds field */}
           <div className="relative">
             <select
-              disabled
               className="appearance-none pl-4 pr-9 py-2.5 rounded-xl border border-gray-200
-                         text-sm font-medium text-[#0f1c35] bg-white cursor-not-allowed
+                         text-sm font-medium text-[#0f1c35] bg-white
                          focus:outline-none focus:ring-2 focus:ring-orange-300"
+              value={industryFilter}
+              onChange={(e) => setIndustryFilter(e.target.value)}
             >
-              <option>All Industries</option>
+              <option value="all">All Industries</option>
+              <option value="Bank">Bank</option>
+              <option value="Healthcare">Healthcare</option>
+              <option value="Mining">Mining</option>
+              <option value="University">University</option>
             </select>
             <ChevronDown className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
           </div>
