@@ -124,6 +124,30 @@ describe('ADD_MESSAGE', () => {
   });
 });
 
+// ── SET_TYPING ────────────────────────────────────────────────────────────────
+
+describe('SET_TYPING', () => {
+  it('sets isTyping to true', () => {
+    expect(reducer(initialState, { type: 'SET_TYPING', isTyping: true }).isTyping).toBe(true);
+  });
+
+  it('sets isTyping to false', () => {
+    const state: ChatRoomState = { ...initialState, isTyping: true };
+    expect(reducer(state, { type: 'SET_TYPING', isTyping: false }).isTyping).toBe(false);
+  });
+});
+
+describe('ADD_MESSAGE clears isTyping', () => {
+  it('resets isTyping to false when a message is added', () => {
+    const state: ChatRoomState = { ...initialState, isTyping: true };
+    const next = reducer(state, {
+      type: 'ADD_MESSAGE',
+      message: { id: '2', sender: 'ai_model', content: 'Response', timestamp: '09:01 AM' },
+    });
+    expect(next.isTyping).toBe(false);
+  });
+});
+
 // ── SET_INPUT / CLEAR_INPUT ───────────────────────────────────────────────────
 
 describe('SET_INPUT', () => {

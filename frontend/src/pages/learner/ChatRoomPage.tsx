@@ -19,7 +19,7 @@ export default function ChatRoomPage() {
   const { logout } = useAuth();
   const { scenario, state, dispatch, retrySession, messagesEndRef, handleSend, handleKeyDown, questions, completedCount } = useChatRoom();
 
-  const { timeLeft, messages, inputText, showWarning, mobileTab, taskAnswers, sessionError, sessionDetails } = state;
+  const { timeLeft, messages, inputText, isTyping, showWarning, mobileTab, taskAnswers, sessionError, sessionDetails } = state;
   const scenarioTitle = scenario?.title ?? 'Training Session';
   const threatActorName = scenario?.threat_actor ?? 'Negotiator';
   const isSessionLoading = !sessionDetails && !sessionError;
@@ -127,11 +127,24 @@ export default function ChatRoomPage() {
               <ChatMessageBubble
                 key={msg.id}
                 sender={msg.sender}
+                senderLabel={msg.sender === 'ai_model' ? threatActorName : undefined}
                 content={msg.content}
                 timestamp={msg.timestamp}
                 variant='chat'
               />
             ))}
+            {isTyping && (
+              <div className='flex justify-start'>
+                <div className='space-y-1 flex flex-col items-start'>
+                  <span className='text-xs text-gray-400'>{threatActorName}</span>
+                  <div className='px-4 py-3 rounded-xl bg-gray-100 flex items-center gap-1.5'>
+                    <span className='w-2 h-2 rounded-full bg-gray-400 animate-bounce' style={{ animationDelay: '0ms' }} />
+                    <span className='w-2 h-2 rounded-full bg-gray-400 animate-bounce' style={{ animationDelay: '150ms' }} />
+                    <span className='w-2 h-2 rounded-full bg-gray-400 animate-bounce' style={{ animationDelay: '300ms' }} />
+                  </div>
+                </div>
+              </div>
+            )}
             <div ref={messagesEndRef} />
           </div>
 
