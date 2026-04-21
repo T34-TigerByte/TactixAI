@@ -77,14 +77,14 @@ export const learnerProfileSchema = z.object({
 
 export const learnerSessionSchema = z.object({
   total: z.number(),
-  average_score: z.number(),
+  average_score: z.number().optional(),
   total_hours: z.number(),
   current_streak: z.number().optional(),
 });
 
 export const learnerProgressSchema = z.object({
   communication: z.number(),
-  negotication: z.number(),
+  negotiation: z.number(),
   risk_management: z.number(),
 });
 
@@ -178,12 +178,23 @@ export const sessionDetailsSchema = z.object({
   questions: z.array(sessionQuestionSchema),
 });
 
+export const sessionSummarySchema = z.object({
+  title: z.string(),
+  start_at: z.number().nullable(),
+  end_at: z.number().nullable(),
+  evaluation: z.object({
+    initial_ransom: z.number().nullable(),
+    min_ransom: z.number().nullable(),
+    initial_deadline: z.number().nullable(),
+    min_deadline: z.number().nullable(),
+  }).nullable(),
+});
+
 export const sessionListItemSchema = z.object({
   uuid: z.uuid(),
-  scenario_title: z.string(),
-  status: z.string(),
-  created_at: z.number(),
-  score: z.number().nullable(),
+  title: z.string(),
+  end_at: z.number().nullable(),
+  duration: z.number().nullable(),
 });
 
 export const sessionListPageSchema = z.object({
@@ -193,10 +204,9 @@ export const sessionListPageSchema = z.object({
 });
 
 export const chatMessageSchema = z.object({
-  id: z.string(),
-  role: z.enum(['user', 'assistant', 'system']),
-  content: z.string(),
-  created_at: z.number(),
+  sender: z.enum(['user', 'system', 'ai_model']),
+  message: z.string(),
+  sent_at: z.number(),
 });
 
 export const chatMessagesPageSchema = z.object({
@@ -234,6 +244,7 @@ export type LearnerActivity = z.infer<typeof learnerActivitySchema>;
 export type ScenarioPage = z.infer<typeof scenarioPageSchema>;
 export type SessionStart = z.infer<typeof sessionStartSchema>;
 export type SessionDetails = z.infer<typeof sessionDetailsSchema>;
+export type SessionSummary = z.infer<typeof sessionSummarySchema>;
 export type SessionListItem = z.infer<typeof sessionListItemSchema>;
 export type SessionListPage = z.infer<typeof sessionListPageSchema>;
 export type ChatMessage = z.infer<typeof chatMessageSchema>;

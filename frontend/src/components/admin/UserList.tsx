@@ -1,6 +1,6 @@
 import { Eye, Pencil, Trash2 } from 'lucide-react';
 
-import type { AdminUserListItem } from '../../types/admin.types';
+import type { AdminUserListItem } from '../../schemas/api.schema';
 import { formatDate } from '../../utils/format.utils';
 
 interface Props {

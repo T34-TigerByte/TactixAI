@@ -1,7 +1,7 @@
 import { Target } from 'lucide-react';
 
-import type { LearnerProgress } from '../../types/learner.types';
-import PanelHeader from './PanelHeader';
+import type { LearnerProgress } from '../../schemas/api.schema';
+import SectionPanel from './SectionPanel';
 
 interface Props {
   progress: LearnerProgress;
@@ -14,14 +14,13 @@ const SKILLS: {
   bar: string;
 }[] = [
   { label: 'Communication Effectiveness', key: 'communication', color: 'text-teal-500', bar: 'bg-teal-400' },
-  { label: 'Negotiation Strategy', key: 'negotication', color: 'text-orange-500', bar: 'bg-orange-500' },
+  { label: 'Negotiation Strategy', key: 'negotiation', color: 'text-orange-500', bar: 'bg-orange-500' },
   { label: 'Risk Management', key: 'risk_management', color: 'text-purple-500', bar: 'bg-purple-500' },
 ];
 
 export default function SkillProgressPanel({ progress }: Props) {
   return (
-    <section className='bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden'>
-      <PanelHeader icon={<Target className='w-5 h-5' />} title='Skill Development Progress' />
+    <SectionPanel icon={<Target className='w-5 h-5' />} title='Skill Development Progress'>
       <div className='p-6 grid grid-cols-1 md:grid-cols-3 gap-6'>
         {SKILLS.map(({ label, key, color, bar }) => (
           <div key={key} className='space-y-2'>
@@ -38,6 +37,6 @@ export default function SkillProgressPanel({ progress }: Props) {
           </div>
         ))}
       </div>
-    </section>
+    </SectionPanel>
   );
 }

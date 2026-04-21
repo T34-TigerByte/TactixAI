@@ -5,6 +5,8 @@ import ScenarioListPage from '../pages/learner/ScenarioListPage';
 import type { LearnerScenario } from '../schemas/api.schema';
 import ChatRoomPage from '../pages/learner/ChatRoomPage';
 import ProfileSettingPage from '../pages/learner/ProfileSettingPage';
+import TrackProgressPage from '../pages/learner/TrackProgressPage';
+import ChatHistoryPage from '../pages/learner/ChatHistoryPage';
 import AdminDashboard from '../pages/admin/AdminDashboard';
 import LearnerDetailsPage from '../pages/admin/LearnerDetailsPage';
 import LoginPage from '../pages/auth/LoginPage';
@@ -51,6 +53,8 @@ export default function AppRouter() {
                         <Route path={ROUTES.LEARNER.DASHBOARD} element={<LearnerDashboard />} />
                         <Route path={ROUTES.LEARNER.SCENARIOS} element={<ScenarioListPageRoute />} />
                         <Route path={ROUTES.LEARNER.CHAT} element={<ChatRoomPage />} />
+                        <Route path={ROUTES.LEARNER.PROGRESS} element={<TrackProgressPage />} />
+                        <Route path={ROUTES.LEARNER.SESSION_HISTORY} element={<ChatHistoryPage />} />
                         <Route path={ROUTES.LEARNER.PROFILE} element={<ProfileSettingPage />} />
                         {/* Add more learner routes here */}
                     </Route>

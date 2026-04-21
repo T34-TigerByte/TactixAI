@@ -44,6 +44,7 @@ export default function ProfileSettingPage() {
       <DashboardHeader
         title='Profile Setting'
         subtitle=''
+        onLogoClick={() => navigate(ROUTES.LEARNER.DASHBOARD)}
         onBack={() => navigate(ROUTES.LEARNER.DASHBOARD)}
         onLogout={handleLogout}
       />

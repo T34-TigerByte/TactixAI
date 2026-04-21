@@ -109,6 +109,7 @@ export default function ScenarioListPage({ onStartScenario }: ScenarioListPagePr
       <DashboardHeader
         title="Training Scenarios"
         subtitle="Choose a scenario to begin your training"
+        onLogoClick={handleBack}
         onBack={handleBack}
         onLogout={handleLogout}
       />

@@ -1,5 +1,3 @@
-import type { LearnerStats, Learner } from '../types/learner.types';
-import type { UpdateProfilePayload } from '../types/learner.types';
 import api from './client';
 import { parseResponse } from '../utils/parse.utils';
 import {
@@ -8,25 +6,27 @@ import {
   updateProfileResponseSchema,
   sessionStartSchema,
   sessionDetailsSchema,
+  sessionSummarySchema,
   scenarioPageSchema,
   sessionListPageSchema,
   chatMessagesPageSchema,
+  type LearnerStats,
+  type LearnerProfile,
+  type SessionStart,
+  type SessionDetails,
+  type SessionSummary,
+  type ScenarioPage,
+  type SessionListPage,
+  type ChatMessagesPage,
 } from '../schemas/api.schema';
-import type {
-  LearnerProfile,
-  SessionStart,
-  SessionDetails,
-  ScenarioPage,
-  SessionListPage,
-  ChatMessagesPage,
-} from '../schemas/api.schema';
+import type { UpdateProfilePayload } from '../schemas/profile.schema';
 
 export async function getLearnerStatsRequest(): Promise<LearnerStats> {
   const response = await api.get('/stats');
   return parseResponse(learnerStatsSchema, response.data, 'getLearnerStatsRequest');
 }
 
-export async function getLearnerProfileRequest(): Promise<Learner> {
+export async function getLearnerProfileRequest(): Promise<LearnerProfile> {
   const response = await api.get('/me');
   return parseResponse(learnerProfileSchema, response.data, 'getLearnerProfileRequest');
 }
@@ -49,6 +49,11 @@ export async function startSessionRequest(scenarioUuid: string): Promise<Session
 export async function getSessionRequest(sessionUuid: string): Promise<SessionDetails> {
   const response = await api.get(`/sessions/${sessionUuid}`);
   return parseResponse(sessionDetailsSchema, response.data, 'getSessionRequest');
+}
+
+export async function getSessionSummaryRequest(sessionUuid: string): Promise<SessionSummary> {
+  const response = await api.get(`/sessions/${sessionUuid}/summary`);
+  return parseResponse(sessionSummarySchema, response.data, 'getSessionSummaryRequest');
 }
 
 export async function getSessionsRequest(cursor?: string): Promise<SessionListPage> {

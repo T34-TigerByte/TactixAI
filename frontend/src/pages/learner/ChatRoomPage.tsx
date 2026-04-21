@@ -5,6 +5,8 @@ import { ROUTES } from '../../router/routes';
 import { useAuth } from '../../hooks/useAuth';
 import WarningModal from '../../components/ui/WarningModal.tsx';
 import { useChatRoom } from '../../hooks/useChatRoom';
+import ChatMessageBubble from '../../components/ui/ChatMessageBubble';
+import TaskQuestionItem from '../../components/ui/TaskQuestionItem';
 
 function formatTime(seconds: number): string {
   const m = Math.floor(seconds / 60).toString().padStart(2, '0');
@@ -28,6 +30,7 @@ export default function ChatRoomPage() {
         <DashboardHeader
           title={scenarioTitle}
           subtitle=''
+          onLogoClick={() => navigate(ROUTES.LEARNER.DASHBOARD)}
           onBack={() => navigate(ROUTES.LEARNER.SCENARIOS)}
           onLogout={() => { logout(); navigate(ROUTES.LOGIN, { replace: true }); }}
         />
@@ -59,6 +62,7 @@ export default function ChatRoomPage() {
       <DashboardHeader
         title={scenarioTitle}
         subtitle={`Threat Actor: ${threatActorName}`}
+        onLogoClick={() => dispatch({ type: 'SET_SHOW_WARNING', show: true })}
         onBack={() => dispatch({ type: 'SET_SHOW_WARNING', show: true })}
         onLogout={() => { logout(); navigate(ROUTES.LOGIN, { replace: true }); }}
       />
@@ -120,30 +124,13 @@ export default function ChatRoomPage() {
               </div>
             )}
             {messages.map((msg) => (
-              <div key={msg.id}>
-                {msg.sender === 'system' && (
-                  <div className='flex items-start gap-2'>
-                    <div className='w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center shrink-0 mt-0.5'>
-                      <span className='text-gray-500 text-xs font-bold'>S</span>
-                    </div>
-                    <div>
-                      <span className='text-xs text-gray-400'>
-                        System {msg.timestamp}
-                      </span>
-                      <p className='text-sm text-gray-700 mt-0.5 leading-relaxed'>
-                        {msg.content}
-                      </p>
-                    </div>
-                  </div>
-                )}
-                {msg.sender === 'user' && (
-                  <div className='flex justify-end'>
-                    <div className='max-w-[70%] bg-orange-500 text-white rounded-xl rounded-br-sm px-4 py-2.5 text-sm leading-relaxed'>
-                      {msg.content}
-                    </div>
-                  </div>
-                )}
-              </div>
+              <ChatMessageBubble
+                key={msg.id}
+                sender={msg.sender}
+                content={msg.content}
+                timestamp={msg.timestamp}
+                variant='chat'
+              />
             ))}
             <div ref={messagesEndRef} />
           </div>
@@ -187,43 +174,18 @@ export default function ChatRoomPage() {
 
           {/* Tasks list */}
           <div className='flex-1 overflow-y-auto px-5 py-4 space-y-5'>
-            {questions.map((task) => {
-              const selected = taskAnswers[task.question_key] ?? [];
-              const isDone = selected.length > 0;
-              return (
-                <div key={task.question_key} className='space-y-2'>
-                  <div className='flex items-start gap-2'>
-                    {isDone ? (
-                      <span className='text-teal-500 text-sm mt-0.5 shrink-0'>✓</span>
-                    ) : (
-                      <span className='text-gray-300 text-sm mt-0.5 shrink-0'>○</span>
-                    )}
-                    <p className='text-sm font-semibold text-gray-800 leading-snug'>
-                      {task.title}
-                    </p>
-                  </div>
-                  <div className='pl-5 space-y-1.5'>
-                    {task.options.map((opt) => (
-                      <label
-                        key={opt.answer_key}
-                        className='flex items-start gap-2 cursor-pointer group'
-                      >
-                        <input
-                          type='radio'
-                          name={`task-${task.question_key}`}
-                          checked={selected.includes(opt.answer_key)}
-                          onChange={() => dispatch({ type: 'TOGGLE_TASK_OPTION', questionKey: task.question_key, answerKey: opt.answer_key, mode: 'radio' })}
-                          className='accent-orange-500 cursor-pointer mt-0.5 shrink-0'
-                        />
-                        <span className='text-xs text-gray-600 group-hover:text-gray-900 transition-colors leading-relaxed'>
-                          {opt.title}
-                        </span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-              );
-            })}
+            {questions.map((task) => (
+              <TaskQuestionItem
+                key={task.question_key}
+                questionKey={task.question_key}
+                title={task.title}
+                options={task.options}
+                selected={taskAnswers[task.question_key] ?? []}
+                onToggle={(questionKey, answerKey) =>
+                  dispatch({ type: 'TOGGLE_TASK_OPTION', questionKey, answerKey, mode: 'radio' })
+                }
+              />
+            ))}
           </div>
 
           {/* Submit */}
