@@ -9,8 +9,20 @@ import DashboardHeader from '../../components/ui/DashboardHeader.tsx';
 import StatsCard from '../../components/ui/StatsCard';
 import PanelHeader from '../../components/ui/PanelHeader';
 import TabNav from '../../components/ui/TabNav';
-import type { AdminUserListItem } from '../../types/admin.types';
-import type { Session, SkillProgress } from '../../types/session.types';
+import type { AdminUserListItem } from '../../schemas/api.schema';
+
+interface Session {
+  id: string;
+  scenario_name: string;
+  date: string;
+}
+
+interface SkillProgress {
+  skill_name: string;
+  current_score: number;
+  session_count: number;
+  delta: number;
+}
 import { formatDate } from '../../utils/format.utils';
 
 // TODO: replace with API calls
@@ -61,6 +73,7 @@ export default function LearnerDetailsPage() {
       <DashboardHeader
         title='Learner Details'
         subtitle={user.email}
+        onLogoClick={() => navigate(ROUTES.ADMIN.DASHBOARD)}
         onBack={handleBack}
         onLogout={handleLogout}
       />

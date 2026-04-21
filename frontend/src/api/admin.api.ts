@@ -1,4 +1,3 @@
-import type { AdminStats, AdminUserListItem, CreateUserPayload, UpdateUserPayload } from '../types/admin.types';
 import api from './client';
 import { parseResponse } from '../utils/parse.utils';
 import {
@@ -8,11 +7,14 @@ import {
   adminUserListPageSchema,
   adminActivitiesPageSchema,
   chatMessagesPageSchema,
+  type AdminStats,
+  type AdminUserListItem,
   type AdminUserById,
   type AdminUserListPage,
   type AdminActivitiesPage,
   type ChatMessagesPage,
 } from '../schemas/api.schema';
+import type { CreateUserPayload, UpdateUserPayload } from '../schemas/user.schema';
 
 export async function getAdminStatsRequest(): Promise<AdminStats> {
   const response = await api.get('/admin/stats');

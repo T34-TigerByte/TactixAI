@@ -7,11 +7,12 @@ interface DashboardHeaderProps {
   subtitle: string;
   uptime?: number;
   onLogout: () => void;
+  onLogoClick?: () => void;
   onBack?: () => void; // For nested page (optional)
   onProfile?: () => void; // For learner dashboard profile link (optional)
 }
 
-export default function DashboardHeader({ title, subtitle, uptime, onLogout, onBack, onProfile }: DashboardHeaderProps) {
+export default function DashboardHeader({ title, subtitle, uptime, onLogout, onLogoClick, onBack, onProfile }: DashboardHeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
@@ -29,7 +30,14 @@ export default function DashboardHeader({ title, subtitle, uptime, onLogout, onB
               Back
             </button>
           )}
-          <Logo />
+          <button
+            onClick={onLogoClick}
+            disabled={!onLogoClick}
+            className='disabled:cursor-default cursor-pointer'
+            aria-label='Go to dashboard'
+          >
+            <Logo />
+          </button>
           <div className='h-6 w-px bg-slate-600 shrink-0' aria-hidden='true' />
           <div className='min-w-0'>
             <h1 className='text-white font-bold text-base sm:text-lg leading-tight truncate'>

@@ -1,4 +1,5 @@
-import type { LoginCredentials, User } from '../types/auth.types';
+import type { LoginCredentials } from '../types/auth.types';
+import type { User } from '../schemas/api.schema';
 import api from './client';
 import { parseResponse } from '../utils/parse.utils';
 import { authResponseSchema, userSchema, type AuthResponse } from '../schemas/api.schema';

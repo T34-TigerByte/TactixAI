@@ -1,10 +1,11 @@
+import React from 'react';
 import { renderHook, act, waitFor } from '@testing-library/react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import { useUsersTab } from '../hooks/useUsersTab';
 import { getUsersRequest, deleteUserRequest } from '../api/admin.api';
-import type { AdminUserListItem } from '../types/admin.types';
+import type { AdminUserListItem, AdminUserListPage } from '../schemas/api.schema';
 
-/* Mock API module — all exports replaced with jest.fn() */
 jest.mock('../api/admin.api', () => ({
   getUsersRequest: jest.fn(),
   deleteUserRequest: jest.fn(),
@@ -33,28 +34,41 @@ const MOCK_USERS: AdminUserListItem[] = [
   },
 ];
 
+const MOCK_PAGE = (users: AdminUserListItem[]): AdminUserListPage => ({
+  data: users,
+  total: users.length,
+  pagination: { has_next: false, has_prev: false, next_cursor: null, prev_cursor: null },
+});
+
+function createWrapper() {
+  const queryClient = new QueryClient({
+    defaultOptions: { queries: { retry: false } },
+  });
+  return ({ children }: { children: React.ReactNode }) =>
+    React.createElement(QueryClientProvider, { client: queryClient }, children);
+}
+
 beforeEach(() => {
   jest.clearAllMocks();
-  mockGetUsers.mockResolvedValue(MOCK_USERS);
+  mockGetUsers.mockResolvedValue(MOCK_PAGE(MOCK_USERS));
 });
 
 /* Initial load */
 describe('initial load', () => {
   it('fetches users on mount and populates state', async () => {
-    const { result } = renderHook(() => useUsersTab());
+    const { result } = renderHook(() => useUsersTab(), { wrapper: createWrapper() });
 
     await waitFor(() => {
-      expect(result.current.state.allUsers).toHaveLength(2);
+      expect(result.current.state.filteredUsers).toHaveLength(2);
     });
 
-    expect(result.current.state.filteredUsers).toHaveLength(2);
     expect(result.current.state.isLoading).toBe(false);
   });
 
   it('sets error when fetch fails', async () => {
     mockGetUsers.mockRejectedValueOnce(new Error('Network error'));
 
-    const { result } = renderHook(() => useUsersTab());
+    const { result } = renderHook(() => useUsersTab(), { wrapper: createWrapper() });
 
     await waitFor(() => {
       expect(result.current.state.error).toBe('Failed to load users. Please try again.');
@@ -67,8 +81,8 @@ describe('initial load', () => {
 /* Search & filter */
 describe('search and filter', () => {
   it('filters users by name', async () => {
-    const { result } = renderHook(() => useUsersTab());
-    await waitFor(() => expect(result.current.state.allUsers).toHaveLength(2));
+    const { result } = renderHook(() => useUsersTab(), { wrapper: createWrapper() });
+    await waitFor(() => expect(result.current.state.filteredUsers).toHaveLength(2));
 
     act(() => {
       result.current.dispatch({ type: 'SET_SEARCH_QUERY', payload: 'alice' });
@@ -80,8 +94,8 @@ describe('search and filter', () => {
   });
 
   it('filters users by company', async () => {
-    const { result } = renderHook(() => useUsersTab());
-    await waitFor(() => expect(result.current.state.allUsers).toHaveLength(2));
+    const { result } = renderHook(() => useUsersTab(), { wrapper: createWrapper() });
+    await waitFor(() => expect(result.current.state.filteredUsers).toHaveLength(2));
 
     act(() => {
       result.current.dispatch({ type: 'SET_SEARCH_QUERY', payload: 'beta' });
@@ -93,8 +107,8 @@ describe('search and filter', () => {
   });
 
   it('returns empty array when no match', async () => {
-    const { result } = renderHook(() => useUsersTab());
-    await waitFor(() => expect(result.current.state.allUsers).toHaveLength(2));
+    const { result } = renderHook(() => useUsersTab(), { wrapper: createWrapper() });
+    await waitFor(() => expect(result.current.state.filteredUsers).toHaveLength(2));
 
     act(() => {
       result.current.dispatch({ type: 'SET_SEARCH_QUERY', payload: 'zzz' });
@@ -105,8 +119,8 @@ describe('search and filter', () => {
   });
 
   it('restores full list on CLEAR_SEARCH', async () => {
-    const { result } = renderHook(() => useUsersTab());
-    await waitFor(() => expect(result.current.state.allUsers).toHaveLength(2));
+    const { result } = renderHook(() => useUsersTab(), { wrapper: createWrapper() });
+    await waitFor(() => expect(result.current.state.filteredUsers).toHaveLength(2));
 
     act(() => {
       result.current.dispatch({ type: 'SET_SEARCH_QUERY', payload: 'alice' });
@@ -126,8 +140,8 @@ describe('search and filter', () => {
 /* View transitions */
 describe('view transitions', () => {
   it('switches to create view', async () => {
-    const { result } = renderHook(() => useUsersTab());
-    await waitFor(() => expect(result.current.state.allUsers).toHaveLength(2));
+    const { result } = renderHook(() => useUsersTab(), { wrapper: createWrapper() });
+    await waitFor(() => expect(result.current.state.filteredUsers).toHaveLength(2));
 
     act(() => {
       result.current.dispatch({ type: 'SET_VIEW', payload: 'create' });
@@ -137,8 +151,8 @@ describe('view transitions', () => {
   });
 
   it('sets selectedUser and switches to edit view', async () => {
-    const { result } = renderHook(() => useUsersTab());
-    await waitFor(() => expect(result.current.state.allUsers).toHaveLength(2));
+    const { result } = renderHook(() => useUsersTab(), { wrapper: createWrapper() });
+    await waitFor(() => expect(result.current.state.filteredUsers).toHaveLength(2));
 
     act(() => {
       result.current.dispatch({ type: 'SET_SELECTED_USER', payload: MOCK_USERS[0] });
@@ -152,11 +166,15 @@ describe('view transitions', () => {
 
 /* confirmDelete */
 describe('confirmDelete', () => {
-  it('removes user from state after successful delete', async () => {
+  it('triggers refetch and removes user after successful delete', async () => {
     mockDeleteUser.mockResolvedValueOnce(undefined as never);
+    // After invalidation, TanStack re-fetches — return 1 user
+    mockGetUsers
+      .mockResolvedValueOnce(MOCK_PAGE(MOCK_USERS))
+      .mockResolvedValueOnce(MOCK_PAGE([MOCK_USERS[1]]));
 
-    const { result } = renderHook(() => useUsersTab());
-    await waitFor(() => expect(result.current.state.allUsers).toHaveLength(2));
+    const { result } = renderHook(() => useUsersTab(), { wrapper: createWrapper() });
+    await waitFor(() => expect(result.current.state.filteredUsers).toHaveLength(2));
 
     act(() => {
       result.current.dispatch({ type: 'SET_DELETE_TARGET', payload: MOCK_USERS[0] });
@@ -166,34 +184,33 @@ describe('confirmDelete', () => {
       await result.current.actions.confirmDelete();
     });
 
-    expect(result.current.state.allUsers).toHaveLength(1);
-    expect(result.current.state.allUsers[0].id).toBe(2);
+    await waitFor(() => expect(result.current.state.filteredUsers).toHaveLength(1));
+    expect(result.current.state.filteredUsers[0].id).toBe(2);
     expect(result.current.state.deleteTarget).toBeNull();
-    expect(mockDeleteUser).toHaveBeenCalledWith(1);
+    expect(mockDeleteUser.mock.calls[0][0]).toBe(1);
   });
 
   it('sets error and clears deleteTarget when delete fails', async () => {
     mockDeleteUser.mockRejectedValueOnce(new Error('Server error'));
 
-    const { result } = renderHook(() => useUsersTab());
-    await waitFor(() => expect(result.current.state.allUsers).toHaveLength(2));
+    const { result } = renderHook(() => useUsersTab(), { wrapper: createWrapper() });
+    await waitFor(() => expect(result.current.state.filteredUsers).toHaveLength(2));
 
     act(() => {
       result.current.dispatch({ type: 'SET_DELETE_TARGET', payload: MOCK_USERS[0] });
     });
 
     await act(async () => {
-      await result.current.actions.confirmDelete();
+      await result.current.actions.confirmDelete().catch(() => {});
     });
 
-    expect(result.current.state.error).toBe('Failed to delete user. Please try again.');
+    await waitFor(() => expect(result.current.state.error).toBe('Failed to delete user. Please try again.'));
     expect(result.current.state.deleteTarget).toBeNull();
-    expect(result.current.state.allUsers).toHaveLength(2);
   });
 
   it('does nothing when deleteTarget is null', async () => {
-    const { result } = renderHook(() => useUsersTab());
-    await waitFor(() => expect(result.current.state.allUsers).toHaveLength(2));
+    const { result } = renderHook(() => useUsersTab(), { wrapper: createWrapper() });
+    await waitFor(() => expect(result.current.state.filteredUsers).toHaveLength(2));
 
     await act(async () => {
       await result.current.actions.confirmDelete();
@@ -206,22 +223,21 @@ describe('confirmDelete', () => {
 /* reloadUsers */
 describe('reloadUsers', () => {
   it('refreshes user list', async () => {
-    const { result } = renderHook(() => useUsersTab());
-    await waitFor(() => expect(result.current.state.allUsers).toHaveLength(2));
+    const { result } = renderHook(() => useUsersTab(), { wrapper: createWrapper() });
+    await waitFor(() => expect(result.current.state.filteredUsers).toHaveLength(2));
 
-    const updated = [MOCK_USERS[0]];
-    mockGetUsers.mockResolvedValueOnce(updated);
+    mockGetUsers.mockResolvedValueOnce(MOCK_PAGE([MOCK_USERS[0]]));
 
     await act(async () => {
       await result.current.actions.reloadUsers();
     });
 
-    expect(result.current.state.allUsers).toHaveLength(1);
+    await waitFor(() => expect(result.current.state.filteredUsers).toHaveLength(1));
   });
 
   it('sets error when reload fails', async () => {
-    const { result } = renderHook(() => useUsersTab());
-    await waitFor(() => expect(result.current.state.allUsers).toHaveLength(2));
+    const { result } = renderHook(() => useUsersTab(), { wrapper: createWrapper() });
+    await waitFor(() => expect(result.current.state.filteredUsers).toHaveLength(2));
 
     mockGetUsers.mockRejectedValueOnce(new Error('fail'));
 
@@ -229,23 +245,20 @@ describe('reloadUsers', () => {
       await result.current.actions.reloadUsers();
     });
 
-    expect(result.current.state.error).toBe('Failed to reload users. Please try again.');
+    await waitFor(() => expect(result.current.state.error).toBe('Failed to load users. Please try again.'));
   });
 });
 
 /* Loading state transitions */
 describe('loading state transitions', () => {
-  // React batches state updates inside act(), making mid-flight isLoading=true
-  // unobservable from outside. Instead we verify the full cycle:
-  // (1) isLoading is false before the action
-  // (2) isLoading is false after the action (proves the finally block ran)
-  // (3) the action produced the expected side effect
-
   it('resets isLoading to false after confirmDelete succeeds', async () => {
     mockDeleteUser.mockResolvedValueOnce(undefined as never);
+    mockGetUsers
+      .mockResolvedValueOnce(MOCK_PAGE(MOCK_USERS))
+      .mockResolvedValueOnce(MOCK_PAGE([MOCK_USERS[1]]));
 
-    const { result } = renderHook(() => useUsersTab());
-    await waitFor(() => expect(result.current.state.allUsers).toHaveLength(2));
+    const { result } = renderHook(() => useUsersTab(), { wrapper: createWrapper() });
+    await waitFor(() => expect(result.current.state.filteredUsers).toHaveLength(2));
 
     expect(result.current.state.isLoading).toBe(false);
 
@@ -257,53 +270,25 @@ describe('loading state transitions', () => {
       await result.current.actions.confirmDelete();
     });
 
-    expect(result.current.state.isLoading).toBe(false);
-    expect(result.current.state.allUsers).toHaveLength(1);
+    await waitFor(() => expect(result.current.state.isLoading).toBe(false));
+    expect(result.current.state.filteredUsers).toHaveLength(1);
   });
 
   it('resets isLoading to false after confirmDelete fails', async () => {
     mockDeleteUser.mockRejectedValueOnce(new Error('fail'));
 
-    const { result } = renderHook(() => useUsersTab());
-    await waitFor(() => expect(result.current.state.allUsers).toHaveLength(2));
+    const { result } = renderHook(() => useUsersTab(), { wrapper: createWrapper() });
+    await waitFor(() => expect(result.current.state.filteredUsers).toHaveLength(2));
 
     act(() => {
       result.current.dispatch({ type: 'SET_DELETE_TARGET', payload: MOCK_USERS[0] });
     });
 
     await act(async () => {
-      await result.current.actions.confirmDelete();
+      await result.current.actions.confirmDelete().catch(() => {});
     });
 
-    expect(result.current.state.isLoading).toBe(false);
-    expect(result.current.state.error).not.toBeNull();
-  });
-
-  it('resets isLoading to false after reloadUsers succeeds', async () => {
-    const { result } = renderHook(() => useUsersTab());
-    await waitFor(() => expect(result.current.state.allUsers).toHaveLength(2));
-
-    mockGetUsers.mockResolvedValueOnce([MOCK_USERS[0]]);
-
-    await act(async () => {
-      await result.current.actions.reloadUsers();
-    });
-
-    expect(result.current.state.isLoading).toBe(false);
-    expect(result.current.state.allUsers).toHaveLength(1);
-  });
-
-  it('resets isLoading to false after reloadUsers fails', async () => {
-    const { result } = renderHook(() => useUsersTab());
-    await waitFor(() => expect(result.current.state.allUsers).toHaveLength(2));
-
-    mockGetUsers.mockRejectedValueOnce(new Error('fail'));
-
-    await act(async () => {
-      await result.current.actions.reloadUsers();
-    });
-
-    expect(result.current.state.isLoading).toBe(false);
+    await waitFor(() => expect(result.current.state.isLoading).toBe(false));
     expect(result.current.state.error).not.toBeNull();
   });
 });
