@@ -103,7 +103,7 @@ export function useChatRoom() {
     const data = lastJsonMessage as { content: string };
     dispatch({
       type: 'ADD_MESSAGE',
-      message: { id: Date.now().toString(), sender: 'system', content: data.content, timestamp: makeTimestamp() },
+      message: { id: Date.now().toString(), sender: 'ai_model', content: data.content, timestamp: makeTimestamp() },
     });
   }, [lastJsonMessage]);
 
@@ -122,6 +122,7 @@ export function useChatRoom() {
     sendJsonMessage({ content: text });
     dispatch({ type: 'ADD_MESSAGE', message: { id: Date.now().toString(), sender: 'user', content: text, timestamp: makeTimestamp() } });
     dispatch({ type: 'CLEAR_INPUT' });
+    dispatch({ type: 'SET_TYPING', isTyping: true });
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {

@@ -117,27 +117,6 @@ export const learnerChatSchema = z.object({
 })
 
 
-/* 
-{
-      "user_name": "Alex Johnson",
-      "created_at": 1773835817, # timestamp
-      # possible options: new_user, session_complete, report_generation
-      "type": "registration",
-      "metadata": {
-        # new_user
-        "role": "learner",
-        # session_complete
-        "scenario_title": "Healthcare Data Breach",
-      }
-    }
-*/
-
-// const threatActorSchema = z.object({
-//   name: z.string(),
-//   description: z.string(),
-//   aggression: z.number().min(1).max(10),
-// });
-
 export const learnerScenarioSchema = z.object({
   uuid: z.uuid(),
   title: z.string(),
