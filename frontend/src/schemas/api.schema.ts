@@ -33,7 +33,6 @@ export const adminStatsSchema = z.object({
   user_growth_percentage: z.number(),
   total_sessions: z.number(),
   session_growth_percentage: z.number(),
-  // uptime: z.number(),
 });
 
 const userSessionSchema = z.object({

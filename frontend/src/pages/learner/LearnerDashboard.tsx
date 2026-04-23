@@ -2,7 +2,7 @@ import { Target, Clock, TrendingUp, BookOpen, BarChart2, MessageSquare } from 'l
 import { useNavigate } from 'react-router-dom';
 import { useAuth }  from '../../hooks/useAuth';
 import { ROUTES } from '../../router/routes';
-import SkillProgressPanel from '../../components/ui/SkillProgressPanel';
+import ScenarioProgressPanel from '../../components/ui/ScenarioProgressPanel';
 import StatsCard from '../../components/ui/StatsCard';
 import SectionPanel from '../../components/ui/SectionPanel';
 import ActionListItem from '../../components/ui/ActionListItem';
@@ -56,7 +56,10 @@ export default function LearnerDashboard () {
           onLogout={handleLogout}
         />
 
-        <main id='main' className='max-w-7xl mx-auto px-4 sm:px-8 py-8 space-y-8'>
+        <main
+          id='main'
+          className='max-w-7xl mx-auto px-4 sm:px-8 py-8 space-y-8'
+        >
           {/* ── Stats Row ── */}
           <div className='grid grid-cols-2 lg:grid-cols-4 gap-4'>
             {learnerStats && (
@@ -68,7 +71,11 @@ export default function LearnerDashboard () {
                 />
                 <StatsCard
                   label='Average Score'
-                  value={learnerStats.session.average_score !== undefined ? `${learnerStats.session.average_score}%` : 'N/A'}
+                  value={
+                    learnerStats.session.average_score !== undefined
+                      ? `${learnerStats.session.average_score}%`
+                      : 'N/A'
+                  }
                   valueColor='text-orange-500'
                   icon={<Target className='w-5 h-5 text-orange-400' />}
                 />
@@ -89,16 +96,23 @@ export default function LearnerDashboard () {
 
           {/* ── Skill Development Progress ── */}
           {learnerStats?.progress && (
-            <SkillProgressPanel progress={learnerStats.progress} />
+            <ScenarioProgressPanel progress={learnerStats.progress} />
           )}
 
           {/* ── 2 Rows at the bottom ── */}
           <div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
             {/* Recommended Scenarios */}
-            <SectionPanel icon={<BookOpen className='w-5 h-5' />} title='Recommended Scenarios'>
+            <SectionPanel
+              icon={<BookOpen className='w-5 h-5' />}
+              title='Recommended Scenarios'
+            >
               <div className='p-4 space-y-3'>
-                {scenarios?.slice(1,4).map((scenario) => (
-                  <ScenarioCard key={scenario.uuid} scenario={scenario} onClick={handleStartScenario} />
+                {scenarios?.slice(1, 4).map((scenario) => (
+                  <ScenarioCard
+                    key={scenario.uuid}
+                    scenario={scenario}
+                    onClick={handleStartScenario}
+                  />
                 ))}
                 <button
                   className='w-full py-3 rounded-xl border border-gray-200 text-red-600 font-medium text-sm hover:bg-orange-50 transition-colors mt-1 cursor-pointer'
@@ -110,19 +124,35 @@ export default function LearnerDashboard () {
             </SectionPanel>
 
             {/* Session History */}
-            <SectionPanel icon={<BarChart2 className='w-5 h-5' />} title='Session History'>
+            <SectionPanel
+              icon={<BarChart2 className='w-5 h-5' />}
+              title='Session History'
+            >
               <div className='p-4 space-y-1'>
                 {recentSessions.length === 0 ? (
-                  <p className='text-center text-gray-400 text-sm py-8'>No sessions yet.</p>
+                  <p className='text-center text-gray-400 text-sm py-8'>
+                    No sessions yet.
+                  </p>
                 ) : (
                   recentSessions.map((session) => (
                     <ActionListItem
                       key={session.uuid}
                       title={session.title}
-                      subtitle={session.end_at ? formatSessionDate(session.end_at) : 'In Progress'}
+                      subtitle={
+                        session.end_at
+                          ? formatSessionDate(session.end_at)
+                          : 'In Progress'
+                      }
                       actions={
                         <button
-                          onClick={() => navigate(ROUTES.LEARNER.SESSION_HISTORY.replace(':sessionId', session.uuid))}
+                          onClick={() =>
+                            navigate(
+                              ROUTES.LEARNER.SESSION_HISTORY.replace(
+                                ':sessionId',
+                                session.uuid,
+                              ),
+                            )
+                          }
                           className='px-3 py-1.5 rounded-lg border border-orange-500 text-orange-500 text-xs font-semibold hover:bg-orange-50 transition-colors cursor-pointer'
                         >
                           View Chat

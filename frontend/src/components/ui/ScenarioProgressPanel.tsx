@@ -24,11 +24,11 @@ const SKILLS: {
   },
 ];
 
-export default function SkillProgressPanel({ progress }: Props) {
+export default function ScenarioProgressPanel({ progress }: Props) {
   return (
     <SectionPanel
       icon={<Target className='w-5 h-5' />}
-      title='Skill Development Progress'
+      title='Scenario Progress'
     >
       <div className='p-6'>
         {SKILLS.map(({ label, key, color, bar }) => (
