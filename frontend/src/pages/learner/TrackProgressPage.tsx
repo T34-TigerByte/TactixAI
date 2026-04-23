@@ -7,7 +7,7 @@ import { useAuth } from '../../hooks/useAuth';
 import { ROUTES } from '../../router/routes';
 import DashboardHeader from '../../components/ui/DashboardHeader';
 import StatsCard from '../../components/ui/StatsCard';
-import SkillProgressPanel from '../../components/ui/SkillProgressPanel';
+import ScenarioProgressPanel from '../../components/ui/ScenarioProgressPanel';
 import TabNav from '../../components/ui/TabNav';
 import { getLearnerStatsRequest, getSessionsRequest } from '../../api/learner.api';
 import SessionHistoryTab from '../../components/learner/SessionHistoryTab';
@@ -79,7 +79,7 @@ export default function TrackProgressPage() {
         )}
 
         {activeTab === 'skills' && learnerStats?.progress && (
-          <SkillProgressPanel progress={learnerStats.progress} />
+          <ScenarioProgressPanel progress={learnerStats.progress} />
         )}
       </main>
     </div>
