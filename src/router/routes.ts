@@ -5,6 +5,8 @@ export const ROUTES = {
     DASHBOARD: '/learner/dashboard',
     SCENARIOS: '/learner/scenarios',
     CHAT: '/learner/chat/:sessionId',
+    PROGRESS: '/learner/progress',
+    SESSION_HISTORY: '/learner/sessions/:sessionId',
     PROFILE: '/learner/profile',
   },
   ADMIN: {

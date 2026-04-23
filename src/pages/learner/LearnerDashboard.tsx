@@ -2,112 +2,46 @@ import { Target, Clock, TrendingUp, BookOpen, BarChart2, MessageSquare } from 'l
 import { useNavigate } from 'react-router-dom';
 import { useAuth }  from '../../hooks/useAuth';
 import { ROUTES } from '../../router/routes';
-import DifficultyBadge from '../../components/ui/DifficultyBadge';
 import SkillProgressPanel from '../../components/ui/SkillProgressPanel';
 import StatsCard from '../../components/ui/StatsCard';
-import PanelHeader from '../../components/ui/PanelHeader';
+import SectionPanel from '../../components/ui/SectionPanel';
+import ActionListItem from '../../components/ui/ActionListItem';
 import DashboardHeader from '../../components/ui/DashboardHeader.tsx';
-import { useEffect, useState } from 'react';
-import { getLearnerStatsRequest } from '../../api/learner.api';
-import type { LearnerStats } from '../../types/learner.types';
+import { useQuery } from '@tanstack/react-query';
+import { getLearnerStatsRequest, getSessionsRequest } from '../../api/learner.api';
 import ScenarioCard from '../../components/learner/ScenarioCard';
 import { useScenario } from '../../hooks/useScenario.ts';
 
-// const MOCK_STATS = {
-//   totalSessions: 24,
-//   averageScore: 78,
-//   trainingHours: 32,
-//   currentStreak: 5,
-// };
-
-// const MOCK_SCENARIOS: LearnerScenario[] = [
-//   {
-//     uuid: '00000000-0000-0000-0000-000000000003',
-//     title: 'Advanced Ransomware Negotiation',
-//     description:
-//       'Practice high-stakes negotiations with sophisticated threat actors using psychological pressure tactics.',
-//     difficulty: 'advanced',
-//     time_estimate: 45,
-//     objectives: 5,
-//     threat_actor: {
-//       name: 'Vladimir "CryptoKing" Petrov',
-//       description: 'Psychological pressure with business-like professionalism',
-//       aggression: 8,
-//     },
-//   },
-//   {
-//     uuid: '00000000-0000-0000-0000-000000000005',
-//     title: 'Financial Institution Ransomware',
-//     description:
-//       'Handle a ransomware attack on financial systems with regulatory pressures and high-value data theft.',
-//     difficulty: 'intermediate',
-//     time_estimate: 40,
-//     objectives: 5,
-//     threat_actor: {
-//       name: 'Viktor "PressureCooker" Ivanov',
-//       description: 'Aggressive financial leverage with tight deadlines',
-//       aggression: 7,
-//     },
-//   },
-// ];
-
-const MOCK_ACTIVITY = [
-  {
-    id: '1',
-    title: 'Corporate Ransomware Attack',
-    difficulty: 'intermediate' as const,
-    date: '3/14/2024',
-    score: 85,
-    status: 'completed' as const,
-  },
-  {
-    id: '2',
-    title: 'Basic Ransomware Negotiation',
-    difficulty: 'beginner' as const,
-    date: '3/14/2024',
-    score: 72,
-    status: 'completed' as const,
-  },
-  {
-    id: '3',
-    title: 'Healthcare Ransomware Crisis',
-    difficulty: 'advanced' as const,
-    date: null,
-    score: null,
-    status: 'in_progress' as const,
-  },
-];
-
+function formatSessionDate(timestamp: number): string {
+  return new Date(timestamp * 1000).toLocaleDateString();
+}
 
 export default function LearnerDashboard () {
     const navigate = useNavigate();
     const { user, logout } = useAuth();
-    const [learnerStats, setLearnerStats] = useState<LearnerStats>();
-    // const [scenarios, setScenarios] = useState<LearnerScenario[]>();
-    const { scenarios } = useScenario();
+
+    const { data: learnerStats } = useQuery({
+      queryKey: ['learner', 'stats'],
+      queryFn: getLearnerStatsRequest,
+    });
+
+    const { data: sessionsPage } = useQuery({
+      queryKey: ['learner', 'sessions'],
+      queryFn: () => getSessionsRequest(),
+    });
+
+    const recentSessions = sessionsPage?.data.slice(0, 3) ?? [];
+    const { scenarios, setSelectedScenario } = useScenario();
 
     const handleLogout = () => {
         logout();
         navigate(ROUTES.LOGIN, { replace: true});
     };
 
-    useEffect(() => {
-      const fetchStats = async () => {
-        const response = await getLearnerStatsRequest();
-        setLearnerStats(response);
-      }
-      // const fetchScenario = async () => {
-      //   const response = await getScenariosRequest();
-      //   setScenarios(response);        
-      // }
-      fetchStats();
-      // fetchScenario();
-    }, [])
-
-    const handleStartScenario  = (id: string ) => {
-        //  TODO: navigate to chat page with session creation
-        navigate(`/learner/chat/${id}`);
-    }
+    const handleStartScenario = (scenario: Parameters<typeof setSelectedScenario>[0]) => {
+        setSelectedScenario(scenario);
+        navigate(`/learner/chat/${scenario.uuid}`);
+    };
 
     const handleViewAllScenario = () => {
         navigate(ROUTES.LEARNER.SCENARIOS, { state: { scenarios } });
@@ -134,7 +68,7 @@ export default function LearnerDashboard () {
                 />
                 <StatsCard
                   label='Average Score'
-                  value={`${learnerStats.session.average_score}%`}
+                  value={learnerStats.session.average_score !== undefined ? `${learnerStats.session.average_score}%` : 'N/A'}
                   valueColor='text-orange-500'
                   icon={<Target className='w-5 h-5 text-orange-400' />}
                 />
@@ -161,104 +95,50 @@ export default function LearnerDashboard () {
           {/* ── 2 Rows at the bottom ── */}
           <div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
             {/* Recommended Scenarios */}
-            <section
-              className='bg-white rounded-xl border border-gray-200
-                                        shadow-sm overflow-hidden'
-            >
-              {/* Panel Header */}
-              <PanelHeader
-                icon={<BookOpen className='w-5 h-5' />}
-                title='Recommended Scenarios'
-              />
-
-              {/* Scenario Cards */}
+            <SectionPanel icon={<BookOpen className='w-5 h-5' />} title='Recommended Scenarios'>
               <div className='p-4 space-y-3'>
-                {scenarios?.map((scenario) => (
-                  <ScenarioCard key={scenario.uuid} scenario={scenario} onClick={handleStartScenario}/>
+                {scenarios?.slice(1,4).map((scenario) => (
+                  <ScenarioCard key={scenario.uuid} scenario={scenario} onClick={handleStartScenario} />
                 ))}
-
-                {/* View All */}
                 <button
-                  className='w-full py-3 rounded-xl border border-gray-200
-                                            text-red-600 font-medium text-sm
-                                            hover:bg-orange-50 transition-colors mt-1
-                                            cursor-pointer'
+                  className='w-full py-3 rounded-xl border border-gray-200 text-red-600 font-medium text-sm hover:bg-orange-50 transition-colors mt-1 cursor-pointer'
                   onClick={handleViewAllScenario}
                 >
                   View All Scenarios
                 </button>
               </div>
-            </section>
+            </SectionPanel>
 
-            {/* Recent Activity */}
-            <section
-              className='bg-white rounded-xl border border-gray-200
-                                        shadow-sm overflow-hidden'
-            >
-              {/* Panel Header */}
-              <PanelHeader
-                icon={<BarChart2 className='w-5 h-5' />}
-                title='Recent Activity'
-              />
-
-              {/* Activity List */}
+            {/* Session History */}
+            <SectionPanel icon={<BarChart2 className='w-5 h-5' />} title='Session History'>
               <div className='p-4 space-y-1'>
-                {MOCK_ACTIVITY.map((activity) => (
-                  <div
-                    key={activity.id}
-                    className='flex items-center justify-between
-                                        px-3 py-4 rounded-lg hover:bg-gray-50
-                                        transition-colors'
-                  >
-                    <div className='space-y-1.5'>
-                      <p className='font-semibold text-gray-900 text-sm'>
-                        {activity.title}
-                      </p>
-                      <div className='flex items-center gap-2'>
-                        <DifficultyBadge level={activity.difficulty} />
-                        {activity.date && (
-                          <span className='text-gray-400 text-xs'>
-                            {activity.date}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Scores / Status */}
-                    {activity.status === 'completed' &&
-                    activity.score !== null ? (
-                      <span
-                        className={`font-bold text-lg ${
-                          activity.score >= 80
-                            ? 'text-teal-500'
-                            : 'text-orange-500'
-                        }`}
-                      >
-                        {activity.score}%
-                      </span>
-                    ) : (
-                      <span
-                        className='px-3 py-1 rounded-full text-xs font-semibold
-                                                bg-orange-500 text-white'
-                      >
-                        In Progress
-                      </span>
-                    )}
-                  </div>
-                ))}
-
-                {/* View Detailed Progress */}
-
+                {recentSessions.length === 0 ? (
+                  <p className='text-center text-gray-400 text-sm py-8'>No sessions yet.</p>
+                ) : (
+                  recentSessions.map((session) => (
+                    <ActionListItem
+                      key={session.uuid}
+                      title={session.title}
+                      subtitle={session.end_at ? formatSessionDate(session.end_at) : 'In Progress'}
+                      actions={
+                        <button
+                          onClick={() => navigate(ROUTES.LEARNER.SESSION_HISTORY.replace(':sessionId', session.uuid))}
+                          className='px-3 py-1.5 rounded-lg border border-orange-500 text-orange-500 text-xs font-semibold hover:bg-orange-50 transition-colors cursor-pointer'
+                        >
+                          View Chat
+                        </button>
+                      }
+                    />
+                  ))
+                )}
                 <button
-                  className='w-full py-3 rounded-xl border border-gray-200
-                                            text-red-600 font-medium text-sm
-                                            hover:bg-orange-50 transition-colors mt-2
-                                            cursor-pointer'
+                  className='w-full py-3 rounded-xl border border-gray-200 text-red-600 font-medium text-sm hover:bg-orange-50 transition-colors mt-2 cursor-pointer'
+                  onClick={() => navigate(ROUTES.LEARNER.PROGRESS)}
                 >
-                  View Detailed Progress
+                  View All Sessions
                 </button>
               </div>
-            </section>
+            </SectionPanel>
           </div>
         </main>
       </div>

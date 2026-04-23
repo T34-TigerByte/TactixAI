@@ -2,7 +2,7 @@ import { User, Mail, Building2, Save } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
-import type { AdminUserListItem } from '../../types/admin.types';
+import type { AdminUserListItem } from '../../schemas/api.schema';
 import { updateUserSchema, type UpdateUserPayload } from '../../schemas/user.schema';
 import { updateUserRequest } from '../../api/admin.api';
 import { splitName } from '../../utils/format.utils';

@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event';
 
 import EditUserForm from '../components/admin/EditUserForm';
 import { updateUserRequest } from '../api/admin.api';
-import type { AdminUserListItem } from '../types/admin.types';
+import type { AdminUserListItem } from '../schemas/api.schema';
 
 jest.mock('../api/admin.api', () => ({
   updateUserRequest: jest.fn(),

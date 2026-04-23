@@ -1,5 +1,5 @@
 import { BarChart2, Activity } from "lucide-react";
-import PanelHeader from "../ui/PanelHeader";
+import SectionPanel from "../ui/SectionPanel";
 
 
 const MOCK_GROWTH = [
@@ -18,11 +18,7 @@ const MOCK_PLATFORM = [
 const AnalyticsTab = () => (
   <div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
     {/* User Growth */}
-    <section className='bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden'>
-      <PanelHeader
-        icon={<BarChart2 className='w-5 h-5' />}
-        title='User Growth'
-      />
+    <SectionPanel icon={<BarChart2 className='w-5 h-5' />} title='User Growth'>
       <div className='p-6 divide-y divide-gray-100'>
         {MOCK_GROWTH.map(({ month, count }) => (
           <div key={month} className='flex items-center justify-between py-4'>
@@ -31,14 +27,9 @@ const AnalyticsTab = () => (
           </div>
         ))}
       </div>
-    </section>
+    </SectionPanel>
 
-    {/* Platform Usage */}
-    <section className='bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden'>
-      <PanelHeader
-        icon={<Activity className='w-5 h-5' />}
-        title='Platform Usage'
-      />
+    <SectionPanel icon={<Activity className='w-5 h-5' />} title='Platform Usage'>
       <div className='p-6 divide-y divide-gray-100'>
         {MOCK_PLATFORM.map(({ label, value }) => (
           <div key={label} className='flex items-center justify-between py-4'>
@@ -47,7 +38,7 @@ const AnalyticsTab = () => (
           </div>
         ))}
       </div>
-    </section>
+    </SectionPanel>
   </div>
 );
 

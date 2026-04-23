@@ -4,7 +4,7 @@ import type { SessionDetails } from '../schemas/api.schema';
 
 export interface Message {
   id: string;
-  sender: 'system' | 'user';
+  sender: 'system' | 'user' | 'ai_model';
   content: string;
   timestamp: string;
 }
@@ -20,6 +20,7 @@ export interface ChatRoomState {
   // chat
   messages: Message[];
   inputText: string;
+  isTyping: boolean;
   // ui
   showWarning: boolean;
   mobileTab: 'chat' | 'tasks';
@@ -34,6 +35,7 @@ export const initialState: ChatRoomState = {
   sessionError: null,
   messages: [],
   inputText: '',
+  isTyping: false,
   showWarning: false,
   mobileTab: 'chat',
   taskAnswers: {},
@@ -47,6 +49,7 @@ export type Action =
   | { type: 'SESSION_RESET' }
   | { type: 'TICK' }
   | { type: 'ADD_MESSAGE'; message: Message }
+  | { type: 'SET_TYPING'; isTyping: boolean }
   | { type: 'SET_INPUT'; text: string }
   | { type: 'CLEAR_INPUT' }
   | { type: 'SET_MOBILE_TAB'; tab: 'chat' | 'tasks' }
@@ -80,7 +83,9 @@ export function reducer(state: ChatRoomState, action: Action): ChatRoomState {
     case 'TICK':
       return { ...state, timeLeft: state.timeLeft > 0 ? state.timeLeft - 1 : 0 };
     case 'ADD_MESSAGE':
-      return { ...state, messages: [...state.messages, action.message] };
+      return { ...state, messages: [...state.messages, action.message], isTyping: false };
+    case 'SET_TYPING':
+      return { ...state, isTyping: action.isTyping };
     case 'SET_INPUT':
       return { ...state, inputText: action.text };
     case 'CLEAR_INPUT':

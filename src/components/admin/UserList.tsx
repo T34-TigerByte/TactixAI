@@ -1,6 +1,6 @@
 import { Eye, Pencil, Trash2 } from 'lucide-react';
 
-import type { AdminUserListItem } from '../../types/admin.types';
+import type { AdminUserListItem } from '../../schemas/api.schema';
 import { formatDate } from '../../utils/format.utils';
 
 interface Props {
@@ -40,7 +40,7 @@ export default function UserList({ users, onCheckDetails, onEdit, onDelete }: Pr
                 </td>
                 <td className='px-6 py-4 text-gray-700'>{user.company ?? '—'}</td>
                 <td className='px-6 py-4 text-gray-700'>
-                  {user.session.last_session_at ?? '—'}
+                  {formatDate(user.session.last_session_at) ?? '—'}
                 </td>
                 <td className='px-6 py-4 text-gray-700 hidden md:table-cell'>
                   {user.session.completed ?? '—'}

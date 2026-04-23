@@ -101,8 +101,8 @@ describe('adminUserByIdSchema', () => {
 /* learnerStatsSchema */
 describe('learnerStatsSchema', () => {
   const valid = {
-    session: { total: 10, average_score: 78, total_hours: 20 },
-    progress: { communication: 80, negotication: 75, risk_management: 88 },
+    session: { total: 10, total_hours: 20 },
+    progress: { communication: 80, negotiation: 75, risk_management: 88 },
   };
 
   it('passes with valid stats', () => {
