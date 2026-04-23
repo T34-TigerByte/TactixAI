@@ -12,60 +12,24 @@ import { getLearnerStatsRequest, getSessionsRequest } from '../../api/learner.ap
 import ScenarioCard from '../../components/learner/ScenarioCard';
 import { useScenario } from '../../hooks/useScenario.ts';
 
-// const MOCK_STATS = {
-//   totalSessions: 24,
-//   averageScore: 78,
-//   trainingHours: 32,
-//   currentStreak: 5,
-// };
-
-// const MOCK_SCENARIOS: LearnerScenario[] = [
-//   {
-//     uuid: '00000000-0000-0000-0000-000000000003',
-//     title: 'Advanced Ransomware Negotiation',
-//     description:
-//       'Practice high-stakes negotiations with sophisticated threat actors using psychological pressure tactics.',
-//     difficulty: 'advanced',
-//     time_estimate: 45,
-//     objectives: 5,
-//     threat_actor: {
-//       name: 'Vladimir "CryptoKing" Petrov',
-//       description: 'Psychological pressure with business-like professionalism',
-//       aggression: 8,
-//     },
-//   },
-//   {
-//     uuid: '00000000-0000-0000-0000-000000000005',
-//     title: 'Financial Institution Ransomware',
-//     description:
-//       'Handle a ransomware attack on financial systems with regulatory pressures and high-value data theft.',
-//     difficulty: 'intermediate',
-//     time_estimate: 40,
-//     objectives: 5,
-//     threat_actor: {
-//       name: 'Viktor "PressureCooker" Ivanov',
-//       description: 'Aggressive financial leverage with tight deadlines',
-//       aggression: 7,
-//     },
-//   },
-// ];
-
 function formatSessionDate(timestamp: number): string {
   return new Date(timestamp * 1000).toLocaleDateString();
 }
 
-
 export default function LearnerDashboard () {
     const navigate = useNavigate();
     const { user, logout } = useAuth();
+
     const { data: learnerStats } = useQuery({
       queryKey: ['learner', 'stats'],
       queryFn: getLearnerStatsRequest,
     });
+
     const { data: sessionsPage } = useQuery({
       queryKey: ['learner', 'sessions'],
       queryFn: () => getSessionsRequest(),
     });
+
     const recentSessions = sessionsPage?.data.slice(0, 3) ?? [];
     const { scenarios, setSelectedScenario } = useScenario();
 
@@ -104,7 +68,7 @@ export default function LearnerDashboard () {
                 />
                 <StatsCard
                   label='Average Score'
-                  value={learnerStats.session.average_score !== undefined ? `${learnerStats.session.average_score}%` : '—'}
+                  value={learnerStats.session.average_score !== undefined ? `${learnerStats.session.average_score}%` : 'N/A'}
                   valueColor='text-orange-500'
                   icon={<Target className='w-5 h-5 text-orange-400' />}
                 />
@@ -133,7 +97,7 @@ export default function LearnerDashboard () {
             {/* Recommended Scenarios */}
             <SectionPanel icon={<BookOpen className='w-5 h-5' />} title='Recommended Scenarios'>
               <div className='p-4 space-y-3'>
-                {scenarios?.map((scenario) => (
+                {scenarios?.slice(1,4).map((scenario) => (
                   <ScenarioCard key={scenario.uuid} scenario={scenario} onClick={handleStartScenario} />
                 ))}
                 <button

@@ -4,10 +4,11 @@ import { Settings, Users, Activity, FileText } from "lucide-react";
 import type { AdminTab } from "../../types/admin.types";
 import { useOverviewTab } from "../../hooks/useOverviewTab";
 
+import { formatDate } from '../../utils/format.utils';
+
 const OverviewTab = ({ onClick }: { onClick: (tab: AdminTab) => void }) => {
 
   const { activities, pagination, total, isLoading, nextPage, prevPage } = useOverviewTab();
-
 
   return (
     <div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
@@ -22,7 +23,7 @@ const OverviewTab = ({ onClick }: { onClick: (tab: AdminTab) => void }) => {
               <div className='space-y-0.5'>
                 <p className='font-semibold text-gray-900 text-sm'>{item.user_name}</p>
                 <p className='text-gray-500 text-xs'>{item.type}</p>
-                <p className='text-gray-400 text-xs'>{item.created_at}</p>
+                <p className='text-gray-400 text-xs'>{formatDate(item.created_at)}</p>
               </div>
             </div>
           ))}

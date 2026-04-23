@@ -38,7 +38,7 @@ export const adminStatsSchema = z.object({
 
 const userSessionSchema = z.object({
   completed: z.number(),
-  last_session_at: z.number().nullable(),
+  last_session_at: z.number().nullish(),
   total_time_spent: z.number(),
 });
 
@@ -83,9 +83,13 @@ export const learnerSessionSchema = z.object({
 });
 
 export const learnerProgressSchema = z.object({
-  communication: z.number(),
-  negotiation: z.number(),
-  risk_management: z.number(),
+  communication: z.number().nullable(),
+  negotiation: z.number().nullable(),
+  risk_management: z.number().nullable(),
+  scenarios: z.object({
+    total: z.number(),
+    completed: z.number()
+  })
 });
 
 export const learnerStatsSchema = z.object({
@@ -94,15 +98,15 @@ export const learnerStatsSchema = z.object({
 });
 
 export const learnerActivityMetaDataSchema = z.object({
-  role: z.string(),
-  scenario_title: z.string()
+  role: z.string().optional(),
+  scenario_title: z.string().optional()
 });
 
 export const learnerActivitySchema = z.object({
   user_name: z.string(),
-  created_at: z.string(),
+  created_at: z.number(),
   type: z.string(),
-  meta_data: learnerActivityMetaDataSchema,
+  metadata: learnerActivityMetaDataSchema,
 });
 
 export const adminActivitiesPageSchema = z.object({
