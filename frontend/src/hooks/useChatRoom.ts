@@ -9,6 +9,7 @@ import { getToken } from '../utils/auth.utils';
 import { startSessionRequest, getSessionRequest } from '../api/learner.api';
 import { reducer, initialState } from './chatRoomReducer';
 import { WS_BASE_URL } from '../config';
+import { getMockQuestions } from '../mocks/investigationQuestions.mock';
 export type { Message, ChatRoomState, Action } from './chatRoomReducer';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -132,7 +133,8 @@ export function useChatRoom() {
     }
   };
 
-  const questions = sessionDetails?.questions ?? [];
+  const apiQuestions = sessionDetails?.questions ?? [];
+  const questions = apiQuestions.length > 0 ? apiQuestions : getMockQuestions(scenario?.title ?? '');
   const completedCount = questions.filter((q) => (state.taskAnswers[q.question_key] ?? []).length > 0).length;
 
   return {
