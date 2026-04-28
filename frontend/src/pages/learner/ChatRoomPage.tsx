@@ -23,7 +23,7 @@ export default function ChatRoomPage() {
   const { timeLeft, messages, inputText, isTyping, showWarning, mobileTab, taskAnswers, sessionError, sessionDetails } = state;
   const scenarioTitle = scenario?.title ?? 'Training Session';
   const threatActorName = scenario?.threat_actor ?? 'Negotiator';
-  const isSessionLoading = !sessionDetails && !sessionError;
+  const isSessionLoading = !sessionDetails && !sesssionError;
   
 
   const handleSessionEnd = async () => {

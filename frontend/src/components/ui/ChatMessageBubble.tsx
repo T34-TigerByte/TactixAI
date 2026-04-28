@@ -16,7 +16,7 @@ export default function ChatMessageBubble({
   const isUser = sender === 'user';
   const isSystem = sender === 'system';
 
-  const label = senderLabel ?? (isUser ? 'You' : isSystem ? 'System' : 'Threat Actor');
+  const label = senderLabel ?? (isUser ? 'You' : isSystem ? 'System' : sender);
   const userBg = variant === 'chat' ? 'bg-orange-500 text-white' : 'bg-[#0f1c35] text-white';
 
   if (isSystem) {

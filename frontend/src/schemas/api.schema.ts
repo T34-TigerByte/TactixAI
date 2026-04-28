@@ -185,8 +185,10 @@ export const sessionListPageSchema = z.object({
   data: z.array(sessionListItemSchema),
 });
 
+// type threatActorTypes = 'The Pressure Cooker' | "The Negotiator"
+
 export const chatMessageSchema = z.object({
-  sender: z.enum(['user', 'system', 'ai_model']),
+  sender: z.enum(['user', 'system', 'The Pressure Cooker', "The Negotiator"]),
   message: z.string(),
   sent_at: z.number(),
 });
