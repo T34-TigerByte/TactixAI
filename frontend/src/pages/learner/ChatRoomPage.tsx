@@ -135,7 +135,7 @@ export default function ChatRoomPage() {
               <ChatMessageBubble
                 key={msg.id}
                 sender={msg.sender}
-                senderLabel={msg.sender === 'ai_model' ? threatActorName : undefined}
+                senderLabel={msg.sender}
                 content={msg.content}
                 timestamp={msg.timestamp}
                 variant='chat'

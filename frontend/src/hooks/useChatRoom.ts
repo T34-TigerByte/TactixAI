@@ -104,7 +104,7 @@ export function useChatRoom() {
     const data = lastJsonMessage as { content: string };
     dispatch({
       type: 'ADD_MESSAGE',
-      message: { id: Date.now().toString(), sender: 'ai_model', content: data.content, timestamp: makeTimestamp() },
+      message: { id: Date.now().toString(), sender: 'The Negotiator', content: data.content, timestamp: makeTimestamp() },
     });
   }, [lastJsonMessage]);
 
