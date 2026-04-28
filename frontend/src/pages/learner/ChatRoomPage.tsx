@@ -7,6 +7,7 @@ import WarningModal from '../../components/ui/WarningModal.tsx';
 import { useChatRoom } from '../../hooks/useChatRoom';
 import ChatMessageBubble from '../../components/ui/ChatMessageBubble';
 import TaskQuestionItem from '../../components/ui/TaskQuestionItem';
+import { endSessionRequest } from '../../api/learner.api.ts';
 
 function formatTime(seconds: number): string {
   const m = Math.floor(seconds / 60).toString().padStart(2, '0');
@@ -23,6 +24,13 @@ export default function ChatRoomPage() {
   const scenarioTitle = scenario?.title ?? 'Training Session';
   const threatActorName = scenario?.threat_actor ?? 'Negotiator';
   const isSessionLoading = !sessionDetails && !sessionError;
+  
+
+  const handleSessionEnd = async () => {
+    if (!state.sessionUuid) return 
+    await endSessionRequest(state.sessionUuid);
+    navigate(ROUTES.LEARNER.SCENARIOS);
+  }
 
   if (sessionError) {
     return (
@@ -127,7 +135,7 @@ export default function ChatRoomPage() {
               <ChatMessageBubble
                 key={msg.id}
                 sender={msg.sender}
-                senderLabel={msg.sender === 'ai_model' ? threatActorName : undefined}
+                senderLabel={msg.sender}
                 content={msg.content}
                 timestamp={msg.timestamp}
                 variant='chat'
@@ -225,7 +233,7 @@ export default function ChatRoomPage() {
             'Your performance will be analysed based on your current progress.',
           ]}
           finalWarning='Are you sure you want to exit?'
-          onConfirm={() => navigate(ROUTES.LEARNER.SCENARIOS)}
+          onConfirm={handleSessionEnd}
           onCancel={() => dispatch({ type: 'SET_SHOW_WARNING', show: false })}
         />
       )}

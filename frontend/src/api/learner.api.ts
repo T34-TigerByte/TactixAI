@@ -46,6 +46,10 @@ export async function startSessionRequest(scenarioUuid: string): Promise<Session
   return parseResponse(sessionStartSchema, response.data, 'startSessionRequest');
 }
 
+export async function endSessionRequest(scenarioUuid: string | undefined) {
+  await api.post(`/sessions/${scenarioUuid}/end`);
+}
+
 export async function getSessionRequest(sessionUuid: string): Promise<SessionDetails> {
   const response = await api.get(`/sessions/${sessionUuid}`);
   return parseResponse(sessionDetailsSchema, response.data, 'getSessionRequest');
