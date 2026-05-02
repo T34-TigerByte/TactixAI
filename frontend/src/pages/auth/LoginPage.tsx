@@ -70,7 +70,10 @@ const LoginPage = () => {
     }
         
     return (
-      <div className='min-h-screen bg-slate-900 flex flex-col'>
+      <div
+        className='min-h-screen flex flex-col'
+        style={{ backgroundImage: "url('/dark-blue_texture_triangle_bg.png')", backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed' }}
+      >
         {/* Navigation */}
         <header className='px-8 py-5 flex items-center gap-3'>
           {/* FlameTree Logo */}
@@ -83,7 +86,7 @@ const LoginPage = () => {
             className='w-full max-w-7xl mx-auto px-8 py-12
                         flex flex-col lg:flex-row items-center gap-16'
           >
-            {/* Left: Title & Feature Cards */}
+            {/* Left: Title, Feature Cards & Mascot */}
             <div className='flex-1 space-y-8'>
               <div className='space-y-3'>
                 <h1 className='text-4xl font-bold text-white leading-tight'>
@@ -115,11 +118,17 @@ const LoginPage = () => {
                   </div>
                 ))}
               </div>
+
             </div>
 
-            {/* Right side: Login Card */}
-            <div className='w-full lg:w-105 shrink-0'>
-              <div className='bg-white rounded-2xl shadow-2xl p-8 space-y-6'>
+            {/* Right side: Login Card with Spike on top */}
+            <div className='w-full lg:w-105 shrink-0 flex flex-col items-center'>
+              <img
+                src='/Spike-Wave-Hello.png'
+                alt='Spike mascot waving hello'
+                className='h-44 object-contain drop-shadow-2xl relative z-10 mb-[-2rem]'
+              />
+              <div className='bg-white rounded-2xl shadow-2xl p-8 pt-12 space-y-6 w-full'>
                 {/* Card Header */}
                 <div className='text-center space-y-1'>
                   <h2 className='text-2xl font-bold text-gray-900'>

@@ -7,12 +7,16 @@ import {
   adminUserListPageSchema,
   adminActivitiesPageSchema,
   chatMessagesPageSchema,
+  adminSessionListPageSchema,
+  adminSessionSummarySchema,
   type AdminStats,
   type AdminUserListItem,
   type AdminUserById,
   type AdminUserListPage,
   type AdminActivitiesPage,
   type ChatMessagesPage,
+  type AdminSessionListPage,
+  type AdminSessionSummary,
 } from '../schemas/api.schema';
 import type { CreateUserPayload, UpdateUserPayload } from '../schemas/user.schema';
 
@@ -50,6 +54,18 @@ export async function updateUserRequest(userId: number, payload: UpdateUserPaylo
 
 export async function deleteUserRequest(userId: number): Promise<void> {
   await api.delete(`/admin/users/${userId}`);
+}
+
+export async function getAdminSessionsRequest(userId: number, cursor?: string): Promise<AdminSessionListPage> {
+  const params: Record<string, unknown> = { user_id: userId };
+  if (cursor) params.cursor = cursor;
+  const response = await api.get('/admin/sessions', { params });
+  return parseResponse(adminSessionListPageSchema, response.data, 'getAdminSessionsRequest');
+}
+
+export async function getAdminSessionSummaryRequest(sessionUuid: string): Promise<AdminSessionSummary> {
+  const response = await api.get(`/admin/sessions/${sessionUuid}/summary`);
+  return parseResponse(adminSessionSummarySchema, response.data, 'getAdminSessionSummaryRequest');
 }
 
 export async function getAdminSessionMessagesRequest(sessionUuid: string, cursor?: string): Promise<ChatMessagesPage> {

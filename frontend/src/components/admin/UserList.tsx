@@ -1,7 +1,7 @@
 import { Eye, Pencil, Trash2 } from 'lucide-react';
 
 import type { AdminUserListItem } from '../../schemas/api.schema';
-import { formatDate } from '../../utils/format.utils';
+import { formatDate, formatDuration } from '../../utils/format.utils';
 
 interface Props {
   users: AdminUserListItem[];
@@ -47,7 +47,7 @@ export default function UserList({ users, onCheckDetails, onEdit, onDelete }: Pr
                 </td>
                 <td className='px-6 py-4 text-gray-500 hidden md:table-cell'>
                   {user.session.total_time_spent != null
-                    ? `${user.session.total_time_spent} mins`
+                    ? formatDuration(user.session.total_time_spent)
                     : '—'}
                 </td>
                 <td className='px-6 py-4'>

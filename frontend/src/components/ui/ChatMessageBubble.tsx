@@ -1,5 +1,5 @@
 interface ChatMessageBubbleProps {
-  sender: 'system' | 'user' | 'The Pressure Cooker' | 'The Negotiator';
+  sender: string;
   content: string;
   timestamp?: string;
   senderLabel?: string;
