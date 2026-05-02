@@ -12,6 +12,7 @@ export const ROUTES = {
   ADMIN: {
     DASHBOARD: '/admin/dashboard',
     USERS: '/admin/users',
-    LEARNER_DETAILS: '/admin/users/:userId'
+    LEARNER_DETAILS: '/admin/users/:userId',
+    SESSION_VIEW: '/admin/sessions/:sessionId',
   },
 } as const;

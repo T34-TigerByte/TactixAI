@@ -142,7 +142,7 @@ describe('ADD_MESSAGE clears isTyping', () => {
     const state: ChatRoomState = { ...initialState, isTyping: true };
     const next = reducer(state, {
       type: 'ADD_MESSAGE',
-      message: { id: '2', sender: 'ai_model', content: 'Response', timestamp: '09:01 AM' },
+      message: { id: '2', sender: 'The Pressure Cooker', content: 'Response', timestamp: '09:01 AM' },
     });
     expect(next.isTyping).toBe(false);
   });

@@ -16,7 +16,7 @@ export default function DashboardHeader({ title, subtitle, uptime, onLogout, onL
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <header className='fixed top-0 left-0 right-0 z-50 bg-slate-900 px-4 sm:px-8 py-4'>
+    <header className='fixed top-0 left-0 right-0 z-50 bg-slate-900 px-4 sm:px-8 py-5'>
       <div className='max-w-7xl mx-auto flex items-center justify-between'>
         <div className='flex items-center gap-3 sm:gap-6 min-w-0'>
           {onBack && (
@@ -58,11 +58,10 @@ export default function DashboardHeader({ title, subtitle, uptime, onLogout, onL
           {onProfile && (
             <button
               onClick={onProfile}
-              className='flex items-center gap-2 px-4 py-2 rounded-lg bg-orange-600 hover:bg-orange-700 text-white transition-colors text-sm font-medium cursor-pointer'
+              className='flex items-center gap-2 px-3 py-3 rounded-full hover:bg-slate-800 text-white transition-colors text-sm font-medium cursor-pointer'
               aria-label='To My Profile'
             >
               <User className='w-4 h-4' aria-hidden='true' />
-              Profile
             </button>
           )}
           <button

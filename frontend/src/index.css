@@ -1,2 +1,9 @@
 /* src/index.css */
 @import "tailwindcss";
+
+html, body {
+  background-image: url('/dark-blue_texture_triangle_bg.png');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}

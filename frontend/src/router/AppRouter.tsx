@@ -9,6 +9,7 @@ import TrackProgressPage from '../pages/learner/TrackProgressPage';
 import ChatHistoryPage from '../pages/learner/ChatHistoryPage';
 import AdminDashboard from '../pages/admin/AdminDashboard';
 import LearnerDetailsPage from '../pages/admin/LearnerDetailsPage';
+import AdminChatHistoryPage from '../pages/admin/AdminChatHistoryPage';
 import LoginPage from '../pages/auth/LoginPage';
 
 import { useAuth } from '../hooks/useAuth';
@@ -63,6 +64,7 @@ export default function AppRouter() {
                     <Route element={<RoleGuard allowedRoles={['admin']} />}>
                         <Route path={ROUTES.ADMIN.DASHBOARD} element={<AdminDashboard />} />
                         <Route path={ROUTES.ADMIN.LEARNER_DETAILS} element={<LearnerDetailsPage />} />
+                        <Route path={ROUTES.ADMIN.SESSION_VIEW} element={<AdminChatHistoryPage />} />
                         {/* Add more admin routes here */}
                     </Route>
                 </Route>

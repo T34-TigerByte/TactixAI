@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Building2, Clock, Calendar, CheckCircle2, FileText } from 'lucide-react';
-
+import { useQuery } from '@tanstack/react-query';
 
 import { useAuth } from '../../hooks/useAuth';
 import { ROUTES } from '../../router/routes';
@@ -10,12 +10,8 @@ import StatsCard from '../../components/ui/StatsCard';
 import PanelHeader from '../../components/ui/PanelHeader';
 import TabNav from '../../components/ui/TabNav';
 import type { AdminUserListItem } from '../../schemas/api.schema';
-
-interface Session {
-  id: string;
-  scenario_name: string;
-  date: string;
-}
+import { getAdminSessionsRequest } from '../../api/admin.api';
+import { formatDate, formatDuration } from '../../utils/format.utils';
 
 interface SkillProgress {
   skill_name: string;
@@ -23,14 +19,6 @@ interface SkillProgress {
   session_count: number;
   delta: number;
 }
-import { formatDate } from '../../utils/format.utils';
-
-// TODO: replace with API calls
-const MOCK_SESSIONS: Session[] = [
-  { id: '1', scenario_name: 'Financial Institution Data Breach', date: '2024-03-15' },
-  { id: '2', scenario_name: 'Healthcare Ransomware Crisis', date: '2024-03-11' },
-  { id: '3', scenario_name: 'University Research Lab Encryption', date: '2024-03-05' },
-];
 
 const MOCK_SKILLS: SkillProgress[] = [
   { skill_name: 'Communication Effectiveness', current_score: 82, session_count: 8, delta: 7 },
@@ -49,6 +37,12 @@ export default function LearnerDetailsPage() {
 
   const user = state?.user as AdminUserListItem | undefined;
   const [activeTab, setActiveTab] = useState<Tab>('session_history');
+
+  const { data: sessionsPage } = useQuery({
+    queryKey: ['admin', 'sessions', user?.id],
+    queryFn: () => getAdminSessionsRequest(user!.id),
+    enabled: !!user?.id,
+  });
 
   const handleBack = () => navigate(`${ROUTES.ADMIN.DASHBOARD}?tab=users`);
   
@@ -122,7 +116,7 @@ export default function LearnerDetailsPage() {
             label='Time Spent'
             value={
               user.session.total_time_spent != null
-                ? `${user.session.total_time_spent}m`
+                ? formatDuration(user.session.total_time_spent)
                 : '—'
             }
             icon={<Clock className='w-8 h-8 text-orange-400' />}
@@ -142,34 +136,48 @@ export default function LearnerDetailsPage() {
         {/* Tab Content */}
         {activeTab === 'session_history' && (
           <div className='bg-white rounded-xl border border-gray-200 shadow-sm divide-y divide-gray-100'>
-            {MOCK_SESSIONS.map((session) => (
-              <div
-                key={session.id}
-                className='px-6 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3'
-              >
-                <div>
-                  <p className='font-semibold text-gray-900'>
-                    {session.scenario_name}
-                  </p>
-                  <p className='text-gray-400 text-sm mt-0.5'>{session.date}</p>
+            {!sessionsPage || sessionsPage.data.length === 0 ? (
+              <p className='px-6 py-8 text-center text-gray-400 text-sm'>No sessions found.</p>
+            ) : (
+              sessionsPage.data.map((session) => (
+                <div
+                  key={session.uuid}
+                  className='px-6 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3'
+                >
+                  <div>
+                    <p className='font-semibold text-gray-900'>{session.title}</p>
+                    <p className='text-gray-400 text-sm mt-0.5'>
+                      {session.end_at ? formatDate(session.end_at) : '—'}
+                      {session.duration != null && ` · ${session.duration}m`}
+                      {session.score != null && (
+                        <span className='ml-2 text-teal-600 font-medium'>Score: {session.score}</span>
+                      )}
+                    </p>
+                  </div>
+                  <div className='flex items-center gap-2 shrink-0'>
+                    <button
+                      onClick={() =>
+                        navigate(
+                          ROUTES.ADMIN.SESSION_VIEW.replace(':sessionId', session.uuid),
+                          { state: { user, sessionTitle: session.title } }
+                        )
+                      }
+                      className='flex-1 sm:flex-none px-4 py-1.5 rounded-lg border border-orange-600 text-orange-600
+                                 hover:bg-orange-50 text-sm font-medium transition-colors cursor-pointer'
+                    >
+                      View Chat
+                    </button>
+                    <button
+                      className='flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-4 py-1.5 rounded-lg border border-orange-600
+                                 text-orange-600 hover:bg-orange-50 text-sm font-medium transition-colors cursor-pointer'
+                    >
+                      <FileText className='w-3.5 h-3.5' />
+                      Export
+                    </button>
+                  </div>
                 </div>
-                <div className='flex items-center gap-2 shrink-0'>
-                  <button
-                    className='flex-1 sm:flex-none px-4 py-1.5 rounded-lg border border-orange-600 text-orange-600
-                               hover:bg-orange-50 text-sm font-medium transition-colors cursor-pointer'
-                  >
-                    View Chat
-                  </button>
-                  <button
-                    className='flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-4 py-1.5 rounded-lg border border-orange-600
-                               text-orange-600 hover:bg-orange-50 text-sm font-medium transition-colors cursor-pointer'
-                  >
-                    <FileText className='w-3.5 h-3.5' />
-                    Export
-                  </button>
-                </div>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         )}
 

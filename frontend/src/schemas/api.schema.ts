@@ -188,7 +188,7 @@ export const sessionListPageSchema = z.object({
 // type threatActorTypes = 'The Pressure Cooker' | "The Negotiator"
 
 export const chatMessageSchema = z.object({
-  sender: z.enum(['user', 'system', 'The Pressure Cooker', "The Negotiator"]),
+  sender: z.string(),
   message: z.string(),
   sent_at: z.number(),
 });
@@ -197,6 +197,40 @@ export const chatMessagesPageSchema = z.object({
   total: z.number(),
   pagination: paginationSchema,
   data: z.array(chatMessageSchema),
+});
+
+/* Admin Sessions */
+
+export const adminSessionListItemSchema = z.object({
+  uuid: z.string(),
+  title: z.string(),
+  end_at: z.number().nullish(),
+  duration: z.number().nullish(),
+  score: z.number().nullish(),
+});
+
+export const adminSessionListPageSchema = z.object({
+  total: z.number(),
+  pagination: paginationSchema,
+  data: z.array(adminSessionListItemSchema),
+});
+
+export const adminSessionSummarySchema = z.object({
+  title: z.string(),
+  start_at: z.number().nullish(),
+  end_at: z.number().nullish(),
+  evaluation: z.object({
+    time_extended: z.boolean(),
+    ransom_reduced: z.boolean(),
+    initial_ransom_amount: z.number().nullish(),
+    final_ransom_amount: z.number().nullish(),
+    decryption_key_requested: z.boolean(),
+    data_exploitation_discussed: z.boolean(),
+  }).nullish(),
+  investigation_tasks: z.array(z.object({
+    question: z.string(),
+    answer: z.string().nullish(),
+  })).optional(),
 });
 
 /* DEFINE SESSION SCHEMA */
@@ -215,6 +249,9 @@ export type AdminUserListItem = z.infer<typeof adminUserSchema>;
 export type AdminUserById = z.infer<typeof adminUserByIdSchema>;
 export type AdminUserListPage = z.infer<typeof adminUserListPageSchema>;
 export type AdminActivitiesPage = z.infer<typeof adminActivitiesPageSchema>;
+export type AdminSessionListItem = z.infer<typeof adminSessionListItemSchema>;
+export type AdminSessionListPage = z.infer<typeof adminSessionListPageSchema>;
+export type AdminSessionSummary = z.infer<typeof adminSessionSummarySchema>;
 export type CursorPagination = z.infer<typeof paginationSchema>;
 
 /* learner page*/
