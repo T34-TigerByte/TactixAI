@@ -126,6 +126,8 @@ const LoginPage = () => {
               <img
                 src='/Spike-Wave-Hello.png'
                 alt='Spike mascot waving hello'
+                width={1080}
+                height={1080}
                 className='h-44 object-contain drop-shadow-2xl relative z-10 mb-[-2rem]'
               />
               <div className='bg-white rounded-2xl shadow-2xl p-8 pt-12 space-y-6 w-full'>

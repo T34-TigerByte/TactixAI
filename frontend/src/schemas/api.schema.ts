@@ -2,8 +2,13 @@ import { z } from 'zod';
 
 /* Shared */
 export const paginationSchema = z.object({
+  page: z.number(),
+  per_page: z.number(),
+  total: z.number(),
+  total_pages: z.number(),
   next_cursor: z.string().nullable(),
   prev_cursor: z.string().nullable(),
+  has_more: z.boolean(),
   has_next: z.boolean(),
   has_prev: z.boolean(),
   limit: z.number(),
@@ -124,9 +129,8 @@ export const learnerScenarioSchema = z.object({
   uuid: z.uuid(),
   title: z.string(),
   description: z.string(),
-  // difficulty: z.enum(['beginner', 'intermediate', 'advanced']),
   time_estimate: z.number(),
-  // objectives: z.number(),
+  completed: z.boolean().optional(),
   industry: z.string().optional(),
   threat_actor: z.string(), // TO BE: Replaced by a threat_actor obj type
 });
@@ -165,12 +169,19 @@ export const sessionSummarySchema = z.object({
   start_at: z.number().nullable(),
   end_at: z.number().nullable(),
   evaluation: z.object({
-    initial_ransom: z.number().nullable(),
-    min_ransom: z.number().nullable(),
-    initial_deadline: z.number().nullable(),
-    min_deadline: z.number().nullable(),
+    time_extended: z.boolean().nullable(),
+    ransom_reduced: z.boolean().nullable(),
+    initial_ransom_amount: z.number().nullable(),
+    final_ransom_amount: z.number().nullable(),
+    decryption_key_requested: z.boolean().nullable(),
+    data_exploitation_discussed: z.boolean().nullable()
   }).nullable(),
+  investigation_tasks: z.array(z.object({
+    question: z.string(),
+    answer: z.string().nullable(),
+  }))
 });
+
 
 export const sessionListItemSchema = z.object({
   uuid: z.uuid(),

@@ -11,6 +11,14 @@ export function formatDate(date?: number | null) {
   return new Date(date).toLocaleString();
 }
 
+export function formatTimestamp(ts: number): string {
+  return new Date(ts * 1000).toLocaleString();
+}
+
+export function formatCurrency(amount: number): string {
+  return `$${amount.toLocaleString()}`;
+}
+
 export function formatDuration(totalSeconds: number): string {
   const h = Math.floor(totalSeconds / 3600);
   const m = Math.floor((totalSeconds % 3600) / 60);

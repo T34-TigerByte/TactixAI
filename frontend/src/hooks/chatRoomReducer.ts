@@ -4,7 +4,7 @@ import type { SessionDetails } from '../schemas/api.schema';
 
 export interface Message {
   id: string;
-  sender: 'system' | 'user' | 'The Pressure Cooker' | 'The Negotiator';
+  sender: string;
   content: string;
   timestamp: string;
 }
