@@ -20,6 +20,10 @@ interface Props {
 export default function SessionHistoryTab({ sessions, hasNextPage, isFetchingNextPage, fetchNextPage }: Props) {
   const navigate = useNavigate();
 
+  const handleViewReport = (sessionId: string) => {
+    navigate(ROUTES.LEARNER.PERFORMANCE.replace(':sessionId', sessionId));
+  };
+
   return (
     <SectionPanel icon={<MessageSquare className='w-5 h-5' />} title='Completed Training Sessions'>
       <div className='divide-y divide-gray-100'>
@@ -41,11 +45,11 @@ export default function SessionHistoryTab({ sessions, hasNextPage, isFetchingNex
                     View Chat
                   </button>
                   <button
-                    disabled
-                    className='flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-orange-500 text-white text-xs font-semibold opacity-50 cursor-not-allowed'
+                    className='flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-orange-500 text-white text-xs font-semibold hover:bg-orange-600 transition-colors cursor-pointer'
+                    onClick={handleViewReport.bind(null, session.uuid)}
                   >
                     <Download className='w-3.5 h-3.5' />
-                    Export Report
+                    View Report
                   </button>
                 </>
               }

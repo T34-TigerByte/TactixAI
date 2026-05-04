@@ -8,6 +8,7 @@ export const ROUTES = {
     PROGRESS: '/learner/progress',
     SESSION_HISTORY: '/learner/sessions/:sessionId',
     PROFILE: '/learner/profile',
+    PERFORMANCE: '/learner/sessions/:sessionId/performance',
   },
   ADMIN: {
     DASHBOARD: '/admin/dashboard',

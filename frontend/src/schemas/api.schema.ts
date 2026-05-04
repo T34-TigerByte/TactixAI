@@ -2,16 +2,16 @@ import { z } from 'zod';
 
 /* Shared */
 export const paginationSchema = z.object({
-  page: z.number(),
-  per_page: z.number(),
-  total: z.number(),
-  total_pages: z.number(),
+  page: z.number().nullable(),
+  per_page: z.number().nullable(),
+  total: z.number().nullable(),
+  total_pages: z.number().nullable(),
   next_cursor: z.string().nullable(),
   prev_cursor: z.string().nullable(),
   has_more: z.boolean(),
   has_next: z.boolean(),
   has_prev: z.boolean(),
-  limit: z.number(),
+  limit: z.number().nullable(),
 });
 
 /* Auth */

@@ -7,6 +7,7 @@ import ChatRoomPage from '../pages/learner/ChatRoomPage';
 import ProfileSettingPage from '../pages/learner/ProfileSettingPage';
 import TrackProgressPage from '../pages/learner/TrackProgressPage';
 import ChatHistoryPage from '../pages/learner/ChatHistoryPage';
+import PerformanceAnalysisPage from '../pages/learner/PerformanceAnalysisPage';
 import AdminDashboard from '../pages/admin/AdminDashboard';
 import LearnerDetailsPage from '../pages/admin/LearnerDetailsPage';
 import AdminChatHistoryPage from '../pages/admin/AdminChatHistoryPage';
@@ -57,6 +58,7 @@ export default function AppRouter() {
                         <Route path={ROUTES.LEARNER.PROGRESS} element={<TrackProgressPage />} />
                         <Route path={ROUTES.LEARNER.SESSION_HISTORY} element={<ChatHistoryPage />} />
                         <Route path={ROUTES.LEARNER.PROFILE} element={<ProfileSettingPage />} />
+                        <Route path={ROUTES.LEARNER.PERFORMANCE} element={<PerformanceAnalysisPage />} />
                         {/* Add more learner routes here */}
                     </Route>
 
