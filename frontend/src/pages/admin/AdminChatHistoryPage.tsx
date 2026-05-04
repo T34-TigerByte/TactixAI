@@ -34,8 +34,10 @@ export default function AdminChatHistoryPage() {
     queryFn: ({ pageParam }: { pageParam: string | undefined }) =>
       getAdminSessionMessagesRequest(sessionId!, pageParam),
     initialPageParam: undefined as string | undefined,
-    getNextPageParam: (lastPage) => lastPage.pagination.next_cursor ?? undefined,
+    getNextPageParam: (lastPage) =>
+      lastPage.pagination.has_next ? (lastPage.pagination.next_cursor ?? undefined) : undefined,
     enabled: !!sessionId,
+    refetchOnWindowFocus: false,
   });
 
   const messages = data?.pages.flatMap((p) => p.data) ?? [];

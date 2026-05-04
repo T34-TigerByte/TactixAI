@@ -14,13 +14,14 @@ export function parseResponse<T>(schema: ZodSchema<T>, data: unknown, context: s
   const result = schema.safeParse(data);
 
   if (!result.success) {
+    console.error(`[API Validation Failed] ${context}`, result.error.flatten());
+
     if (import.meta.env.DEV) {
       throw new Error(
         `[API Validation Failed] ${context}\n${JSON.stringify(result.error.flatten(), null, 2)}`
       );
     }
 
-    console.warn(`[API Validation Failed] ${context}`, result.error.flatten());
     return data as T;
   }
 

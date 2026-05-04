@@ -35,8 +35,10 @@ export default function ChatHistoryPage() {
     queryFn: ({ pageParam }: { pageParam: string | undefined }) =>
       getSessionMessagesRequest(sessionId!, pageParam),
     initialPageParam: undefined as string | undefined,
-    getNextPageParam: (lastPage) => lastPage.pagination.next_cursor ?? undefined,
+    getNextPageParam: (lastPage) =>
+      lastPage.pagination.has_next ? (lastPage.pagination.next_cursor ?? undefined) : undefined,
     enabled: !!sessionId,
+    refetchOnWindowFocus: false,
   });
 
   const apiMessages = data?.pages.flatMap((p) => p.data) ?? [];
@@ -50,20 +52,19 @@ export default function ChatHistoryPage() {
     navigate(ROUTES.LOGIN, { replace: true });
   };
 
-  const handleDownloadReport = () => {
-    // TODO: Implement report download functionality, e.g. generate PDF or CSV with session summary and messages
-
-  }
+  const handleViewReport = () => {
+    navigate(ROUTES.LEARNER.PERFORMANCE.replace(':sessionId', sessionId!));
+  };
 
   const summaryHeader = summary ? (
     <div className='bg-[#0f1c35] px-6 py-4 flex items-center justify-between'>
       <h2 className='text-white font-bold text-base'>{summary.title} Performance Summary</h2>
       <button
         className='flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-orange-500 text-white text-xs font-semibold cursor-pointer hover:bg-orange-600 active:bg-orange-700 transition-colors'
-        onClick={handleDownloadReport}
+        onClick={handleViewReport}
       >
         <Download className='w-3.5 h-3.5' />
-        Export Report
+        View Report
       </button>
     </div>
   ) : undefined;
@@ -79,16 +80,13 @@ export default function ChatHistoryPage() {
       />
 
       <main className='max-w-4xl mx-auto px-4 sm:px-8 py-8 space-y-6'>
-        {/* Performance Summary */}
         {summary && (
           <SectionPanel title='' header={summaryHeader}>
             <div className='p-6 space-y-4'>
               <div className='grid grid-cols-2 gap-6'>
                 <InfoField
                   label='Start Time'
-                  value={
-                    summary.start_at ? formatTimestamp(summary.start_at) : '—'
-                  }
+                  value={summary.start_at ? formatTimestamp(summary.start_at) : '—'}
                 />
                 <InfoField
                   label='End Time'
@@ -102,9 +100,7 @@ export default function ChatHistoryPage() {
                       label='Initial Ransom Amount'
                       value={
                         summary.evaluation.initial_ransom_amount !== null
-                          ? formatCurrency(
-                              summary.evaluation.initial_ransom_amount,
-                            )
+                          ? formatCurrency(summary.evaluation.initial_ransom_amount)
                           : '—'
                       }
                     />
@@ -112,34 +108,18 @@ export default function ChatHistoryPage() {
                       label='Final Ransom Amount'
                       value={
                         summary.evaluation.final_ransom_amount !== null
-                          ? formatCurrency(
-                              summary.evaluation.final_ransom_amount,
-                            )
+                          ? formatCurrency(summary.evaluation.final_ransom_amount)
                           : '—'
                       }
                     />
                   </div>
                   <div className='border-t border-gray-100 pt-4'>
-                    <p className='text-xs text-gray-400 mb-1'>
-                      Session Goals Achieved
-                    </p>
+                    <p className='text-xs text-gray-400 mb-1'>Session Goals Achieved</p>
                     <div className='grid grid-cols-4 gap-6'>
-                      <BoolBadge
-                        label='Time Extended'
-                        value={summary.evaluation.time_extended}
-                      />
-                      <BoolBadge
-                        label='Ransom Reduced'
-                        value={summary.evaluation.ransom_reduced}
-                      />
-                      <BoolBadge
-                        label='Decryption Key Requested'
-                        value={summary.evaluation.decryption_key_requested}
-                      />
-                      <BoolBadge
-                        label='Data Exploitation Discussed'
-                        value={summary.evaluation.data_exploitation_discussed}
-                      />
+                      <BoolBadge label='Time Extended' value={summary.evaluation.time_extended} />
+                      <BoolBadge label='Ransom Reduced' value={summary.evaluation.ransom_reduced} />
+                      <BoolBadge label='Decryption Key Requested' value={summary.evaluation.decryption_key_requested} />
+                      <BoolBadge label='Data Exploitation Discussed' value={summary.evaluation.data_exploitation_discussed} />
                     </div>
                   </div>
                 </div>
@@ -148,31 +128,25 @@ export default function ChatHistoryPage() {
           </SectionPanel>
         )}
 
-        {/* Conversation History */}
         <SectionPanel title='Conversation History'>
           <div className='mx-4 mt-4 px-4 py-3 rounded-lg bg-gray-50 border border-gray-200'>
             <p className='text-xs text-gray-500'>
-              <span className='font-semibold'>Reference Demo:</span> This is a
-              completed training session for learning purposes. Review the
-              negotiation strategies, communication techniques, and
-              documentation practices demonstrated in this conversation.
+              <span className='font-semibold'>Reference Demo:</span> This is a completed training
+              session for learning purposes. Review the negotiation strategies, communication
+              techniques, and documentation practices demonstrated in this conversation.
             </p>
           </div>
 
           <div className='p-4 space-y-3'>
             {messages.length === 0 ? (
-              <p className='text-center text-gray-400 text-sm py-8'>
-                No messages.
-              </p>
+              <p className='text-center text-gray-400 text-sm py-8'>No messages.</p>
             ) : (
               messages.map((msg, i) => (
                 <ChatMessageBubble
                   key={i}
                   sender={msg.sender}
                   content={msg.message}
-                  timestamp={
-                    msg.sent_at > 0 ? formatTimestamp(msg.sent_at) : undefined
-                  }
+                  timestamp={msg.sent_at > 0 ? formatTimestamp(msg.sent_at) : undefined}
                   variant='history'
                 />
               ))
@@ -188,6 +162,7 @@ export default function ChatHistoryPage() {
             )}
           </div>
         </SectionPanel>
+
         {(summary?.investigation_tasks?.length ?? 0) > 0 && (
           <SectionPanel title='Investigation Tasks'>
             <div className='p-6 space-y-3'>
