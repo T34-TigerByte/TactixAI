@@ -1,4 +1,4 @@
-import { Target, Clock, TrendingUp, BookOpen, BarChart2, MessageSquare } from 'lucide-react';
+import { Target, Clock, BookOpen, BarChart2, MessageSquare } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth }  from '../../hooks/useAuth';
 import { ROUTES } from '../../router/routes';
@@ -61,7 +61,7 @@ export default function LearnerDashboard () {
           className='max-w-7xl mx-auto px-4 sm:px-8 py-8 space-y-8'
         >
           {/* ── Stats Row ── */}
-          <div className='grid grid-cols-2 lg:grid-cols-4 gap-4'>
+          <div className='grid grid-cols-2 lg:grid-cols-3 gap-4'>
             {learnerStats && (
               <>
                 <StatsCard
@@ -83,12 +83,6 @@ export default function LearnerDashboard () {
                   label='Training Hours'
                   value={`${learnerStats.session.total_hours}h`}
                   icon={<Clock className='w-5 h-5 text-purple-500' />}
-                />
-                <StatsCard
-                  label='Current Streak'
-                  value={5}
-                  valueColor='text-red-500'
-                  icon={<TrendingUp className='w-5 h-5 text-red-500' />}
                 />
               </>
             )}

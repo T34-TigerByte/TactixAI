@@ -56,7 +56,7 @@ const OverviewTab = ({ onClick }: { onClick: (tab: AdminTab) => void }) => {
                             hover:bg-orange-50 transition-colors cursor-pointer'
           >
             <FileText className='w-5 h-5' />
-            Generate Reports
+            View Performance Reports
           </button>
         </div>
       </SectionPanel>

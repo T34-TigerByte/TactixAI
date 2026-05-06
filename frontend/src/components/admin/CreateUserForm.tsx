@@ -142,18 +142,18 @@ export default function CreateUserForm({ onBack }: Props) {
             {/* User Role */}
             <div>
               <label htmlFor='role' className='block text-sm font-semibold text-gray-800 mb-1'>
-                User Role <span aria-hidden='true' className='text-red-500'>*</span>
+                User Role
               </label>
               <div className='flex items-center gap-2 border border-gray-300 rounded-lg px-3 py-2
                               focus-within:border-orange-500 focus-within:ring-1 focus-within:ring-orange-500'>
                 <User className='w-4 h-4 text-teal-500 shrink-0' aria-hidden='true' />
                 <select
                   id='role'
-                  className='flex-1 text-sm outline-none text-gray-700 bg-transparent cursor-pointer appearance-none'
+                  className='flex-1 text-sm outline-none text-gray-700 bg-transparent appearance-none'
+                  disabled
                   {...register('role')}
                 >
                   <option value='learner'>Learner</option>
-                  <option value='admin'>Admin</option>
                 </select>
               </div>
             </div>

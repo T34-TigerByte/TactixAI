@@ -1,18 +1,17 @@
 import { useState } from 'react';
-import { LogOut, CheckCircle, Menu, X, ArrowLeft, User } from 'lucide-react';
+import { LogOut, Menu, X, ArrowLeft, User } from 'lucide-react';
 import Logo from './Logo';
 
 interface DashboardHeaderProps {
   title: string;
   subtitle: string;
-  uptime?: number;
   onLogout: () => void;
   onLogoClick?: () => void;
   onBack?: () => void; // For nested page (optional)
   onProfile?: () => void; // For learner dashboard profile link (optional)
 }
 
-export default function DashboardHeader({ title, subtitle, uptime, onLogout, onLogoClick, onBack, onProfile }: DashboardHeaderProps) {
+export default function DashboardHeader({ title, subtitle, onLogout, onLogoClick, onBack, onProfile }: DashboardHeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
@@ -49,12 +48,6 @@ export default function DashboardHeader({ title, subtitle, uptime, onLogout, onL
 
         {/* Desktop actions */}
         <div className='hidden sm:flex items-center gap-3'>
-          {uptime !== undefined && (
-            <div className='flex items-center gap-2 px-4 py-2 rounded-lg bg-teal-500/20 border border-teal-500/30 text-teal-400 text-sm font-medium'>
-              <CheckCircle className='w-4 h-4' />
-              {uptime}% Uptime
-            </div>
-          )}
           {onProfile && (
             <button
               onClick={onProfile}
@@ -99,12 +92,6 @@ export default function DashboardHeader({ title, subtitle, uptime, onLogout, onL
               <ArrowLeft className='w-4 h-4' />
               Back
             </button>
-          )}
-          {uptime !== undefined && (
-            <div className='flex items-center gap-2 px-4 py-2 rounded-lg bg-teal-500/20 border border-teal-500/30 text-teal-400 text-sm font-medium w-full'>
-              <CheckCircle className='w-4 h-4' />
-              {uptime}% Uptime
-            </div>
           )}
           {onProfile && (
             <button

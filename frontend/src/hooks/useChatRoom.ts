@@ -9,7 +9,6 @@ import { getToken } from '../utils/auth.utils';
 import { startSessionRequest, getSessionRequest } from '../api/learner.api';
 import { reducer, initialState } from './chatRoomReducer';
 import { WS_BASE_URL } from '../config';
-import { getMockQuestions } from '../mocks/investigationQuestions.mock';
 export type { Message, ChatRoomState, Action } from './chatRoomReducer';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -60,7 +59,18 @@ export function useChatRoom() {
           welcomeMessage: {
             id: '1',
             sender: 'system',
-            content: details.system_message ?? `Welcome to the "${scenarioTitle}" training scenario. Stay calm and apply your training.`,
+            content:
+              details.system_message ??
+              `
+              Welcome to the "${scenarioTitle}" training scenario. Stay calm and apply your training.
+              
+              Please follow these instructions to proceed:\n
+
+              1. Kick-start the chat by entering your prompt. Be careful with your word choice, as it will significantly affect the outcome and threat actor aggression.\n
+              2. Finish the investigation tasks located on the right panel.\n
+              3. Click "Submit" or "End Session" once you have completed all investigation tasks.\n
+              4. A report will be generated upon completion, you can review your performance under the Session History tab.”\n
+              `,
             timestamp: makeTimestamp(),
           },
         });
@@ -134,8 +144,7 @@ export function useChatRoom() {
   };
 
   const apiQuestions = sessionDetails?.questions ?? [];
-  const questions = apiQuestions.length > 0 ? apiQuestions : getMockQuestions(scenario?.title ?? '');
-  const completedCount = questions.filter((q) => (state.taskAnswers[q.question_key] ?? []).length > 0).length;
+  const completedCount = apiQuestions.filter((q) => (state.taskAnswers[q.question_key] ?? []).length > 0).length;
 
   return {
     scenario,
@@ -145,7 +154,7 @@ export function useChatRoom() {
     messagesEndRef,
     handleSend,
     handleKeyDown,
-    questions,
+    questions: apiQuestions,
     completedCount,
   };
 }

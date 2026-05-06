@@ -40,6 +40,17 @@ export const adminStatsSchema = z.object({
   session_growth_percentage: z.number(),
 });
 
+export const adminAnalyticsSchema = z.object({
+  user_growth: z.array(z.object({
+    month: z.string(),
+    learners: z.number(),
+  })),
+  platform_usage: z.object({
+    daily_active_users: z.number(),
+    sessions_per_user: z.number(),
+  }),
+});
+
 const userSessionSchema = z.object({
   completed: z.number(),
   last_session_at: z.number().nullish(),
@@ -256,6 +267,7 @@ export type User = z.infer<typeof userSchema>;
 /* admin page*/
 
 export type AdminStats = z.infer<typeof adminStatsSchema>;
+export type AdminAnalytics = z.infer<typeof adminAnalyticsSchema>;
 export type AdminUserListItem = z.infer<typeof adminUserSchema>;
 export type AdminUserById = z.infer<typeof adminUserByIdSchema>;
 export type AdminUserListPage = z.infer<typeof adminUserListPageSchema>;

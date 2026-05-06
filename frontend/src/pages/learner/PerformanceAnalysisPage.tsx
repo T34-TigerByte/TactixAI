@@ -296,20 +296,34 @@ export default function PerformanceAnalysisPage() {
 
   const { scores, verdict, investigation, negotiation, bcsm, bcsmBreakdown } = MOCK_REPORT;
 
+  const handleDownloadReport = () => window.print();
+
   return (
-    <div className='min-h-screen bg-gray-100'>
-      <DashboardHeader
-        title='Performance Report'
-        subtitle={MOCK_REPORT.title}
-        onLogoClick={() => navigate(ROUTES.LEARNER.DASHBOARD)}
-        onBack={() => navigate(ROUTES.LEARNER.PROGRESS)}
-        onLogout={handleLogout}
-      />
+    <>
+      <style>{`
+        @media print {
+          * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+          @page { margin: 12mm; size: A4; }
+        }
+      `}</style>
+      <div className='min-h-screen bg-gray-100'>
+      <div className='print:hidden'>
+        <DashboardHeader
+          title='Performance Report'
+          subtitle={MOCK_REPORT.title}
+          onLogoClick={() => navigate(ROUTES.LEARNER.DASHBOARD)}
+          onBack={() => navigate(ROUTES.LEARNER.PROGRESS)}
+          onLogout={handleLogout}
+        />
+      </div>
 
       <main className='max-w-4xl mx-auto px-4 sm:px-8 py-8 space-y-4'>
         {/* Action Buttons */}
-        <div className='flex flex-wrap gap-3 justify-end pt-1'>
-          <button className='flex items-center gap-2 px-4 py-2 rounded-lg bg-orange-500 hover:bg-orange-600 text-sm text-white font-medium transition-colors cursor-pointer'>
+        <div className='flex flex-wrap gap-3 justify-end pt-1 print:hidden'>
+          <button
+            className='flex items-center gap-2 px-4 py-2 rounded-lg bg-orange-500 hover:bg-orange-600 text-sm text-white font-medium transition-colors cursor-pointer'
+            onClick={handleDownloadReport}
+          >
             <Download className='w-4 h-4' />
             Export PDF
           </button>
@@ -413,6 +427,7 @@ export default function PerformanceAnalysisPage() {
 
         {/* Section 1: Investigation Tasks */}
         <SectionPanel
+          className='print:break-before-page'
           title=''
           header={
             <SectionToggleHeader
@@ -539,6 +554,7 @@ export default function PerformanceAnalysisPage() {
 
         {/* Section 3: BCSM */}
         <SectionPanel
+          className='print:break-before-page'
           title=''
           header={
             <SectionToggleHeader
@@ -636,5 +652,6 @@ export default function PerformanceAnalysisPage() {
         </SectionPanel>
       </main>
     </div>
+    </>
   );
 }

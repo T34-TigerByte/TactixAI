@@ -24,7 +24,7 @@ export default function ScenarioCard({ scenario, onClick, variant = 'compact' }:
               <Clock className='w-4 h-4' />
               <span>{scenario.time_estimate} min</span>
             </div>
-            <BoolBadge label='Completed' value={scenario.completed ?? false} />
+            <BoolBadge label={`${scenario.completed ? 'Completed' : 'Incomplete'}`} value={scenario.completed ?? false} />
           </div>
 
           <div className='rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 flex items-center justify-between'>
@@ -52,11 +52,16 @@ export default function ScenarioCard({ scenario, onClick, variant = 'compact' }:
     <div className='p-4 rounded-xl border border-gray-200 hover:border-gray-300 hover:shadow-sm transition-all space-y-3'>
       <div>
         <h3 className='font-semibold text-gray-900 mb-1'>{scenario.title}</h3>
-        <p className='text-gray-500 text-sm leading-relaxed'>{scenario.description}</p>
+        <p className='text-gray-500 text-sm leading-relaxed'>
+          {scenario.description}
+        </p>
       </div>
 
       <div className='flex items-center justify-between'>
-        <BoolBadge label='Completed' value={scenario.completed ?? false} />
+        <BoolBadge
+          label={`${scenario.completed ? 'Completed' : 'Incomplete'}`}
+          value={scenario.completed ?? false}
+        />
         <button
           onClick={() => onClick(scenario)}
           className='flex items-center gap-2 px-4 py-2 rounded-lg
