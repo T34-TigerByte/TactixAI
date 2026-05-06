@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Send, Clock, MessageSquare, ClipboardList } from 'lucide-react';
 import DashboardHeader from '../../components/ui/DashboardHeader.tsx';
@@ -24,12 +25,22 @@ export default function ChatRoomPage() {
   const scenarioTitle = scenario?.title ?? 'Training Session';
   const threatActorName = scenario?.threat_actor ?? 'Negotiator';
   const isSessionLoading = !sessionDetails && !sessionError;
-  
+  const [showTimeoutModal, setShowTimeoutModal] = useState(false);
+
+  useEffect(() => {
+    if (timeLeft === 0 && !isSessionLoading) {
+      setShowTimeoutModal(true);
+    }
+  }, [timeLeft, isSessionLoading]);
 
   const handleSessionEnd = async () => {
     if (!state.sessionUuid) return 
     await endSessionRequest(state.sessionUuid);
     navigate(ROUTES.LEARNER.SCENARIOS);
+  }
+
+  const handleOpenSubmitModal = () => {
+    dispatch({ type: 'SET_SHOW_WARNING', show: true });
   }
 
   if (sessionError) {
@@ -72,7 +83,10 @@ export default function ChatRoomPage() {
         subtitle={`Threat Actor: ${threatActorName}`}
         onLogoClick={() => dispatch({ type: 'SET_SHOW_WARNING', show: true })}
         onBack={() => dispatch({ type: 'SET_SHOW_WARNING', show: true })}
-        onLogout={() => { logout(); navigate(ROUTES.LOGIN, { replace: true }); }}
+        onLogout={() => {
+          logout();
+          navigate(ROUTES.LOGIN, { replace: true });
+        }}
       />
 
       {/* Mobile tab switcher */}
@@ -87,13 +101,16 @@ export default function ChatRoomPage() {
           onClick={() => dispatch({ type: 'SET_MOBILE_TAB', tab: 'tasks' })}
           className={`flex-1 py-2 rounded-lg text-sm font-semibold transition-colors cursor-pointer ${mobileTab === 'tasks' ? 'bg-[#0f1c35] text-white' : 'bg-white border border-gray-200 text-gray-600'}`}
         >
-          Investigation Tasks {completedCount > 0 && `(${completedCount}/${questions.length})`}
+          Investigation Tasks{' '}
+          {completedCount > 0 && `(${completedCount}/${questions.length})`}
         </button>
       </div>
 
       <main className='flex-1 max-w-7xl w-full mx-auto px-4 sm:px-8 py-4 lg:py-6 flex gap-6 min-h-0'>
         {/* Left: Chat Panel */}
-        <div className={`flex-1 min-h-0 bg-white rounded-xl border border-gray-200 shadow-sm flex-col ${mobileTab === 'chat' ? 'flex' : 'hidden lg:flex'}`}>
+        <div
+          className={`flex-1 min-h-0 bg-white rounded-xl border border-gray-200 shadow-sm flex-col ${mobileTab === 'chat' ? 'flex' : 'hidden lg:flex'}`}
+        >
           {/* Chat header */}
           <div className='flex items-center justify-between px-5 py-4 border-b border-gray-200 shrink-0'>
             <div className='flex items-center gap-2 text-gray-700 font-semibold text-sm'>
@@ -106,7 +123,9 @@ export default function ChatRoomPage() {
                 {formatTime(timeLeft)}
               </div>
               <button
-                onClick={() => dispatch({ type: 'SET_SHOW_WARNING', show: true })}
+                onClick={() =>
+                  dispatch({ type: 'SET_SHOW_WARNING', show: true })
+                }
                 className='px-4 py-1.5 rounded bg-red-500 hover:bg-red-600 text-white text-sm font-semibold transition-colors cursor-pointer'
               >
                 End Session
@@ -144,11 +163,22 @@ export default function ChatRoomPage() {
             {isTyping && (
               <div className='flex justify-start'>
                 <div className='space-y-1 flex flex-col items-start'>
-                  <span className='text-xs text-gray-400'>{threatActorName}</span>
+                  <span className='text-xs text-gray-400'>
+                    {threatActorName}
+                  </span>
                   <div className='px-4 py-3 rounded-xl bg-gray-100 flex items-center gap-1.5'>
-                    <span className='w-2 h-2 rounded-full bg-gray-400 animate-bounce' style={{ animationDelay: '0ms' }} />
-                    <span className='w-2 h-2 rounded-full bg-gray-400 animate-bounce' style={{ animationDelay: '150ms' }} />
-                    <span className='w-2 h-2 rounded-full bg-gray-400 animate-bounce' style={{ animationDelay: '300ms' }} />
+                    <span
+                      className='w-2 h-2 rounded-full bg-gray-400 animate-bounce'
+                      style={{ animationDelay: '0ms' }}
+                    />
+                    <span
+                      className='w-2 h-2 rounded-full bg-gray-400 animate-bounce'
+                      style={{ animationDelay: '150ms' }}
+                    />
+                    <span
+                      className='w-2 h-2 rounded-full bg-gray-400 animate-bounce'
+                      style={{ animationDelay: '300ms' }}
+                    />
                   </div>
                 </div>
               </div>
@@ -161,7 +191,9 @@ export default function ChatRoomPage() {
             <input
               type='text'
               value={inputText}
-              onChange={(e) => dispatch({ type: 'SET_INPUT', text: e.target.value })}
+              onChange={(e) =>
+                dispatch({ type: 'SET_INPUT', text: e.target.value })
+              }
               onKeyDown={handleKeyDown}
               placeholder='Type your message...'
               className='flex-1 px-4 py-2.5 rounded-lg border border-gray-200 text-sm text-gray-700
@@ -181,29 +213,45 @@ export default function ChatRoomPage() {
         </div>
 
         {/* Right: Investigation Tasks */}
-        <div className={`w-full lg:w-80 xl:w-96 min-h-0 bg-white rounded-xl border border-gray-200 shadow-sm flex-col ${mobileTab === 'tasks' ? 'flex' : 'hidden lg:flex'}`}>
+        <div
+          className={`w-full lg:w-80 xl:w-96 min-h-0 bg-white rounded-xl border border-gray-200 shadow-sm flex-col ${mobileTab === 'tasks' ? 'flex' : 'hidden lg:flex'}`}
+        >
           {/* Tasks header */}
           <div className='flex items-center justify-between px-5 py-4 border-b border-gray-200 shrink-0'>
-            <div className='flex items-center gap-2 text-gray-700 font-semibold text-sm'>
-              <ClipboardList className='w-4 h-4' />
-              Investigation Tasks
+              <div className='flex items-center gap-2 text-gray-700 font-semibold text-sm'>
+                <ClipboardList className='w-4 h-4' />
+                Investigation Tasks
+              </div>
+              <div className='h-2 w-24 rounded-full bg-gray-100'>
+                <div
+                  className={`h-2 rounded-full bg-green-500 transition-all`}
+                  style={{
+                    width: `${(Number(completedCount) / Number(questions.length)) * 100}%`,
+                  }}
+                  />
+              </div>
+              <span className='text-sm font-semibold text-gray-500'>
+                {completedCount}/{questions.length}
+              </span>
             </div>
-            <span className='text-sm font-semibold text-gray-500'>
-              {completedCount}/{questions.length}
-            </span>
-          </div>
 
           {/* Tasks list */}
           <div className='flex-1 overflow-y-auto px-5 py-4 space-y-5'>
-            {questions.map((task) => (
+            {questions.map((task, idx) => (
               <TaskQuestionItem
                 key={task.question_key}
+                idx={idx}
                 questionKey={task.question_key}
                 title={task.title}
                 options={task.options}
                 selected={taskAnswers[task.question_key] ?? []}
                 onToggle={(questionKey, answerKey) =>
-                  dispatch({ type: 'TOGGLE_TASK_OPTION', questionKey, answerKey, mode: 'radio' })
+                  dispatch({
+                    type: 'TOGGLE_TASK_OPTION',
+                    questionKey,
+                    answerKey,
+                    mode: 'radio',
+                  })
                 }
               />
             ))}
@@ -215,6 +263,7 @@ export default function ChatRoomPage() {
               className='w-full flex items-center justify-center gap-2 py-2.5 rounded-lg
                                border border-gray-300 hover:border-orange-400 hover:text-orange-600
                                text-gray-600 text-sm font-semibold transition-colors cursor-pointer'
+              onClick={handleOpenSubmitModal}
             >
               <ClipboardList className='w-4 h-4' />
               Submit
@@ -235,6 +284,23 @@ export default function ChatRoomPage() {
           finalWarning='Are you sure you want to exit?'
           onConfirm={handleSessionEnd}
           onCancel={() => dispatch({ type: 'SET_SHOW_WARNING', show: false })}
+        />
+      )}
+
+      {showTimeoutModal && (
+        <WarningModal
+          variant='timeout'
+          title='Time is up'
+          warning='Your session time has expired. Please note:'
+          dotpoints={[
+            'You will not be able to return once you exit.',
+            'All answers for the investigation tasks will be submitted automatically.',
+            'Your performance will be analysed based on your current progress.',
+          ]}
+          finalWarning='Are you sure you want to end the session?'
+          note='Extended time is recorded and included in your performance report.'
+          onConfirm={handleSessionEnd}
+          onCancel={() => setShowTimeoutModal(false)}
         />
       )}
     </div>

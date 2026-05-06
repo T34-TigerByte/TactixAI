@@ -5,10 +5,8 @@ export function splitName(fullName: string): { first: string; last: string } {
 }
 
 export function formatDate(date?: number | null) {
-  if (!date) {
-    return
-  }
-  return new Date(date).toLocaleString();
+  if (!date) return;
+  return new Date(date * 1000).toLocaleString();
 }
 
 export function formatTimestamp(ts: number): string {

@@ -23,6 +23,7 @@ export interface ChatRoomState {
   isTyping: boolean;
   // ui
   showWarning: boolean;
+  showSubmitModal: boolean;
   mobileTab: 'chat' | 'tasks';
   // tasks
   taskAnswers: Record<string, string[]>;
@@ -37,6 +38,7 @@ export const initialState: ChatRoomState = {
   inputText: '',
   isTyping: false,
   showWarning: false,
+  showSubmitModal: false,
   mobileTab: 'chat',
   taskAnswers: {},
 };
@@ -54,6 +56,7 @@ export type Action =
   | { type: 'CLEAR_INPUT' }
   | { type: 'SET_MOBILE_TAB'; tab: 'chat' | 'tasks' }
   | { type: 'SET_SHOW_WARNING'; show: boolean }
+  | { type: 'SET_SHOW_SUBMIT_MODAL'; show: boolean }
   | { type: 'TOGGLE_TASK_OPTION'; questionKey: string; answerKey: string; mode: 'radio' | 'checkbox' };
 
 // ── Reducer ───────────────────────────────────────────────────────────────────
@@ -94,6 +97,8 @@ export function reducer(state: ChatRoomState, action: Action): ChatRoomState {
       return { ...state, mobileTab: action.tab };
     case 'SET_SHOW_WARNING':
       return { ...state, showWarning: action.show };
+    case 'SET_SHOW_SUBMIT_MODAL':
+      return { ...state, showSubmitModal: action.show };
     case 'TOGGLE_TASK_OPTION': {
       const current = state.taskAnswers[action.questionKey] ?? [];
       let next: string[];

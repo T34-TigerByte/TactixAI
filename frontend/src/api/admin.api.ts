@@ -17,6 +17,8 @@ import {
   type ChatMessagesPage,
   type AdminSessionListPage,
   type AdminSessionSummary,
+  type AdminAnalytics,
+  adminAnalyticsSchema,
 } from '../schemas/api.schema';
 import type { CreateUserPayload, UpdateUserPayload } from '../schemas/user.schema';
 
@@ -29,6 +31,11 @@ export async function getUserActivitiesRequest(cursor?: string): Promise<AdminAc
   const params = cursor ? { cursor } : {};
   const response = await api.get('/admin/activities', { params });
   return parseResponse(adminActivitiesPageSchema, response.data, 'getUserActivitiesRequest');
+}
+
+export async function getAdminAnalyticsRequest(): Promise<AdminAnalytics> {
+  const response = await api.get('/admin/analytics');
+  return parseResponse(adminAnalyticsSchema,response.data,'getAdminAnalyticsRequest');
 }
 
 export async function getUsersRequest(cursor?: string): Promise<AdminUserListPage> {

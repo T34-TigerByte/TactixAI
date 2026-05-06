@@ -4,6 +4,7 @@ interface Option {
 }
 
 interface TaskQuestionItemProps {
+  idx: number;
   questionKey: string;
   title: string;
   options: Option[];
@@ -12,6 +13,7 @@ interface TaskQuestionItemProps {
 }
 
 export default function TaskQuestionItem({
+  idx,
   questionKey,
   title,
   options,
@@ -26,7 +28,7 @@ export default function TaskQuestionItem({
         <span className={`text-sm mt-0.5 shrink-0 ${isDone ? 'text-teal-500' : 'text-gray-300'}`}>
           {isDone ? '✓' : '○'}
         </span>
-        <p className='text-sm font-semibold text-gray-800 leading-snug'>{title}</p>
+        <p className='text-sm font-semibold text-gray-800 leading-snug'>{idx+1}. {title}</p>
       </div>
       <div className='pl-5 space-y-1.5'>
         {options.map((opt) => (

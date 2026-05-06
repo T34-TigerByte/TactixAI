@@ -20,6 +20,12 @@ export default function ChatMessageBubble({
   const userBg = variant === 'chat' ? 'bg-orange-500 text-white' : 'bg-[#0f1c35] text-white';
 
   if (isSystem) {
+    const normalized = content
+      .split('\n')
+      .map((line) => line.trim())
+      .join('\n')
+      .replace(/\n{3,}/g, '\n\n');
+
     return (
       <div className='flex items-start gap-2'>
         <div className='w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center shrink-0 mt-0.5'>
@@ -29,7 +35,7 @@ export default function ChatMessageBubble({
           {timestamp && (
             <span className='text-xs text-gray-400'>{label} · {timestamp}</span>
           )}
-          <p className='text-sm text-gray-700 mt-0.5 leading-relaxed'>{content}</p>
+          <p className='text-sm text-gray-700 mt-0.5 leading-relaxed whitespace-pre-wrap'>{normalized}</p>
         </div>
       </div>
     );

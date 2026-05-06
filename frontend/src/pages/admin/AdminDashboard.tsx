@@ -49,7 +49,6 @@ export default function AdminDashboardPage() {
       <DashboardHeader
         title='Admin Dashboard'
         subtitle='System Overview & Management'
-        uptime={99.8}
         onLogout={handleLogout}
       />
 
