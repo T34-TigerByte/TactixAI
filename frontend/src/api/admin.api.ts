@@ -54,9 +54,8 @@ export async function createUserRequest(payload: CreateUserPayload): Promise<Adm
   return parseResponse(adminUserSchema, response.data, 'createUserRequest');
 }
 
-export async function updateUserRequest(userId: number, payload: UpdateUserPayload): Promise<AdminUserListItem> {
-  const response = await api.put(`/admin/users/${userId}`, payload);
-  return parseResponse(adminUserSchema, response.data, 'updateUserRequest');
+export async function updateUserRequest(userId: number, payload: UpdateUserPayload): Promise<void> {
+  await api.put(`/admin/users/${userId}`, payload);
 }
 
 export async function deleteUserRequest(userId: number): Promise<void> {

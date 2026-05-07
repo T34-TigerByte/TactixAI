@@ -30,7 +30,14 @@ export default function ProfileSettingPage() {
   });
 
   const onSubmit = async (data: UpdateProfilePayload) => {
-    await updateLearnerProfileRequest(data);
+    const payload: UpdateProfilePayload = {
+      first_name: data.first_name,
+      last_name: data.last_name,
+      ...(data.current_password && { current_password: data.current_password }),
+      ...(data.new_password && { new_password: data.new_password }),
+      ...(data.new_password_confirmation && { new_password_confirmation: data.new_password_confirmation }),
+    };
+    await updateLearnerProfileRequest(payload);
     navigate(ROUTES.LEARNER.DASHBOARD);
   };
 

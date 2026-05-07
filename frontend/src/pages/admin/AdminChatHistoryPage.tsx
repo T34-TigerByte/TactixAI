@@ -5,6 +5,7 @@ import BoolBadge from '../../components/ui/BoolBadge';
 import { useAuth } from '../../hooks/useAuth';
 import { formatTimestamp, formatCurrency } from '../../utils/format.utils';
 import { ROUTES } from '../../router/routes';
+
 import DashboardHeader from '../../components/ui/DashboardHeader';
 import SectionPanel from '../../components/ui/SectionPanel';
 import InfoField from '../../components/ui/InfoField';

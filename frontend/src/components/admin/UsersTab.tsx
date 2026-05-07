@@ -48,15 +48,7 @@ export default function UsersTab() {
   }
 
   if (view === 'edit' && selectedUser) {
-    return (
-      <EditUserForm
-        user={selectedUser}
-        onBack={async () => {
-          await actions.reloadUsers();
-          dispatch({ type: 'SET_VIEW', payload: 'list' });
-        }}
-      />
-    );
+    return <EditUserForm user={selectedUser} />;
   }
 
   return (

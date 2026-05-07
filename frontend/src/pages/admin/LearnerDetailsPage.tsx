@@ -2,13 +2,15 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { Building2, Clock, Calendar, CheckCircle2, FileText } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 
-import { useAuth } from '../../hooks/useAuth';
-import { ROUTES } from '../../router/routes';
-import DashboardHeader from '../../components/ui/DashboardHeader.tsx';
-import StatsCard from '../../components/ui/StatsCard';
 import type { AdminUserListItem } from '../../schemas/api.schema';
 import { getAdminSessionsRequest } from '../../api/admin.api';
 import { formatDate, formatDuration } from '../../utils/format.utils';
+
+import { useAuth } from '../../hooks/useAuth';
+import { ROUTES } from '../../router/routes';
+
+import DashboardHeader from '../../components/ui/DashboardHeader.tsx';
+import StatsCard from '../../components/ui/StatsCard';
 
 export default function LearnerDetailsPage() {
   const { state } = useLocation();
