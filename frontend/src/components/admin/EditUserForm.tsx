@@ -1,19 +1,21 @@
 import { User, Mail, Building2, Save } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useNavigate } from 'react-router-dom';
 
 import type { AdminUserListItem } from '../../schemas/api.schema';
 import { updateUserSchema, type UpdateUserPayload } from '../../schemas/user.schema';
 import { updateUserRequest } from '../../api/admin.api';
 import { splitName } from '../../utils/format.utils';
 import PanelHeader from '../ui/PanelHeader';
+import { ROUTES } from '../../router/routes';
 
 interface Props {
   user: AdminUserListItem;
-  onBack: () => void;
 }
 
-export default function EditUserForm({ user, onBack }: Props) {
+export default function EditUserForm({ user }: Props) {
+  const navigate = useNavigate();
   const { first, last } = splitName(user.name);
 
   const {
@@ -27,7 +29,7 @@ export default function EditUserForm({ user, onBack }: Props) {
 
   const onSubmit = async (data: UpdateUserPayload) => {
     await updateUserRequest(user.id, data);
-    onBack();
+    navigate(ROUTES.ADMIN.DASHBOARD);
   };
 
   return (
