@@ -106,7 +106,7 @@ const MOCK_REPORT: {
   invFeedback:
     '3 of 4 questions correct. Q2 was missed — the ransomware had propagated laterally across all domain controllers and file servers, not just HR & Finance. Review the network topology section of the scenario briefing before your next attempt.',
   negotiation: [
-    { label: 'Ransom amount reduced', detail: 'Threat actor: $250,000 → $180,000 (28% reduction achieved)', result: 'pass', points: 5 },
+    { label: 'Ransom amount reduced', detail: 'Threat actor: $250,000 → $180,000', result: 'pass', points: 5 },
     { label: 'Payment deadline extended', detail: "Deadline extended: 24 hrs → 72 hrs upon learner's request", result: 'pass', points: 5 },
   ],
   negFeedback:
