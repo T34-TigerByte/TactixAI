@@ -256,6 +256,24 @@ export const adminSessionSummarySchema = z.object({
   })).optional(),
 });
 
+/* Registration Requests */
+
+export const registrationRequestSchema = z.object({
+  id: z.number(),
+  first_name: z.string(),
+  last_name: z.string(),
+  email: z.string(),
+  company: z.string().nullable(),
+  status: z.enum(['pending', 'approved', 'rejected']),
+  created_at: z.number().nullable(),
+  reviewed_at: z.number().nullable(),
+});
+
+export const registrationRequestListSchema = z.object({
+  total: z.number(),
+  data: z.array(registrationRequestSchema),
+});
+
 /* DEFINE SESSION SCHEMA */
 
 // PUT /profile response — Assume BE server returns updated profile data
@@ -294,3 +312,5 @@ export type SessionListItem = z.infer<typeof sessionListItemSchema>;
 export type SessionListPage = z.infer<typeof sessionListPageSchema>;
 export type ChatMessage = z.infer<typeof chatMessageSchema>;
 export type ChatMessagesPage = z.infer<typeof chatMessagesPageSchema>;
+export type RegistrationRequest = z.infer<typeof registrationRequestSchema>;
+export type RegistrationRequestList = z.infer<typeof registrationRequestListSchema>;

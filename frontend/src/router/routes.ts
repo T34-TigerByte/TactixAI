@@ -1,5 +1,7 @@
 export const ROUTES = {
   LOGIN: '/login',
+  REGISTER_REQUEST: '/register-request',
+  SET_PASSWORD: '/set-password',
   UNAUTHORIZED: '/unauthorized',
   LEARNER: {
     DASHBOARD: '/learner/dashboard',

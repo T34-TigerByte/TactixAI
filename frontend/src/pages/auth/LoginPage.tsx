@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { SubmitEvent } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 import { ROUTES } from "../../router/routes";
 import Logo from "../../components/ui/Logo";
@@ -251,12 +251,12 @@ const LoginPage = () => {
                 {/* Footer */}
                 <p className='text-center text-gray-500 text-sm'>
                   Don't have an account?{' '}
-                  <span
-                    className='text-red-600 font-medium cursor-pointer
-                                 hover:underline'
+                  <Link
+                    to={ROUTES.REGISTER_REQUEST}
+                    className='text-orange-600 font-medium hover:underline'
                   >
-                    Contact your administrator
-                  </span>
+                    Request access
+                  </Link>
                 </p>
               </div>
             </div>

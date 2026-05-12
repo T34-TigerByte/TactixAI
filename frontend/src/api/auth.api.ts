@@ -19,3 +19,18 @@ export async function getMeRequest(): Promise<User> {
 export async function logoutRequest(): Promise<void> {
   await api.post('/auth/logout');
 }
+
+export interface SubmitRegistrationRequestPayload {
+  first_name: string;
+  last_name: string;
+  email: string;
+  company: string;
+}
+
+export async function submitRegistrationRequestRequest(payload: SubmitRegistrationRequestPayload): Promise<void> {
+  await api.post('/registration-requests', payload);
+}
+
+export async function setPasswordRequest(token: string, password: string): Promise<void> {
+  await api.post('/auth/set-password', { token, password });
+}

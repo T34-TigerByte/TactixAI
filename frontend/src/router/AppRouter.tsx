@@ -12,6 +12,8 @@ import AdminDashboard from '../pages/admin/AdminDashboard';
 import LearnerDetailsPage from '../pages/admin/LearnerDetailsPage';
 import AdminChatHistoryPage from '../pages/admin/AdminChatHistoryPage';
 import LoginPage from '../pages/auth/LoginPage';
+import RegisterRequestPage from '../pages/auth/RegisterRequestPage';
+import SetPasswordPage from '../pages/auth/SetPasswordPage';
 
 import { useAuth } from '../hooks/useAuth';
 import { useScenario } from '../hooks/useScenario';
@@ -44,6 +46,8 @@ export default function AppRouter() {
             {/* Public Routes */}
 
             <Route path={ROUTES.LOGIN} element={<LoginPage />} />
+            <Route path={ROUTES.REGISTER_REQUEST} element={<RegisterRequestPage />} />
+            <Route path={ROUTES.SET_PASSWORD} element={<SetPasswordPage />} />
             <Route path={ROUTES.UNAUTHORIZED} element={<div>Unauthorized Access</div>} />
 
             {/* Protected Routes */}

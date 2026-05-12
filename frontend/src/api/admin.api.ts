@@ -9,6 +9,7 @@ import {
   chatMessagesPageSchema,
   adminSessionListPageSchema,
   adminSessionSummarySchema,
+  registrationRequestListSchema,
   type AdminStats,
   type AdminUserListItem,
   type AdminUserById,
@@ -18,6 +19,7 @@ import {
   type AdminSessionListPage,
   type AdminSessionSummary,
   type AdminAnalytics,
+  type RegistrationRequestList,
   adminAnalyticsSchema,
 } from '../schemas/api.schema';
 import type { CreateUserPayload, UpdateUserPayload } from '../schemas/user.schema';
@@ -78,4 +80,17 @@ export async function getAdminSessionMessagesRequest(sessionUuid: string, cursor
   const params = cursor ? { cursor } : {};
   const response = await api.get(`/admin/sessions/${sessionUuid}/messages`, { params });
   return parseResponse(chatMessagesPageSchema, response.data, 'getAdminSessionMessagesRequest');
+}
+
+export async function getRegistrationRequestsRequest(status = 'pending', page = 1): Promise<RegistrationRequestList> {
+  const response = await api.get('/admin/registration-requests', { params: { status, page } });
+  return parseResponse(registrationRequestListSchema, response.data, 'getRegistrationRequestsRequest');
+}
+
+export async function approveRegistrationRequestRequest(requestId: number): Promise<void> {
+  await api.post(`/admin/registration-requests/${requestId}/approve`);
+}
+
+export async function rejectRegistrationRequestRequest(requestId: number): Promise<void> {
+  await api.post(`/admin/registration-requests/${requestId}/reject`);
 }

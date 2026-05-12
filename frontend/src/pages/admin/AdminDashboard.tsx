@@ -9,6 +9,7 @@ import { ROUTES } from '../../router/routes';
 import OverviewTab from '../../components/admin/OverviewTab';
 import UsersTab from '../../components/admin/UsersTab';
 import AnalyticsTab from '../../components/admin/AnalyticsTab';
+import RegistrationRequestsTab from '../../components/admin/RegistrationRequestsTab';
 import StatsCard from '../../components/ui/StatsCard';
 import DashboardHeader from '../../components/ui/DashboardHeader.tsx';
 import TabNav from '../../components/ui/TabNav';
@@ -38,6 +39,7 @@ export default function AdminDashboardPage() {
     { key: 'overview', label: 'Overview' },
     { key: 'users', label: 'User Management' },
     { key: 'analytics', label: 'Analytics' },
+    { key: 'requests', label: 'Registration Requests' },
   ];
 
   const userGrowthSubText =
@@ -86,6 +88,7 @@ export default function AdminDashboardPage() {
         {activeTab === 'overview' && <OverviewTab onClick={setActiveTab} />}
         {activeTab === 'users' && <UsersTab />}
         {activeTab === 'analytics' && <AnalyticsTab />}
+        {activeTab === 'requests' && <RegistrationRequestsTab />}
       </main>
     </div>
   );
