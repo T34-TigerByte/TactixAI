@@ -7,6 +7,7 @@ export interface Message {
   sender: string;
   content: string;
   timestamp: string;
+  attachedFile?: string;
 }
 
 // ── State ─────────────────────────────────────────────────────────────────────

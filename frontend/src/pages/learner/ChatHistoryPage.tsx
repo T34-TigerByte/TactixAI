@@ -43,7 +43,7 @@ export default function ChatHistoryPage() {
 
   const apiMessages = data?.pages.flatMap((p) => p.data) ?? [];
   const systemMessage = sessionDetails?.system_message
-    ? [{ sender: 'system' as const, message: sessionDetails.system_message, sent_at: 0 }]
+    ? [{ sender: 'system' as const, message: sessionDetails.system_message, sent_at: 0, attached_file: 'sample.doc' }]
     : [];
   const messages = [...systemMessage, ...apiMessages];
 
@@ -148,6 +148,7 @@ export default function ChatHistoryPage() {
                   content={msg.message}
                   timestamp={msg.sent_at > 0 ? formatTimestamp(msg.sent_at) : undefined}
                   variant='history'
+                  attachedFile={msg.attached_file}
                 />
               ))
             )}

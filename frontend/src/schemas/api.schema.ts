@@ -213,6 +213,7 @@ export const chatMessageSchema = z.object({
   sender: z.string(),
   message: z.string(),
   sent_at: z.number(),
+  attached_file: z.string().optional(),
 });
 
 export const chatMessagesPageSchema = z.object({

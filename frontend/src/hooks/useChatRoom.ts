@@ -127,11 +127,14 @@ export function useChatRoom() {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  const handleSend = () => {
+  const handleSend = (attachedFile?: string) => {
     const text = inputText.trim();
-    if (!text) return;
-    sendJsonMessage({ content: text });
-    dispatch({ type: 'ADD_MESSAGE', message: { id: Date.now().toString(), sender: 'user', content: text, timestamp: makeTimestamp() } });
+    if (!text && !attachedFile) return;
+    sendJsonMessage({ content: text, ...(attachedFile ? { attached_file: attachedFile } : {}) });
+    dispatch({
+      type: 'ADD_MESSAGE',
+      message: { id: Date.now().toString(), sender: 'user', content: text, timestamp: makeTimestamp(), attachedFile },
+    });
     dispatch({ type: 'CLEAR_INPUT' });
     dispatch({ type: 'SET_TYPING', isTyping: true });
   };

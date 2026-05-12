@@ -1,9 +1,12 @@
+import { FileText } from 'lucide-react';
+
 interface ChatMessageBubbleProps {
   sender: string;
   content: string;
   timestamp?: string;
   senderLabel?: string;
   variant?: 'chat' | 'history'; // chat: active session, history: review
+  attachedFile?: string;
 }
 
 export default function ChatMessageBubble({
@@ -12,6 +15,7 @@ export default function ChatMessageBubble({
   timestamp,
   senderLabel,
   variant = 'history',
+  attachedFile,
 }: ChatMessageBubbleProps) {
   const isUser = sender === 'user';
   const isSystem = sender === 'system';
@@ -47,11 +51,21 @@ export default function ChatMessageBubble({
         {timestamp && (
           <span className='text-xs text-gray-400'>{label} · {timestamp}</span>
         )}
-        <div className={`px-4 py-3 rounded-xl text-sm leading-relaxed
-          ${isUser ? userBg : 'bg-gray-100 text-gray-900'}`}
-        >
-          {content}
-        </div>
+        {attachedFile && (
+          <div className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-medium
+            ${isUser ? 'bg-orange-400 text-white' : 'bg-gray-200 text-gray-700'}`}
+          >
+            <FileText className='w-3.5 h-3.5 shrink-0' />
+            {attachedFile}
+          </div>
+        )}
+        {content && (
+          <div className={`px-4 py-3 rounded-xl text-sm leading-relaxed
+            ${isUser ? userBg : 'bg-gray-100 text-gray-900'}`}
+          >
+            {content}
+          </div>
+        )}
       </div>
     </div>
   );

@@ -1,11 +1,11 @@
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
-import BoolBadge from '../../components/ui/BoolBadge';
 
 import { useAuth } from '../../hooks/useAuth';
 import { formatTimestamp, formatCurrency } from '../../utils/format.utils';
 import { ROUTES } from '../../router/routes';
 
+import BoolBadge from '../../components/ui/BoolBadge';
 import DashboardHeader from '../../components/ui/DashboardHeader';
 import SectionPanel from '../../components/ui/SectionPanel';
 import InfoField from '../../components/ui/InfoField';
@@ -145,6 +145,7 @@ export default function AdminChatHistoryPage() {
                   content={msg.message}
                   timestamp={msg.sent_at > 0 ? formatTimestamp(msg.sent_at) : undefined}
                   variant='history'
+                  attachedFile={msg.attached_file}
                 />
               ))
             )}
