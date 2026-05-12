@@ -1,5 +1,9 @@
 export const ROUTES = {
   LOGIN: '/login',
+  REGISTER_REQUEST: '/register-request',
+  PRIVACY_POLICY: 'https://flametreecyber.com.au/privacy-policy/',
+  SET_PASSWORD: '/set-password',
+  FORGOT_PASSWORD: '/forgot-password',
   UNAUTHORIZED: '/unauthorized',
   LEARNER: {
     DASHBOARD: '/learner/dashboard',

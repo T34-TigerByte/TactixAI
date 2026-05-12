@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { SubmitEvent } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 import { ROUTES } from "../../router/routes";
 import Logo from "../../components/ui/Logo";
@@ -72,7 +72,12 @@ const LoginPage = () => {
     return (
       <div
         className='min-h-screen flex flex-col'
-        style={{ backgroundImage: "url('/dark-blue_texture_triangle_bg.png')", backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed' }}
+        style={{
+          backgroundImage: "url('/dark-blue_texture_triangle_bg.png')",
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundAttachment: 'fixed',
+        }}
       >
         {/* Navigation */}
         <header className='px-8 py-5 flex items-center gap-3'>
@@ -118,7 +123,6 @@ const LoginPage = () => {
                   </div>
                 ))}
               </div>
-
             </div>
 
             {/* Right side: Login Card with Spike on top */}
@@ -168,9 +172,17 @@ const LoginPage = () => {
                   </div>
 
                   <div className='space-y-1.5'>
-                    <label className='text-gray-700 text-sm font-medium'>
-                      Password
-                    </label>
+                    <div className='flex items-center justify-between'>
+                      <label className='text-gray-700 text-sm font-medium'>
+                        Password
+                      </label>
+                      <Link
+                        to={ROUTES.FORGOT_PASSWORD}
+                        className='text-xs text-orange-600 hover:underline'
+                      >
+                        Forgot password?
+                      </Link>
+                    </div>
                     <input
                       type='password'
                       value={password}
@@ -251,12 +263,21 @@ const LoginPage = () => {
                 {/* Footer */}
                 <p className='text-center text-gray-500 text-sm'>
                   Don't have an account?{' '}
-                  <span
-                    className='text-red-600 font-medium cursor-pointer
-                                 hover:underline'
+                  <Link
+                    to={ROUTES.REGISTER_REQUEST}
+                    className='text-orange-600 font-medium hover:underline'
                   >
-                    Contact your administrator
-                  </span>
+                    Request access
+                  </Link>
+                </p>
+                <p className='text-center text-gray-500 text-sm'>
+                  By signing in, you agree to our{' '}
+                  <Link
+                    to={ROUTES.PRIVACY_POLICY}
+                    className='text-orange-600 font-medium hover:underline'
+                  >
+                    Privacy Policy
+                  </Link>
                 </p>
               </div>
             </div>
