@@ -62,7 +62,7 @@ export default function RegistrationRequestsTab() {
             </button>
           ))}
           <button
-            onClick={refetch}
+            onClick={() => void refetch()}
             className='ml-auto mb-2 flex items-center gap-1.5 px-3 py-1.5 text-xs text-gray-500 hover:text-gray-700 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer'
           >
             <RefreshCw className='w-3.5 h-3.5' />
