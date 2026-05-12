@@ -34,3 +34,7 @@ export async function submitRegistrationRequestRequest(payload: SubmitRegistrati
 export async function setPasswordRequest(token: string, password: string): Promise<void> {
   await api.post('/auth/set-password', { token, password });
 }
+
+export async function forgotPasswordRequest(email: string): Promise<void> {
+  await api.post('/auth/forgot-password', { email });
+}
