@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Send, Clock, MessageSquare, ClipboardList } from 'lucide-react';
+import { Send, Clock, MessageSquare, ClipboardList, Paperclip, X, FileText } from 'lucide-react';
 import DashboardHeader from '../../components/ui/DashboardHeader.tsx';
 import { ROUTES } from '../../router/routes';
 import { useAuth } from '../../hooks/useAuth';
@@ -25,6 +25,16 @@ export default function ChatRoomPage() {
   const scenarioTitle = scenario?.title ?? 'Training Session';
   const threatActorName = scenario?.threat_actor ?? 'Negotiator';
   const isSessionLoading = !sessionDetails && !sessionError;
+
+  const [uploadedFile, setUploadedFile] = useState<string | null>(null);
+
+  function handleSimulatedUpload() {
+    setUploadedFile('sample.doc');
+  }
+
+  function handleRemoveFile() {
+    setUploadedFile(null);
+  }
   const [showTimeoutModal, setShowTimeoutModal] = useState(false);
 
   useEffect(() => {
@@ -158,6 +168,7 @@ export default function ChatRoomPage() {
                 content={msg.content}
                 timestamp={msg.timestamp}
                 variant='chat'
+                attachedFile={msg.attachedFile}
               />
             ))}
             {isTyping && (
@@ -187,28 +198,64 @@ export default function ChatRoomPage() {
           </div>
 
           {/* Input */}
-          <div className='px-5 py-4 border-t border-gray-200 flex items-center gap-3 shrink-0'>
-            <input
-              type='text'
-              value={inputText}
-              onChange={(e) =>
-                dispatch({ type: 'SET_INPUT', text: e.target.value })
-              }
-              onKeyDown={handleKeyDown}
-              placeholder='Type your message...'
-              className='flex-1 px-4 py-2.5 rounded-lg border border-gray-200 text-sm text-gray-700
-                         placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-transparent'
-            />
-            <button
-              onClick={handleSend}
-              disabled={!inputText.trim()}
-              className='flex items-center gap-2 px-5 py-2.5 rounded-lg bg-orange-500 hover:bg-orange-600
-                         disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm font-semibold
-                         transition-colors cursor-pointer'
-            >
-              <Send className='w-4 h-4' />
-              Send
-            </button>
+          <div className='px-5 py-4 border-t border-gray-200 shrink-0'>
+            {uploadedFile && (
+              <div className='flex items-center gap-1.5 mb-2 px-2 py-1 w-fit rounded-md bg-orange-50 border border-orange-200 text-orange-700 text-xs'>
+                <FileText className='w-3.5 h-3.5 shrink-0' />
+                <span className='font-medium'>{uploadedFile}</span>
+                <button
+                  onClick={handleRemoveFile}
+                  className='ml-1 hover:text-orange-900 transition-colors cursor-pointer'
+                  aria-label='Remove file'
+                >
+                  <X className='w-3 h-3' />
+                </button>
+              </div>
+            )}
+            <div className='flex items-center gap-3'>
+              <button
+                onClick={handleSimulatedUpload}
+                disabled={!!uploadedFile}
+                title='Attach file'
+                className='flex items-center justify-center w-9 h-9 rounded-lg border border-gray-200 text-gray-400
+                           hover:text-orange-500 hover:border-orange-300 disabled:opacity-40 disabled:cursor-not-allowed
+                           transition-colors cursor-pointer shrink-0'
+              >
+                <Paperclip className='w-4 h-4' />
+              </button>
+              <input
+                type='text'
+                value={inputText}
+                onChange={(e) =>
+                  dispatch({ type: 'SET_INPUT', text: e.target.value })
+                }
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    handleSend(uploadedFile ?? undefined);
+                    setUploadedFile(null);
+                  } else {
+                    handleKeyDown(e);
+                  }
+                }}
+                placeholder='Type your message...'
+                className='flex-1 px-4 py-2.5 rounded-lg border border-gray-200 text-sm text-gray-700
+                           placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-transparent'
+              />
+              <button
+                onClick={() => {
+                  handleSend(uploadedFile ?? undefined);
+                  setUploadedFile(null);
+                }}
+                disabled={!inputText.trim() && !uploadedFile}
+                className='flex items-center gap-2 px-5 py-2.5 rounded-lg bg-orange-500 hover:bg-orange-600
+                           disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm font-semibold
+                           transition-colors cursor-pointer'
+              >
+                <Send className='w-4 h-4' />
+                Send
+              </button>
+            </div>
           </div>
         </div>
 
